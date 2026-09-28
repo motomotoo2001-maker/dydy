@@ -1,8 +1,8 @@
-BackpackRoyale_Rebuild_v0.1.2-final.zip
+BackpackRoyale_Rebuild_v0.1.3-final.zip
 Unity: 6000.6.3f1
-Google Drive: /BackpackRoyale/Rebuild/BackpackRoyale_Rebuild_v0.1.2-final.zip
-Drive file id: 1OZZbVhd-zkd0ks8FA6l4JC3zraOkPfm_
-Size: 50326630 bytes
-SHA-256: 12243b5d6afe31accf50ad62de79e096e4f9775668708d65ba6244d6bacce1f8
-Container checks: 14/14 contract tests; VALIDATION_OK; ZIP integrity OK
+Google Drive: /BackpackRoyale/Rebuild/BackpackRoyale_Rebuild_v0.1.3-final.zip
+Drive file id: 1mNCXDUw6Sh_YovWUBqOuERpLXmcEgfFz
+Size: 50315238 bytes
+SHA-256: 95d4dd6e3fca5fe0a0aa6a68d6ee7cc308f768c4aa8062036adbacc023233575
+Container checks: 20/20 contract tests; VALIDATION_OK; ZIP integrity OK
 Unity compile/playmode: pending local Unity 6000.6.3f1 verification
