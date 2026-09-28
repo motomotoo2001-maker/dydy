@@ -8,11 +8,13 @@ The approved source-art archive is kept in `Assets/Game/Art`: five character she
 ## Stability-first stack
 Built-in Render Pipeline; legacy Input Manager (no `com.unity.inputsystem`); UGUI 2.6.0 + TextMeshPro; SpriteRenderer + Animator; ParticleSystem; ScriptableObjects; Unity Test Framework 1.8.0.
 
-## v0.1.2 playable loop
+## v0.1.3 playable loop
 `Hero Select → Build → Battle → Reward → Run Map → Build → … → Boss → Run Complete`.
 
 Current slice includes:
-- Pyromancer vs Ice Barbarian real-time autobattle;
+- four selectable heroes: **Pyromancer, Ice Mage, Poison Assassin, Holy Paladin**;
+- deterministic encounter roster: **Frost Adept, Venom Stalker, Radiant Guardian**, with **Ice Warlord** as the final boss;
+- runtime visual/controller switching from preloaded Unity assets with no `AssetDatabase` dependency in Play Mode;
 - 6×5 backpack with reserved Hero Core;
 - nine items, item icons, shop buying and **1-gold reroll**;
 - three Fire synergies and Ember Dagger → Blazing Fang fusion;
