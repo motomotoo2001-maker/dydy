@@ -8,23 +8,23 @@ The approved source-art archive is kept in `Assets/Game/Art`: five character she
 ## Stability-first stack
 Built-in Render Pipeline; legacy Input Manager (no `com.unity.inputsystem`); UGUI 2.6.0 + TextMeshPro; SpriteRenderer + Animator; ParticleSystem; ScriptableObjects; Unity Test Framework 1.8.0.
 
-## v0.1.3 playable loop
+## v0.1.4 playable loop
 `Hero Select → Build → Battle → Reward → Run Map → Build → … → Boss → Run Complete`.
 
 Current slice includes:
-- four selectable heroes: **Pyromancer, Ice Mage, Poison Assassin, Holy Paladin**;
-- deterministic encounter roster: **Frost Adept, Venom Stalker, Radiant Guardian**, with **Ice Warlord** as the final boss;
-- runtime visual/controller switching from preloaded Unity assets with no `AssetDatabase` dependency in Play Mode;
+- four selectable playable heroes: **Pyromancer, Ice Mage, Poison Assassin, Holy Paladin**;
+- deterministic encounter roster: **Frost Adept, Venom Stalker, Radiant Guardian**, with **Ice Warlord** reserved as the final boss;
+- runtime character visual/controller switching from preloaded Unity assets, with no `AssetDatabase` dependency in Play Mode;
 - 6×5 backpack with reserved Hero Core;
-- nine items, item icons, shop buying and **1-gold reroll**;
-- three Fire synergies and Ember Dagger → Blazing Fang fusion;
-- deterministic six-stage run with Battle/Elite route choices and a final Boss;
+- fifteen items with Fire/Ice/Poison/Holy build support, item icons, shop buying and **1-gold reroll**;
+- affinity synergies for **Fire, Ice, Poison and Holy**, Hero Core bonuses, and Ember Dagger → Blazing Fang fusion;
+- deterministic six-stage run with Battle/Elite routes plus **Shop, Treasure and Rest** event nodes and a final Boss;
 - enemy HP/damage/armor/attack-speed scaling by stage and route type;
 - stage-scaled gold plus **three distinct item reward choices**;
 - dedicated world-map screen using the preserved `world_map.png` art;
 - HP/Mana bars, battle event feed, arena backdrop, hit flash and damage-type particles;
 - sprite-sheet animation baking for five preserved character sheets;
-- Save v1 data model and EditMode tests;
+- **Save v2** checkpoint model preserving hero, route progression, event resolution, run-health bonus and backpack layout;
 - source guards for malformed C# literals, braces, preprocessor balance and forbidden legacy APIs.
 
 ## Open in Unity
