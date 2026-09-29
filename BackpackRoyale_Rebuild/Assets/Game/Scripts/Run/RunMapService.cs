@@ -6,6 +6,12 @@ namespace BackpackRoyale.Rebuild
     public sealed class RunMapService
     {
         private readonly int seed;
+        private static readonly RunNodeType[] EventTypes =
+        {
+            RunNodeType.Shop,
+            RunNodeType.Treasure,
+            RunNodeType.Rest
+        };
 
         public RunMapService(int valueSeed)
         {
@@ -21,25 +27,48 @@ namespace BackpackRoyale.Rebuild
             };
 
             var random = new Random(seed);
+            int eventOffset = Math.Abs(seed % EventTypes.Length);
             for (int stage = 2; stage < maxStage; stage++)
             {
-                bool eliteFirst = random.Next(0, 2) == 0;
-                RunNode battle = new RunNode($"stage_{stage}_battle", stage, RunNodeType.Battle, $"Battle {stage}");
-                RunNode elite = new RunNode($"stage_{stage}_elite", stage, RunNodeType.Elite, $"Elite {stage}");
-                if (eliteFirst)
+                RunNodeType combatType = random.Next(0, 3) == 0 ? RunNodeType.Elite : RunNodeType.Battle;
+                RunNodeType eventType = EventTypes[(eventOffset + stage - 2) % EventTypes.Length];
+
+                var combat = new RunNode(
+                    $"stage_{stage}_{combatType.ToString().ToLowerInvariant()}",
+                    stage,
+                    combatType,
+                    combatType == RunNodeType.Elite ? $"Elite {stage}" : $"Battle {stage}");
+                var runEvent = new RunNode(
+                    $"stage_{stage}_{eventType.ToString().ToLowerInvariant()}",
+                    stage,
+                    eventType,
+                    EventLabel(eventType));
+
+                if (random.Next(0, 2) == 0)
                 {
-                    nodes.Add(elite);
-                    nodes.Add(battle);
+                    nodes.Add(combat);
+                    nodes.Add(runEvent);
                 }
                 else
                 {
-                    nodes.Add(battle);
-                    nodes.Add(elite);
+                    nodes.Add(runEvent);
+                    nodes.Add(combat);
                 }
             }
 
             nodes.Add(new RunNode($"stage_{maxStage}_boss", maxStage, RunNodeType.Boss, "Final Boss"));
             return new RunMapState(nodes, maxStage);
+        }
+
+        private static string EventLabel(RunNodeType type)
+        {
+            switch (type)
+            {
+                case RunNodeType.Shop: return "Merchant Camp";
+                case RunNodeType.Treasure: return "Treasure Cache";
+                case RunNodeType.Rest: return "Sacred Rest";
+                default: return type.ToString();
+            }
         }
     }
 }
