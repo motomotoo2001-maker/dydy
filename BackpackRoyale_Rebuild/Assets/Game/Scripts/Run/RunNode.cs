@@ -4,6 +4,9 @@ namespace BackpackRoyale.Rebuild
     {
         Battle,
         Elite,
+        Shop,
+        Treasure,
+        Rest,
         Boss
     }
 
@@ -13,6 +16,8 @@ namespace BackpackRoyale.Rebuild
         public int Stage { get; }
         public RunNodeType Type { get; }
         public string Label { get; }
+
+        public bool IsCombat => Type == RunNodeType.Battle || Type == RunNodeType.Elite || Type == RunNodeType.Boss;
 
         public RunNode(string id, int stage, RunNodeType type, string label)
         {
