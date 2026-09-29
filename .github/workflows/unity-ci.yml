@@ -21,6 +21,7 @@ env:
   UNITY_VERSION: 6000.6.3f1
   PROJECT_PATH: ci-project/BackpackRoyale_Rebuild
   CI_SOURCE_SHA256: 7587ccac89482f6a01ade88db6ee449f58d57e0f1a008030dedfcb4803739da5
+  CI_SOURCE_PARTS: 13
 
 jobs:
   editmode:
@@ -36,6 +37,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          PART_COUNT=$(find BackpackRoyale_Rebuild/.ci/source-v0.1.4 -maxdepth 1 -name 'part-*.b64' | wc -l)
+          test "${PART_COUNT}" -eq "${CI_SOURCE_PARTS}" || { echo "::error::Expected ${CI_SOURCE_PARTS} source parts, found ${PART_COUNT}"; exit 1; }
           mkdir -p ci-project
           cat BackpackRoyale_Rebuild/.ci/source-v0.1.4/part-*.b64 \
             | base64 --decode \
@@ -44,7 +47,7 @@ jobs:
           unzip -q /tmp/BackpackRoyale_Rebuild_Source_v0.1.4.zip -d ci-project
           test -f "${PROJECT_PATH}/ProjectSettings/ProjectVersion.txt"
           grep -F "${UNITY_VERSION}" "${PROJECT_PATH}/ProjectSettings/ProjectVersion.txt"
-          echo "Verified project: ${PROJECT_PATH}"
+          echo "Verified ${PART_COUNT}-part project bundle: ${PROJECT_PATH}"
 
       - name: Check Unity activation secrets
         shell: bash
@@ -103,6 +106,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          PART_COUNT=$(find BackpackRoyale_Rebuild/.ci/source-v0.1.4 -maxdepth 1 -name 'part-*.b64' | wc -l)
+          test "${PART_COUNT}" -eq "${CI_SOURCE_PARTS}" || { echo "::error::Expected ${CI_SOURCE_PARTS} source parts, found ${PART_COUNT}"; exit 1; }
           mkdir -p ci-project
           cat BackpackRoyale_Rebuild/.ci/source-v0.1.4/part-*.b64 \
             | base64 --decode \
