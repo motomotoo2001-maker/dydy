@@ -8,24 +8,28 @@ The approved source-art archive is kept in `Assets/Game/Art`: five character she
 ## Stability-first stack
 Built-in Render Pipeline; legacy Input Manager (no `com.unity.inputsystem`); UGUI 2.6.0 + TextMeshPro; SpriteRenderer + Animator; ParticleSystem; ScriptableObjects; Unity Test Framework 1.8.0.
 
-## v0.1.4 playable loop
+## v0.1.5 visual cleanup
+This pass is based on the first real Unity 6000.6.3f1 screenshots of the generated demo.
+- Build mode no longer overlays live controls on the painted `build_camp.png` UI mockup; it uses a clean generated arena backdrop.
+- Hero Select also uses a clean generated arena rather than a menu mockup with baked buttons.
+- Build mode is reorganized into three readable zones: hero card, backpack, and shop/synergies.
+- The selected hero card shows a larger portrait and runtime stats.
+- Character sprites are normalized to a consistent battle height and action presentation keeps the readable body sprite on screen while runtime VFX handle impacts/spells.
+- Idle frames are alpha-trimmed, bottom-anchored, and cleaned to the largest opaque silhouette to remove detached neighboring fragments.
+- `Animator.Play` is protected by active-state and `HasState` checks.
+- TMP Essential Resources are bootstrapped from the installed Unity UI/TMP package before scene generation.
+- Optional Unicode UI glyphs were removed to avoid fallback-font warnings.
+
+## Current playable loop
 `Hero Select → Build → Battle → Reward → Run Map → Build → … → Boss → Run Complete`.
 
 Current slice includes:
-- four selectable playable heroes: **Pyromancer, Ice Mage, Poison Assassin, Holy Paladin**;
-- deterministic encounter roster: **Frost Adept, Venom Stalker, Radiant Guardian**, with **Ice Warlord** reserved as the final boss;
-- runtime character visual/controller switching from preloaded Unity assets, with no `AssetDatabase` dependency in Play Mode;
-- 6×5 backpack with reserved Hero Core;
-- fifteen items with Fire/Ice/Poison/Holy build support, item icons, shop buying and **1-gold reroll**;
-- affinity synergies for **Fire, Ice, Poison and Holy**, Hero Core bonuses, and Ember Dagger → Blazing Fang fusion;
-- deterministic six-stage run with Battle/Elite routes plus **Shop, Treasure and Rest** event nodes and a final Boss;
-- enemy HP/damage/armor/attack-speed scaling by stage and route type;
-- stage-scaled gold plus **three distinct item reward choices**;
-- dedicated world-map screen using the preserved `world_map.png` art;
-- HP/Mana bars, battle event feed, arena backdrop, hit flash and damage-type particles;
-- sprite-sheet animation baking for five preserved character sheets;
-- **Save v2** checkpoint model preserving hero, route progression, event resolution, run-health bonus and backpack layout;
-- source guards for malformed C# literals, braces, preprocessor balance and forbidden legacy APIs.
+- four selectable heroes: **Pyromancer, Ice Mage, Poison Assassin, Holy Paladin**;
+- encounter roster with Frost Adept, Venom Stalker, Radiant Guardian and Ice Warlord boss;
+- 6×5 backpack with Hero Core;
+- fifteen Fire/Ice/Poison/Holy items, shop, reroll, fusion and affinity synergies;
+- Battle/Elite/Shop/Treasure/Rest/Boss route nodes;
+- scaling enemies, rewards, HP/Mana HUD, particles and Save v2 checkpoints.
 
 ## Open in Unity
 1. Extract to a new empty folder and open with **Unity 6000.6.3f1**.
@@ -35,11 +39,9 @@ Current slice includes:
 5. Run EditMode tests in `Assets/Game/Tests/EditMode`, then enter Play Mode.
 
 ## Validation boundary
-Container-side checks:
-
+Container checks:
 ```bash
 python -m pytest tools/tests -q
 python tools/validate_rebuild.py
 ```
-
-This environment does **not** contain Unity Editor. Unity compilation, Unity Test Runner, Play Mode and Windows player build are therefore not claimed until this exact version is opened in Unity 6000.6.3f1.
+The exact v0.1.5 archive was re-extracted and revalidated in the container. Unity compilation/Test Runner/Play Mode still require execution in Unity 6000.6.3f1.
