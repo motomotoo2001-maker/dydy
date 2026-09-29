@@ -1,0 +1,156 @@
+name: Unity CI - BackpackRoyale Rebuild
+
+on:
+  push:
+    branches:
+      - backpackroyale-rebuild
+    paths:
+      - ".github/workflows/unity-ci.yml"
+      - "BackpackRoyale_Rebuild/.ci/source-v0.1.4/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+
+concurrency:
+  group: unity-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  UNITY_VERSION: 6000.6.3f1
+  PROJECT_PATH: ci-project/BackpackRoyale_Rebuild
+  CI_SOURCE_SHA256: 7587ccac89482f6a01ade88db6ee449f58d57e0f1a008030dedfcb4803739da5
+
+jobs:
+  editmode:
+    name: Compile / Import / EditMode
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout rebuild branch
+        uses: actions/checkout@v4
+
+      - name: Rehydrate verified Unity source project
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ci-project
+          cat BackpackRoyale_Rebuild/.ci/source-v0.1.4/part-*.b64 \
+            | base64 --decode \
+            > /tmp/BackpackRoyale_Rebuild_Source_v0.1.4.zip
+          echo "${CI_SOURCE_SHA256}  /tmp/BackpackRoyale_Rebuild_Source_v0.1.4.zip" | sha256sum -c -
+          unzip -q /tmp/BackpackRoyale_Rebuild_Source_v0.1.4.zip -d ci-project
+          test -f "${PROJECT_PATH}/ProjectSettings/ProjectVersion.txt"
+          grep -F "${UNITY_VERSION}" "${PROJECT_PATH}/ProjectSettings/ProjectVersion.txt"
+          echo "Verified project: ${PROJECT_PATH}"
+
+      - name: Check Unity activation secrets
+        shell: bash
+        env:
+          UNITY_LICENSE_CHECK: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL_CHECK: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD_CHECK: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL_CHECK: ${{ secrets.UNITY_SERIAL }}
+        run: |
+          set -euo pipefail
+          test -n "${UNITY_EMAIL_CHECK}" || { echo "::error::Missing repository secret UNITY_EMAIL"; exit 1; }
+          test -n "${UNITY_PASSWORD_CHECK}" || { echo "::error::Missing repository secret UNITY_PASSWORD"; exit 1; }
+          if [ -z "${UNITY_LICENSE_CHECK}" ] && [ -z "${UNITY_SERIAL_CHECK}" ]; then
+            echo "::error::Add UNITY_LICENSE for a Personal license, or UNITY_SERIAL for a Pro license."
+            exit 1
+          fi
+
+      - name: Unity compile, import and EditMode tests
+        id: editmode
+        uses: game-ci/unity-test-runner@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        with:
+          projectPath: ${{ env.PROJECT_PATH }}
+          unityVersion: ${{ env.UNITY_VERSION }}
+          testMode: editmode
+          artifactsPath: artifacts/editmode
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          checkName: BackpackRoyale EditMode
+
+      - name: Upload EditMode results and Unity logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-editmode-results
+          if-no-files-found: warn
+          path: |
+            ${{ steps.editmode.outputs.artifactsPath }}
+            artifacts/editmode
+            ${{ env.PROJECT_PATH }}/Logs
+
+  playmode:
+    name: PlayMode
+    needs: editmode
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout rebuild branch
+        uses: actions/checkout@v4
+
+      - name: Rehydrate verified Unity source project
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ci-project
+          cat BackpackRoyale_Rebuild/.ci/source-v0.1.4/part-*.b64 \
+            | base64 --decode \
+            > /tmp/BackpackRoyale_Rebuild_Source_v0.1.4.zip
+          echo "${CI_SOURCE_SHA256}  /tmp/BackpackRoyale_Rebuild_Source_v0.1.4.zip" | sha256sum -c -
+          unzip -q /tmp/BackpackRoyale_Rebuild_Source_v0.1.4.zip -d ci-project
+          test -f "${PROJECT_PATH}/ProjectSettings/ProjectVersion.txt"
+          grep -F "${UNITY_VERSION}" "${PROJECT_PATH}/ProjectSettings/ProjectVersion.txt"
+
+      - name: Check Unity activation secrets
+        shell: bash
+        env:
+          UNITY_LICENSE_CHECK: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL_CHECK: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD_CHECK: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL_CHECK: ${{ secrets.UNITY_SERIAL }}
+        run: |
+          set -euo pipefail
+          test -n "${UNITY_EMAIL_CHECK}" || { echo "::error::Missing repository secret UNITY_EMAIL"; exit 1; }
+          test -n "${UNITY_PASSWORD_CHECK}" || { echo "::error::Missing repository secret UNITY_PASSWORD"; exit 1; }
+          if [ -z "${UNITY_LICENSE_CHECK}" ] && [ -z "${UNITY_SERIAL_CHECK}" ]; then
+            echo "::error::Add UNITY_LICENSE for a Personal license, or UNITY_SERIAL for a Pro license."
+            exit 1
+          fi
+
+      - name: Unity PlayMode tests
+        id: playmode
+        uses: game-ci/unity-test-runner@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        with:
+          projectPath: ${{ env.PROJECT_PATH }}
+          unityVersion: ${{ env.UNITY_VERSION }}
+          testMode: playmode
+          artifactsPath: artifacts/playmode
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          checkName: BackpackRoyale PlayMode
+
+      - name: Upload PlayMode results and Unity logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-playmode-results
+          if-no-files-found: warn
+          path: |
+            ${{ steps.playmode.outputs.artifactsPath }}
+            artifacts/playmode
+            ${{ env.PROJECT_PATH }}/Logs
