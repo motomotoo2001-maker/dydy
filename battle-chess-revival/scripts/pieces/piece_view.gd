@@ -1,18 +1,18 @@
 class_name PieceView
 extends Node3D
 
-const WHITE_PAWN_ASSET_PATH := "res://assets/models/white_pawn_concept_v2.glb"
-const BLACK_PAWN_ASSET_PATH := "res://assets/models/black_pawn_concept_v2.glb"
-const WHITE_KNIGHT_ASSET_PATH := "res://assets/models/white_knight_concept_v2.glb"
-const BLACK_KNIGHT_ASSET_PATH := "res://assets/models/black_knight_concept_v2.glb"
-const WHITE_BISHOP_ASSET_PATH := "res://assets/models/white_bishop_concept_v2.glb"
-const BLACK_BISHOP_ASSET_PATH := "res://assets/models/black_bishop_concept_v2.glb"
-const WHITE_ROOK_ASSET_PATH := "res://assets/models/white_rook_concept_v2.glb"
-const BLACK_ROOK_ASSET_PATH := "res://assets/models/black_rook_concept_v2.glb"
-const WHITE_QUEEN_ASSET_PATH := "res://assets/models/white_queen_concept_v2.glb"
-const BLACK_QUEEN_ASSET_PATH := "res://assets/models/black_queen_concept_v2.glb"
-const WHITE_KING_ASSET_PATH := "res://assets/models/white_king_concept_v2.glb"
-const BLACK_KING_ASSET_PATH := "res://assets/models/black_king_concept_v2.glb"
+const WHITE_PAWN_ASSET_PATH := "res://assets/models/white_pawn_concept_v3.glb"
+const BLACK_PAWN_ASSET_PATH := "res://assets/models/black_pawn_concept_v3.glb"
+const WHITE_KNIGHT_ASSET_PATH := "res://assets/models/white_knight_concept_v3.glb"
+const BLACK_KNIGHT_ASSET_PATH := "res://assets/models/black_knight_concept_v3.glb"
+const WHITE_BISHOP_ASSET_PATH := "res://assets/models/white_bishop_concept_v3.glb"
+const BLACK_BISHOP_ASSET_PATH := "res://assets/models/black_bishop_concept_v3.glb"
+const WHITE_ROOK_ASSET_PATH := "res://assets/models/white_rook_concept_v3.glb"
+const BLACK_ROOK_ASSET_PATH := "res://assets/models/black_rook_concept_v3.glb"
+const WHITE_QUEEN_ASSET_PATH := "res://assets/models/white_queen_concept_v3.glb"
+const BLACK_QUEEN_ASSET_PATH := "res://assets/models/black_queen_concept_v3.glb"
+const WHITE_KING_ASSET_PATH := "res://assets/models/white_king_concept_v3.glb"
+const BLACK_KING_ASSET_PATH := "res://assets/models/black_king_concept_v3.glb"
 
 var piece_type: StringName = &"Pawn"
 var side: StringName = &"White"
@@ -139,12 +139,12 @@ func _apply_secondary_idle(wave: float, slow_wave: float) -> void:
 	match piece_type:
 		&"Pawn":
 			_idle_named(["Head"], Vector3(slow_wave * 1.2, 0, wave * 0.7))
-			_idle_named(["Helmet_Crest", "HelmetCrest", "Concept_Plume_0", "Concept_Plume_1", "Concept_Plume_2"], Vector3(0, slow_wave * 1.1, wave * 2.4))
+			_idle_named(["Helmet_Crest", "HelmetCrest", "Concept_Plume_0", "Concept_Plume_1", "Concept_Plume_2", "V3_Plume_0", "V3_Plume_1", "V3_Plume_2"], Vector3(0, slow_wave * 1.2, wave * 2.8))
 			_idle_named(["Spear_Shaft", "SpearShaft", "Knife_Grip", "KnifeGrip"], Vector3(0, 0, slow_wave * 1.6))
 		&"Knight":
 			_idle_named(["HorseHead"], Vector3(wave * 1.8, 0, slow_wave * 0.9))
 			_idle_named(["Mane"], Vector3(wave * 1.2, 0, slow_wave * 1.6))
-			_idle_named(["Plume", "Concept_Plume_0", "Concept_Plume_1", "Concept_Plume_2", "Concept_RedPlume_0", "Concept_RedPlume_1", "Concept_RedPlume_2"], Vector3(0, wave * 1.1, slow_wave * 2.8))
+			_idle_named(["Plume", "Concept_Plume_0", "Concept_Plume_1", "Concept_Plume_2", "Concept_RedPlume_0", "Concept_RedPlume_1", "Concept_RedPlume_2", "V3_Plume_0", "V3_Plume_1", "V3_Plume_2"], Vector3(0, wave * 1.2, slow_wave * 3.2))
 			_idle_named(["RiderTorso"], Vector3(slow_wave * 0.8, 0, wave * 0.5))
 		&"Bishop":
 			_idle_named(["Head"], Vector3(slow_wave * 0.8, 0, wave * 0.45))

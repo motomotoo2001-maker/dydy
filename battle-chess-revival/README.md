@@ -134,3 +134,8 @@ The imported asset milestone is followed by a dedicated motion pass. Idle motion
 ## Concept-sheet integration v2
 
 The approved character sheets are now the direct production target. All 12 imported GLBs moved to `*_concept_v2.glb` and receive a second authored detail pass after the base modular mesh is built. The pass adds the concept-specific visual language: White blue/gold heraldry, polished armor and cloth; Black crimson/bronze/purple accents; multi-part helmet plumes; tabards/capes; bishop inner ears and robe layers; rook heraldry/lava cracks; queen hair/cape/jewelry; king fur mantles/capes and crown/scepter gems. All added parts are named for animation rather than baked into a single mesh. Pawn and Knight capture motion now also drives plume/shield/rider/horse-head parts so the approved animation sheets begin to read in motion.
+
+
+## Concept v3 fidelity pass
+
+The latest six approved character sheets are now treated as the visual source of truth. A third GLB generation pass builds on concept-v2 and adds face readability and costume silhouette details across all twelve characters: layered eye whites/irises, mouths and moustaches, fuller multi-lobe helmet plumes, rounded pauldron/fist forms, stronger shield rims and heraldry, horse/rider facial details and capes, bishop robe layers and staff halos, queen layered hair/gowns/capes, and king fur/coat/remote details. PieceView now loads `*_concept_v3.glb`. CI asset contracts were raised to concept-v3 so future changes cannot silently fall back to the simpler geometry.

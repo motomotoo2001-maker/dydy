@@ -678,3 +678,178 @@ _POLISHERS = {
 }
 for _filename,_callback in _POLISHERS.items():
     _polish_scene(_filename,_callback)
+
+
+# ---------------------------------------------------------------------------
+# Concept v3 — silhouette + face + costume fidelity pass from the latest sheets.
+# v2 remains as a safe source. v3 adds higher-readability hero details without
+# destroying named-part animation structure.
+# ---------------------------------------------------------------------------
+def _upgrade_v3(src_name, dst_name, callback):
+    src = OUT / src_name
+    sc = trimesh.load(src, force="scene", process=False)
+    callback(sc)
+    dst = OUT / dst_name
+    dst.write_bytes(sc.export(file_type="glb"))
+    print(f"CONCEPT_V3_PASS {dst} parts={len(sc.geometry)} bytes={dst.stat().st_size}")
+
+def _eye_pair(sc, prefix, mat_white, mat_iris, y, z, spread=.072, scale=.040):
+    for side,x in (("L",-spread),("R",spread)):
+        _addp(sc,f"{prefix}_EyeWhite_{side}",sphere(scale),mat_white,(x,y,z),scale=(1.22,.92,.55))
+        _addp(sc,f"{prefix}_Iris_{side}",sphere(scale*.48),mat_iris,(x,y+.001,z-.030),scale=(1,.92,.45))
+
+EYEWHITE=pbr("EyeWhite","#fff8ed",0,.30)
+BLUEIRIS=pbr("BlueIris","#2c79b8",0,.18)
+GREENIRIS=pbr("GreenIris","#9bbf45",0,.18)
+REDIRIS=pbr("RedIris","#e34d3e",0,.16)
+LIP=pbr("WarmLip","#a8544a",0,.46)
+TEETH=pbr("Teeth","#f4ead9",0,.42)
+SOFTGOLD=pbr("SoftGold","#e0b75a",.68,.24)
+ROYALBLUE=pbr("RoyalBlueV3","#2454a1",.02,.38)
+CRIMSON=pbr("CrimsonV3","#b22c38",.03,.36)
+DEEPBLACK=pbr("DeepBlackV3","#18171c",.12,.38)
+PALEIVORY=pbr("PaleIvoryV3","#f4eadc",0,.40)
+
+def v3_white_pawn(sc):
+    _eye_pair(sc,"V3",EYEWHITE,BLUEIRIS,1.225,-.252,.074,.043)
+    _addp(sc,"V3_Smile",box((.12,.018,.018)),LIP,(0,1.105,-.258))
+    _addp(sc,"V3_ChestCrossV",box((.052,.25,.038)),SOFTGOLD,(0,.87,-.348))
+    _addp(sc,"V3_ChestCrossH",box((.19,.052,.038)),SOFTGOLD,(0,.87,-.348))
+    _addp(sc,"V3_Pauldron_L",sphere(.115),SOFTGOLD,(-.30,.985,-.015),scale=(1.25,.52,.95))
+    _addp(sc,"V3_Pauldron_R",sphere(.115),SOFTGOLD,(.30,.985,-.015),scale=(1.25,.52,.95))
+    for i,(x,y,s) in enumerate(((0,1.64,(1.0,.75,1.0)),(.015,1.75,(.88,.70,.92)),(.035,1.86,(.70,.58,.80)))):
+        _addp(sc,f"V3_Plume_{i}",sphere(.125),ROYALBLUE,(x,y,.035),scale=s)
+    _addp(sc,"V3_ShieldRim",cyl(.315,.030),SOFTGOLD,(-.486,.75,-.020),(90,0,90))
+    _addp(sc,"V3_SpearGem",sphere(.040),ROYALBLUE,(.55,1.45,-.03))
+
+def v3_black_pawn(sc):
+    _eye_pair(sc,"V3",EYEWHITE,GREENIRIS,1.225,-.252,.078,.044)
+    _addp(sc,"V3_Grin",box((.15,.020,.020)),TEETH,(0,1.045,-.260))
+    _addp(sc,"V3_LowerLip",box((.13,.018,.018)),LIP,(0,1.020,-.262))
+    _addp(sc,"V3_ShoulderPlate_L",sphere(.125),CBRONZE,(-.31,.985,-.015),scale=(1.30,.52,.98))
+    _addp(sc,"V3_ShoulderPlate_R",sphere(.125),CBRONZE,(.31,.985,-.015),scale=(1.30,.52,.98))
+    for i,(x,y,s) in enumerate(((0,1.62,(1.05,.76,1.0)),(-.02,1.74,(.92,.68,.92)),(-.05,1.86,(.72,.56,.80)))):
+        _addp(sc,f"V3_Plume_{i}",sphere(.128),CRIMSON,(x,y,.035),scale=s)
+    _addp(sc,"V3_ShieldRim",cyl(.295,.032),CBRONZE,(-.486,.72,-.020),(90,0,90))
+    _addp(sc,"V3_ShieldSlash",box((.11,.33,.034)),CRIMSON,(-.515,.72,-.035),(0,0,18))
+    _addp(sc,"V3_CapeTear_L",box((.11,.24,.035)),CRIMSON,(-.13,.60,.225),(0,0,-10))
+    _addp(sc,"V3_CapeTear_R",box((.11,.28,.035)),CRIMSON,(.12,.58,.225),(0,0,12))
+
+def v3_white_knight(sc):
+    _eye_pair(sc,"V3Horse",EYEWHITE,BLUEIRIS,1.425,-.690,.130,.042)
+    _addp(sc,"V3Horse_Smile",box((.18,.022,.020)),LIP,(0,1.235,-.835))
+    _eye_pair(sc,"V3Rider",EYEWHITE,BLUEIRIS,1.735,-.082,.055,.029)
+    _addp(sc,"V3Rider_Moustache_L",sphere(.050),CHAIR,(-.045,1.675,-.105),scale=(1.28,.42,.52))
+    _addp(sc,"V3Rider_Moustache_R",sphere(.050),CHAIR,(.045,1.675,-.105),scale=(1.28,.42,.52))
+    _addp(sc,"V3_HorseChestGold",box((.32,.075,.075)),SOFTGOLD,(0,.93,-.515))
+    _addp(sc,"V3_SaddleFleur",box((.055,.25,.045)),SOFTGOLD,(0,1.00,-.215))
+    for side in (-1,1):
+        _addp(sc,f"V3_HorseKneeGold_{side}",cyl(.060,.035),SOFTGOLD,(.20*side,.42,-.20),(0,0,90))
+    _addp(sc,"V3_RiderCape",box((.38,.46,.042)),ROYALBLUE,(0,1.38,.28),(12,0,0))
+
+def v3_black_knight(sc):
+    _eye_pair(sc,"V3Horse",EYEWHITE,REDIRIS,1.435,-.695,.130,.042)
+    _eye_pair(sc,"V3Rider",EYEWHITE,REDIRIS,1.742,-.092,.055,.029)
+    _addp(sc,"V3_RiderGrin",box((.13,.020,.020)),TEETH,(0,1.655,-.112))
+    _addp(sc,"V3_HorseChestArmor",box((.34,.18,.075)),DEEPBLACK,(0,.93,-.52))
+    _addp(sc,"V3_HorseChestSlash",box((.055,.15,.083)),CRIMSON,(0,.93,-.565),(0,0,-15))
+    for side in (-1,1):
+        _addp(sc,f"V3_HorseShoulderSpike_{side}",trimesh.creation.cone(radius=.052,height=.18,sections=8),CBRONZE,(.22*side,.95,-.31),(0,0,38*side))
+    _addp(sc,"V3_RiderCape",box((.40,.50,.045)),CRIMSON,(0,1.39,.29),(12,0,0))
+
+def v3_white_bishop(sc):
+    _eye_pair(sc,"V3",EYEWHITE,BLUEIRIS,1.49,-.250,.080,.035)
+    _addp(sc,"V3_TrunkTip",sphere(.075),BIW["skin"],(0,1.15,-.35),scale=(.85,.65,1.10))
+    _addp(sc,"V3_MitreGem",sphere(.055),BLUEIRIS,(0,1.95,-.145))
+    _addp(sc,"V3_RobeGoldL",box((.035,.56,.035)),SOFTGOLD,(-.105,.78,-.375),(0,0,-4))
+    _addp(sc,"V3_RobeGoldR",box((.035,.56,.035)),SOFTGOLD,(.105,.78,-.375),(0,0,4))
+    _addp(sc,"V3_CapeLayer_L",box((.18,.62,.035)),ROYALBLUE,(-.23,1.00,.27),(0,0,-10))
+    _addp(sc,"V3_CapeLayer_R",box((.18,.62,.035)),ROYALBLUE,(.23,1.00,.27),(0,0,10))
+    _addp(sc,"V3_StaffOuterHalo",cyl(.170,.020),SOFTGOLD,(.46,1.82,-.02),(90,0,0))
+
+def v3_black_bishop(sc):
+    _eye_pair(sc,"V3",EYEWHITE,REDIRIS,1.50,-.250,.080,.035)
+    _addp(sc,"V3_TrunkTip",sphere(.073),BIB["bone"],(0,1.18,-.35),scale=(.85,.65,1.10))
+    _addp(sc,"V3_MitreGem",sphere(.055),CMAGENTA,(0,1.95,-.145))
+    _addp(sc,"V3_RobeGoldL",box((.035,.57,.035)),CBRONZE,(-.105,.78,-.385),(0,0,-4))
+    _addp(sc,"V3_RobeGoldR",box((.035,.57,.035)),CBRONZE,(.105,.78,-.385),(0,0,4))
+    _addp(sc,"V3_CapeLayer_L",box((.18,.64,.035)),CRIMSON,(-.24,1.00,.28),(0,0,-11))
+    _addp(sc,"V3_CapeLayer_R",box((.18,.64,.035)),CRIMSON,(.24,1.00,.28),(0,0,11))
+    _addp(sc,"V3_StaffOuterHalo",cyl(.175,.020),CBRONZE,(.46,1.84,-.02),(90,0,0))
+
+def v3_white_rook(sc):
+    _eye_pair(sc,"V3",EYEWHITE,BLUEIRIS,1.055,-.405,.150,.044)
+    _addp(sc,"V3_MouthWhite",box((.18,.035,.025)),TEETH,(0,.875,-.395))
+    for side in (-1,1):
+        _addp(sc,f"V3_FistKnuckleA_{side}",sphere(.105),RW["stone"],(.55*side,.49,-.11))
+        _addp(sc,f"V3_FistKnuckleB_{side}",sphere(.105),RW["stone"],(.55*side,.49,.01))
+        _addp(sc,f"V3_FistKnuckleC_{side}",sphere(.105),RW["stone"],(.55*side,.49,.13))
+    _addp(sc,"V3_TabardPoint",trimesh.creation.cone(radius=.17,height=.28,sections=4),ROYALBLUE,(0,.50,-.38),(90,0,45))
+    _addp(sc,"V3_CrownGoldBand",box((.84,.075,.84)),SOFTGOLD,(0,1.34,0))
+
+def v3_black_rook(sc):
+    _eye_pair(sc,"V3",EYEWHITE,REDIRIS,1.055,-.415,.150,.044)
+    _addp(sc,"V3_MouthGlow",box((.18,.038,.025)),CLAVA,(0,.875,-.405))
+    for side in (-1,1):
+        _addp(sc,f"V3_FistKnuckleA_{side}",sphere(.108),RB["obs"],(.56*side,.48,-.11))
+        _addp(sc,f"V3_FistKnuckleB_{side}",sphere(.108),RB["obs"],(.56*side,.48,.01))
+        _addp(sc,f"V3_FistKnuckleC_{side}",sphere(.108),RB["obs"],(.56*side,.48,.13))
+    _addp(sc,"V3_TabardPoint",trimesh.creation.cone(radius=.17,height=.28,sections=4),CRIMSON,(0,.50,-.39),(90,0,45))
+    _addp(sc,"V3_CrownBronzeBand",box((.85,.075,.85)),CBRONZE,(0,1.35,0))
+
+def v3_white_queen(sc):
+    _eye_pair(sc,"V3",EYEWHITE,BLUEIRIS,1.615,-.220,.067,.031)
+    _addp(sc,"V3_Lip",box((.09,.018,.016)),LIP,(0,1.505,-.225))
+    for side in (-1,1):
+        for j,(yy,zz,ss) in enumerate(((1.56,.12,(.85,1.20,.70)),(1.43,.16,(.78,1.28,.72)),(1.30,.18,(.70,1.20,.70)))):
+            _addp(sc,f"V3_HairCurl_{side}_{j}",sphere(.105),CHAIR,(.20*side,yy,zz),scale=ss)
+    _addp(sc,"V3_BodiceGoldV",box((.045,.32,.032)),SOFTGOLD,(0,1.11,-.252))
+    _addp(sc,"V3_BodiceGoldH",box((.20,.045,.032)),SOFTGOLD,(0,1.11,-.252))
+    _addp(sc,"V3_SkirtLayerFront",trimesh.creation.cone(radius=.34,height=.58,sections=24),PALEIVORY,(0,.57,-.01),(180,0,0),scale=(1,.7,1))
+    _addp(sc,"V3_CapeBlue_L",box((.21,.58,.035)),ROYALBLUE,(-.29,1.02,.25),(0,0,-11))
+    _addp(sc,"V3_CapeBlue_R",box((.21,.58,.035)),ROYALBLUE,(.29,1.02,.25),(0,0,11))
+
+def v3_black_queen(sc):
+    _eye_pair(sc,"V3",EYEWHITE,REDIRIS,1.625,-.220,.067,.031)
+    _addp(sc,"V3_Lip",box((.095,.018,.016)),CRIMSON,(0,1.515,-.225))
+    for side in (-1,1):
+        for j,(yy,zz,ss) in enumerate(((1.57,.12,(.88,1.22,.72)),(1.44,.16,(.80,1.30,.74)),(1.31,.18,(.72,1.22,.72)))):
+            _addp(sc,f"V3_HairCurl_{side}_{j}",sphere(.108),CDARKHAIR,(.20*side,yy,zz),scale=ss)
+    _addp(sc,"V3_BodiceGoldV",box((.045,.33,.032)),CBRONZE,(0,1.12,-.252))
+    _addp(sc,"V3_BodiceGoldH",box((.20,.045,.032)),CBRONZE,(0,1.12,-.252))
+    _addp(sc,"V3_SkirtLayerFront",trimesh.creation.cone(radius=.35,height=.59,sections=24),CCHAR,(0,.58,-.01),(180,0,0),scale=(1,.7,1))
+    _addp(sc,"V3_CapeRed_L",box((.22,.60,.035)),CRIMSON,(-.30,1.03,.26),(0,0,-12))
+    _addp(sc,"V3_CapeRed_R",box((.22,.60,.035)),CRIMSON,(.30,1.03,.26),(0,0,12))
+
+def v3_white_king(sc):
+    _eye_pair(sc,"V3",EYEWHITE,BLUEIRIS,1.625,-.250,.078,.031)
+    _addp(sc,"V3_Nose",sphere(.065),KW["skin"],(0,1.56,-.27),scale=(1,.80,1.20))
+    _addp(sc,"V3_Moustache_L",sphere(.085),KW["beard"],(-.075,1.49,-.265),scale=(1.40,.46,.60))
+    _addp(sc,"V3_Moustache_R",sphere(.085),KW["beard"],(.075,1.49,-.265),scale=(1.40,.46,.60))
+    for side in (-1,1):
+        _addp(sc,f"V3_FurSpotA_{side}",sphere(.028),KW["dark"],(.18*side,1.42,.00))
+        _addp(sc,f"V3_FurSpotB_{side}",sphere(.024),KW["dark"],(.28*side,1.36,.03))
+    _addp(sc,"V3_CoatPanel",box((.28,.50,.045)),PALEIVORY,(0,1.00,-.32))
+    _addp(sc,"V3_CoatGoldV",box((.05,.46,.050)),SOFTGOLD,(0,1.00,-.35))
+    _addp(sc,"V3_RemoteHolster",box((.18,.13,.09)),KW["dark"],(.27,.82,.15))
+
+def v3_black_king(sc):
+    _eye_pair(sc,"V3",EYEWHITE,REDIRIS,1.635,-.250,.078,.031)
+    _addp(sc,"V3_Nose",sphere(.065),KB["skin"],(0,1.57,-.27),scale=(1,.80,1.20))
+    _addp(sc,"V3_Moustache_L",sphere(.086),CBLACKFUR,(-.075,1.50,-.265),scale=(1.42,.46,.60))
+    _addp(sc,"V3_Moustache_R",sphere(.086),CBLACKFUR,(.075,1.50,-.265),scale=(1.42,.46,.60))
+    _addp(sc,"V3_CoatPanel",box((.29,.52,.045)),CRED,(0,1.01,-.33))
+    _addp(sc,"V3_CoatGoldV",box((.05,.48,.050)),CBRONZE,(0,1.01,-.36))
+    _addp(sc,"V3_LionEmblem",trimesh.creation.cone(radius=.11,height=.05,sections=6),CBLACKFUR,(0,.98,-.385),(90,0,0))
+    _addp(sc,"V3_RemoteHolster",box((.18,.13,.09)),KB["dark"],(.28,.83,.15))
+
+_V3 = {
+ "white_pawn":v3_white_pawn, "black_pawn":v3_black_pawn,
+ "white_knight":v3_white_knight, "black_knight":v3_black_knight,
+ "white_bishop":v3_white_bishop, "black_bishop":v3_black_bishop,
+ "white_rook":v3_white_rook, "black_rook":v3_black_rook,
+ "white_queen":v3_white_queen, "black_queen":v3_black_queen,
+ "white_king":v3_white_king, "black_king":v3_black_king,
+}
+for stem,cb in _V3.items():
+    _upgrade_v3(f"{stem}_concept_v2.glb", f"{stem}_concept_v3.glb", cb)

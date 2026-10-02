@@ -113,6 +113,7 @@ func _run_capture(id: StringName, attacker: PieceView, victim: PieceView, restor
 func _pawn_toe_stab(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
 	await _animate_part_prefix(attacker, "Spear", Vector3(0, 0, -24), Vector3.ZERO, 0.14)
 	await _animate_part_prefix(attacker, "Concept_Plume", Vector3(0, 0, -12), Vector3.ZERO, 0.14)
+	await _animate_part_prefix(attacker, "V3_Plume", Vector3(0, 0, -18), Vector3.ZERO, 0.14)
 	await _animate_part_prefix(attacker, "Shield", Vector3(0, -8, -12), Vector3.ZERO, 0.14)
 	await _animate_part_prefix(attacker, "Knife", Vector3(0, 0, 32), Vector3.ZERO, 0.14)
 	await _tween(attacker.visual_root, "position", Vector3(0, -0.10, 0), 0.18)
@@ -153,7 +154,8 @@ func _knight_double_kick(attacker: PieceView, victim: PieceView, data: CaptureAn
 		"rotation_degrees:x": -7.0
 	}, 0.14)
 	await _animate_part_prefix(attacker, "RiderTorso", Vector3(-12, 0, 0), Vector3.ZERO, 0.11)
-	await _animate_part_prefix(attacker, "HorseHead", Vector3(10, 0, 0), Vector3.ZERO, 0.11)
+	await _animate_part_prefix(attacker, "HorseHead", Vector3(12, 0, 0), Vector3.ZERO, 0.11)
+	await _animate_part_prefix(attacker, "V3_RiderCape", Vector3(-10, 0, 0), Vector3.ZERO, 0.11)
 	await _animate_part_prefix(attacker, "Leg_", Vector3(-38, 0, 0), Vector3.ZERO, 0.11)
 	await _animate_part_prefix(attacker, "Hoof_", Vector3(-28, 0, 0), Vector3.ZERO, 0.11)
 
