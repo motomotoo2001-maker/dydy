@@ -120,11 +120,10 @@ func find_piece(p_side: StringName, p_type: StringName, occurrence: int = 0) -> 
 	return null
 
 func set_demo_focus(attacker: PieceView, victim: PieceView, focused: bool) -> void:
+	# Keep the army visible during captures so it reads like the approved
+	# cinematic reference: the remaining pieces become background spectators.
 	for piece in _pieces:
-		if piece == attacker or piece == victim:
-			piece.visible = true
-		else:
-			piece.visible = not focused
+		piece.visible = true
 
 func set_battle_lighting(active: bool) -> void:
 	if generated == null:
@@ -137,13 +136,13 @@ func set_battle_lighting(active: bool) -> void:
 	var cool := lighting.get_node_or_null("CoolRim") as OmniLight3D
 	var window := lighting.get_node_or_null("WindowSunFill") as OmniLight3D
 	if sun:
-		sun.light_energy = 0.92 if active else 1.18
+		sun.light_energy = 0.58 if active else 1.18
 	if warm:
-		warm.light_energy = 0.72 if active else 1.45
+		warm.light_energy = 0.30 if active else 1.45
 	if cool:
-		cool.light_energy = 1.15 if active else 1.35
+		cool.light_energy = 0.92 if active else 1.35
 	if window:
-		window.light_energy = 0.78 if active else 1.75
+		window.light_energy = 0.34 if active else 1.75
 
 func _build_environment() -> void:
 	var world := WorldEnvironment.new()

@@ -62,3 +62,8 @@ The first automated report flagged over-bright lighting, weak board occupancy/fr
 ## Knight production pass
 
 White and Black Knights now use dedicated stylized horse-and-rider production blockouts instead of generic capsules. White uses an ivory horse, blue/gold tack, readable face, rider shield and compact lance. Black uses a lean nightmare horse, bony joints, violet emissive eyes, horns, dark rider and rune shield. The battle camera was lowered/closed in and battle-only warm lighting is reduced in response to Visual QA.
+
+
+## Battle-reference correction
+
+Visual QA showed the Knight pass improved gameplay but hurt the battle score. The capture stage now keeps the rest of the army visible as spectators, uses a lower 3/4 battle camera, removes the full-body red victim tint from Pawn impact, and further reduces warm battle-only light to prevent overexposed marble.

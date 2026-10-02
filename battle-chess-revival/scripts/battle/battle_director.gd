@@ -107,7 +107,6 @@ func _pawn_toe_stab(attacker: PieceView, victim: PieceView, data: CaptureAnimati
 	capture_impact.emit(data.id)
 	_flash(victim.foot_target.global_position, Color("#ffd35c"), 0.26)
 	_comic_text("BAM!", victim.battle_target.global_position + Vector3(0, 0.65, 0), Color("#ffd84f"))
-	victim.set_tint(Color("#ff665e"))
 	await _parallel(victim.visual_root, {
 		"scale": Vector3(1.18, 0.82, 1.18),
 		"position": Vector3(0, 0.22, 0)
@@ -533,8 +532,9 @@ func _set_battle_camera(profile: StringName) -> void:
 		&"BattleLow":
 			arena.battle_camera.position = Vector3(0, 1.45, 5.0)
 		_:
-			arena.battle_camera.position = Vector3(0, 1.72, 4.15)
-	arena.battle_camera.look_at(Vector3(0, 0.86, 0), Vector3.UP)
+			arena.battle_camera.position = Vector3(3.65, 1.58, 4.25)
+	arena.battle_camera.fov = 48.0
+	arena.battle_camera.look_at(Vector3(0, 0.82, -0.15), Vector3.UP)
 
 func _comic_text(text_value: String, p: Vector3, color: Color) -> void:
 	var label := Label3D.new()
