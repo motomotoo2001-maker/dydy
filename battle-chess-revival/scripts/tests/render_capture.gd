@@ -67,44 +67,48 @@ func _run() -> void:
 		await process_frame
 
 	var arena := root.get_node("ArenaBuilder") as ArenaBuilder
-	_prepare_asset_lineup(arena)
+	_prepare_asset_lineup(arena, &"White")
 	await process_frame
 	await RenderingServer.frame_post_draw
-	var lineup_image := get_root().get_texture().get_image()
-	var lineup_error := lineup_image.save_png("res://asset_lineup.png")
-	if lineup_error != OK:
-		push_error("RENDER_CAPTURE_FAIL: asset lineup save_png error %s" % lineup_error)
+	var white_lineup := get_root().get_texture().get_image()
+	var white_lineup_error := white_lineup.save_png("res://asset_lineup_white.png")
+	if white_lineup_error != OK:
+		push_error("RENDER_CAPTURE_FAIL: white asset lineup save_png error %s" % white_lineup_error)
 		quit(1)
 		return
 
-	print("RENDER_CAPTURE_PASS gameplay=", image.get_width(), "x", image.get_height(), " captures=", CAPTURES.size(), " lineup=asset_lineup.png")
+	_prepare_asset_lineup(arena, &"Black")
+	await process_frame
+	await RenderingServer.frame_post_draw
+	var black_lineup := get_root().get_texture().get_image()
+	var black_lineup_error := black_lineup.save_png("res://asset_lineup_black.png")
+	if black_lineup_error != OK:
+		push_error("RENDER_CAPTURE_FAIL: black asset lineup save_png error %s" % black_lineup_error)
+		quit(1)
+		return
+
+	print("RENDER_CAPTURE_PASS gameplay=", image.get_width(), "x", image.get_height(), " captures=", CAPTURES.size(), " lineups=2")
 	root.queue_free()
 	await process_frame
 	quit(0)
 
 
-func _prepare_asset_lineup(arena: ArenaBuilder) -> void:
+func _prepare_asset_lineup(arena: ArenaBuilder, side: StringName) -> void:
 	var types: Array[StringName] = [&"Pawn", &"Knight", &"Bishop", &"Rook", &"Queen", &"King"]
 	for piece in arena.get_all_pieces():
 		piece.visible = false
 
 	for index in range(types.size()):
-		var x := (float(index) - 2.5) * 1.55
-		var white := arena.find_piece(&"White", types[index])
-		var black := arena.find_piece(&"Black", types[index])
-		if white:
-			white.visible = true
-			white.reset_visual()
-			white.global_position = Vector3(x, 0.54, 0.72)
-			white.rotation_degrees = Vector3(0, 0, 0)
-		if black:
-			black.visible = true
-			black.reset_visual()
-			black.global_position = Vector3(x, 0.54, -0.72)
-			black.rotation_degrees = Vector3(0, 0, 0)
+		var x := (float(index) - 2.5) * 1.48
+		var piece := arena.find_piece(side, types[index])
+		if piece:
+			piece.visible = true
+			piece.reset_visual()
+			piece.global_position = Vector3(x, 0.54, 0.0)
+			piece.rotation_degrees = Vector3.ZERO
 
 	arena.gameplay_camera.current = false
 	arena.battle_camera.current = true
-	arena.battle_camera.position = Vector3(0, 3.35, -11.2)
-	arena.battle_camera.fov = 43.0
-	arena.battle_camera.look_at(Vector3(0, 1.05, 0), Vector3.UP)
+	arena.battle_camera.position = Vector3(0, 2.65, -8.8)
+	arena.battle_camera.fov = 42.0
+	arena.battle_camera.look_at(Vector3(0, 1.02, 0), Vector3.UP)
