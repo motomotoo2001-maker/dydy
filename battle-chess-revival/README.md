@@ -52,3 +52,8 @@ CI also renders a real gameplay frame from Godot and uploads it as the BattleChe
 Every CI build now compares the rendered gameplay and battle frames with a compact profile extracted from the approved user-provided video reference. The check tracks lighting, contrast, saturation, warm/cool balance, material palette, edge/detail density, coarse composition, low-resolution perceptual difference, and a diagnostic SSIM value.
 
 The Visual QA step writes `visual_report/report.json`, `report.md`, side-by-side diagnostics, and diff images. CI fails only on a meaningful regression from the verified baseline (default tolerance: 4 percentage points); the target-reference score itself remains a development metric while final production assets are still being built.
+
+
+## Visual QA guided pass v2
+
+The first automated report flagged over-bright lighting, weak board occupancy/framing, and low silhouette detail. This pass responds directly to those findings: the gameplay camera moves closer to the approved board composition, cathedral lighting is reduced toward the reference luminance, and Black Pawns receive a dedicated goblin production-style blockout with readable face, ears, bucket helmet, shield, armor and toe-stab knife.

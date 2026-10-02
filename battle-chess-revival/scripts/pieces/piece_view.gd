@@ -73,6 +73,9 @@ func _build_visual() -> void:
 	if piece_type == &"Pawn" and side == &"White":
 		_build_white_pawn_production_blockout()
 		return
+	if piece_type == &"Pawn" and side == &"Black":
+		_build_black_pawn_production_blockout()
+		return
 
 	var main_color := Color("#e9dfca") if side == &"White" else Color("#271d31")
 	var accent_color := Color("#c69b49") if side == &"White" else Color("#7647b8")
@@ -198,6 +201,97 @@ func _build_white_pawn_production_blockout() -> void:
 	tip.position = Vector3(0.51, 1.36, 0.02)
 	tip.rotation_degrees = Vector3(0, 0, -7)
 	visual_root.add_child(tip)
+
+func _build_black_pawn_production_blockout() -> void:
+	visual_root.name = "VisualRoot_BlackPawnProductionV1"
+
+	var charcoal := _material(Color("#302a31"))
+	charcoal.roughness = 0.56
+	var leather := _material(Color("#4b342c"))
+	leather.roughness = 0.72
+	var leather_dark := _material(Color("#241c20"))
+	leather_dark.roughness = 0.68
+	var bronze := _material(Color("#79583b"))
+	bronze.roughness = 0.38
+	bronze.metallic = 0.42
+	var violet := _material(Color("#5b426e"))
+	violet.roughness = 0.46
+	var green := _material(Color("#718250"))
+	green.roughness = 0.60
+	var green_dark := _material(Color("#465330"))
+	green_dark.roughness = 0.62
+	var red := _material(Color("#8d3943"))
+	red.roughness = 0.46
+	var eye := _material(Color("#d4bf68"))
+	eye.roughness = 0.18
+	var steel := _material(Color("#8b8a86"))
+	steel.roughness = 0.29
+	steel.metallic = 0.66
+
+	# Dark chess pedestal, still readable as a pawn.
+	_add_cylinder_mat("PedestalLower", 0.43, 0.08, Vector3(0, 0.04, 0), leather_dark)
+	_add_cylinder_mat("PedestalRing", 0.39, 0.045, Vector3(0, 0.105, 0), bronze)
+	_add_cylinder_mat("PedestalUpper", 0.35, 0.09, Vector3(0, 0.165, 0), charcoal)
+
+	# Short goblin proportions: big boots, thin legs, chunky torso.
+	_add_capsule_mat("Boot_L", 0.12, 0.30, Vector3(-0.14, 0.31, 0.045), leather_dark, Vector3(90, 0, 0))
+	_add_capsule_mat("Boot_R", 0.12, 0.30, Vector3(0.14, 0.31, 0.045), leather_dark, Vector3(90, 0, 0))
+	_add_capsule_mat("Leg_L", 0.08, 0.31, Vector3(-0.13, 0.47, 0), charcoal)
+	_add_capsule_mat("Leg_R", 0.08, 0.31, Vector3(0.13, 0.47, 0), charcoal)
+	_add_capsule_mat("Torso", 0.255, 0.58, Vector3(0, 0.75, 0), leather)
+	_add_box_mat("ChestPlate", Vector3(0.42, 0.28, 0.08), Vector3(0, 0.82, -0.22), charcoal)
+	_add_box_mat("Belt", Vector3(0.52, 0.09, 0.30), Vector3(0, 0.65, 0), leather_dark)
+	_add_box_mat("BeltBuckle", Vector3(0.10, 0.09, 0.035), Vector3(0, 0.65, -0.17), bronze)
+
+	# Long goblin arms and oversized hands.
+	_add_sphere_mat("Shoulder_L", 0.14, Vector3(-0.29, 0.91, 0), charcoal, Vector3(1.08, 0.78, 1.0))
+	_add_sphere_mat("Shoulder_R", 0.14, Vector3(0.29, 0.91, 0), charcoal, Vector3(1.08, 0.78, 1.0))
+	_add_capsule_mat("Arm_L", 0.075, 0.40, Vector3(-0.34, 0.74, 0), green_dark, Vector3(0, 0, -17))
+	_add_capsule_mat("Arm_R", 0.075, 0.40, Vector3(0.34, 0.74, 0), green_dark, Vector3(0, 0, 18))
+	_add_sphere_mat("Hand_L", 0.095, Vector3(-0.39, 0.57, 0), green)
+	_add_sphere_mat("Hand_R", 0.095, Vector3(0.39, 0.57, 0), green)
+
+	# Crooked shield.
+	var shield_mesh := CylinderMesh.new()
+	shield_mesh.top_radius = 0.27
+	shield_mesh.bottom_radius = 0.27
+	shield_mesh.height = 0.075
+	var shield := MeshInstance3D.new()
+	shield.name = "Shield"
+	shield.mesh = shield_mesh
+	shield.material_override = charcoal
+	shield.position = Vector3(-0.43, 0.70, -0.02)
+	shield.rotation_degrees = Vector3(0, 0, 90)
+	visual_root.add_child(shield)
+	_add_box_mat("ShieldMarkV", Vector3(0.045, 0.31, 0.05), Vector3(-0.47, 0.70, -0.02), red, Vector3(0, 0, 18))
+	_add_box_mat("ShieldMarkH", Vector3(0.045, 0.05, 0.28), Vector3(-0.47, 0.70, -0.02), red, Vector3(0, 0, -16))
+
+	# Expressive goblin head: large nose, ears, glowing eyes and angry brows.
+	_add_sphere_mat("Head", 0.235, Vector3(0, 1.13, -0.01), green, Vector3(1.03, 0.93, 0.92))
+	_add_sphere_mat("Nose", 0.070, Vector3(0, 1.10, -0.225), green_dark, Vector3(1.05, 0.72, 1.32))
+	_add_sphere_mat("Ear_L", 0.115, Vector3(-0.25, 1.14, -0.02), green, Vector3(1.55, 0.55, 0.72))
+	_add_sphere_mat("Ear_R", 0.115, Vector3(0.25, 1.14, -0.02), green, Vector3(1.55, 0.55, 0.72))
+	_add_sphere_mat("Eye_L", 0.031, Vector3(-0.075, 1.18, -0.216), eye)
+	_add_sphere_mat("Eye_R", 0.031, Vector3(0.075, 1.18, -0.216), eye)
+	_add_box_mat("Brow_L", Vector3(0.10, 0.022, 0.018), Vector3(-0.078, 1.235, -0.220), leather_dark, Vector3(0, 0, -14))
+	_add_box_mat("Brow_R", Vector3(0.10, 0.022, 0.018), Vector3(0.078, 1.235, -0.220), leather_dark, Vector3(0, 0, 14))
+
+	# Bucket helmet, deliberately asymmetrical and worn-looking.
+	_add_cylinder_mat("HelmetBucket", 0.255, 0.25, Vector3(0, 1.34, 0), bronze)
+	_add_box_mat("HelmetBand", Vector3(0.54, 0.06, 0.36), Vector3(0, 1.25, -0.01), leather_dark)
+	_add_box_mat("HelmetPatch", Vector3(0.16, 0.10, 0.025), Vector3(0.11, 1.39, -0.255), violet, Vector3(0, 0, 11))
+
+	# Short knife used by the toe-stab capture.
+	_add_cylinder_mat("KnifeGrip", 0.035, 0.24, Vector3(0.41, 0.68, -0.03), leather_dark, Vector3(0, 0, -58))
+	var blade_mesh := BoxMesh.new()
+	blade_mesh.size = Vector3(0.055, 0.30, 0.025)
+	var blade := MeshInstance3D.new()
+	blade.name = "KnifeBlade"
+	blade.mesh = blade_mesh
+	blade.material_override = steel
+	blade.position = Vector3(0.50, 0.55, -0.03)
+	blade.rotation_degrees = Vector3(0, 0, -58)
+	visual_root.add_child(blade)
 
 func _build_anchors() -> void:
 	battle_target = _marker("BattleTarget", Vector3(0, 0.82, 0))
