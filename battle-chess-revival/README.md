@@ -67,3 +67,8 @@ White and Black Knights now use dedicated stylized horse-and-rider production bl
 ## Battle-reference correction
 
 Visual QA showed the Knight pass improved gameplay but hurt the battle score. The capture stage now keeps the rest of the army visible as spectators, uses a lower 3/4 battle camera, removes the full-body red victim tint from Pawn impact, and further reduces warm battle-only light to prevent overexposed marble.
+
+
+## Bishop production pass
+
+Both Bishops now have dedicated silhouettes. White is an original elephant-cleric with huge ears, compact trunk, tall mitre, robe and glowing ceremonial staff; Black is a horned necromancer/ram-priest with bone mask, violet glow and pronged staff. This keeps the approved ram-charge animation readable while moving the army away from generic cylinders.

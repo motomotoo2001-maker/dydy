@@ -82,6 +82,12 @@ func _build_visual() -> void:
 	if piece_type == &"Knight" and side == &"Black":
 		_build_black_knight_production_blockout()
 		return
+	if piece_type == &"Bishop" and side == &"White":
+		_build_white_bishop_production_blockout()
+		return
+	if piece_type == &"Bishop" and side == &"Black":
+		_build_black_bishop_production_blockout()
+		return
 
 	var main_color := Color("#e9dfca") if side == &"White" else Color("#271d31")
 	var accent_color := Color("#c69b49") if side == &"White" else Color("#7647b8")
@@ -459,6 +465,87 @@ func _build_black_knight_production_blockout() -> void:
 	tip.rotation_degrees = Vector3(42, 0, 0)
 	visual_root.add_child(tip)
 
+func _build_white_bishop_production_blockout() -> void:
+	visual_root.name = "VisualRoot_WhiteBishopProductionV1"
+	var ivory := _material(Color("#e7ddd0")); ivory.roughness = 0.52
+	var ivory_shadow := _material(Color("#c8bbad")); ivory_shadow.roughness = 0.58
+	var gold := _material(Color("#c69a48")); gold.roughness = 0.25; gold.metallic = 0.68
+	var blue := _material(Color("#3f668a")); blue.roughness = 0.46
+	var skin := _material(Color("#b9a68f")); skin.roughness = 0.62
+	var dark := _material(Color("#252126")); dark.roughness = 0.48
+	var eye := _material(Color("#334559")); eye.roughness = 0.18
+	var staff_wood := _material(Color("#5a3b2b")); staff_wood.roughness = 0.70
+	var gem := _material(Color("#5fc5d4")); gem.roughness = 0.12; gem.emission_enabled = true; gem.emission = Color("#4fa8bd"); gem.emission_energy_multiplier = 1.7
+
+	_add_cylinder_mat("PedestalLower", 0.44, 0.08, Vector3(0, 0.04, 0), dark)
+	_add_cylinder_mat("PedestalRing", 0.40, 0.045, Vector3(0, 0.105, 0), gold)
+	_add_cylinder_mat("PedestalUpper", 0.36, 0.09, Vector3(0, 0.165, 0), ivory_shadow)
+
+	# Long ceremonial robe.
+	_add_cylinder_mat("RobeLower", 0.29, 0.72, Vector3(0, 0.55, 0), ivory)
+	_add_capsule_mat("Torso", 0.22, 0.55, Vector3(0, 0.95, 0), ivory_shadow)
+	_add_box_mat("Sash", Vector3(0.08, 0.72, 0.34), Vector3(0, 0.72, -0.17), blue, Vector3(0, 0, 6))
+	_add_box_mat("Collar", Vector3(0.50, 0.10, 0.36), Vector3(0, 1.15, 0), gold)
+
+	# Elephant-like bishop head: huge ears + short trunk for readable charge silhouette.
+	_add_sphere_mat("Head", 0.23, Vector3(0, 1.35, -0.02), skin, Vector3(0.95, 1.0, 0.92))
+	_add_sphere_mat("Ear_L", 0.20, Vector3(-0.23, 1.36, -0.01), ivory_shadow, Vector3(0.65, 1.15, 0.50))
+	_add_sphere_mat("Ear_R", 0.20, Vector3(0.23, 1.36, -0.01), ivory_shadow, Vector3(0.65, 1.15, 0.50))
+	_add_capsule_mat("Trunk", 0.065, 0.42, Vector3(0, 1.18, -0.23), skin, Vector3(25, 0, 0))
+	_add_sphere_mat("Eye_L", 0.028, Vector3(-0.08, 1.40, -0.22), eye)
+	_add_sphere_mat("Eye_R", 0.028, Vector3(0.08, 1.40, -0.22), eye)
+
+	# Tall bishop mitre.
+	_add_box_mat("MitreBase", Vector3(0.38, 0.20, 0.30), Vector3(0, 1.58, -0.01), ivory_shadow)
+	_add_box_mat("MitreTall", Vector3(0.28, 0.46, 0.22), Vector3(0, 1.83, -0.01), ivory, Vector3(0, 0, 8))
+	_add_box_mat("MitreStripe", Vector3(0.055, 0.48, 0.025), Vector3(0, 1.83, -0.13), gold, Vector3(0, 0, 8))
+
+	# Arms and ornate staff.
+	_add_capsule_mat("Arm_L", 0.075, 0.38, Vector3(-0.28, 1.03, 0), ivory_shadow, Vector3(0, 0, -14))
+	_add_capsule_mat("Arm_R", 0.075, 0.38, Vector3(0.28, 1.03, 0), ivory_shadow, Vector3(0, 0, 14))
+	_add_sphere_mat("Hand_L", 0.085, Vector3(-0.32, 0.87, -0.02), skin)
+	_add_sphere_mat("Hand_R", 0.085, Vector3(0.32, 0.87, -0.02), skin)
+	_add_cylinder_mat("Staff", 0.028, 1.35, Vector3(0.40, 1.05, -0.02), staff_wood, Vector3(0, 0, -4))
+	_add_sphere_mat("StaffGem", 0.105, Vector3(0.44, 1.73, -0.02), gem)
+	_add_cylinder_mat("StaffHalo", 0.035, 0.30, Vector3(0.44, 1.63, -0.02), gold, Vector3(90, 0, 0))
+
+func _build_black_bishop_production_blockout() -> void:
+	visual_root.name = "VisualRoot_BlackBishopProductionV1"
+	var charcoal := _material(Color("#26232c")); charcoal.roughness = 0.52
+	var violet := _material(Color("#654080")); violet.roughness = 0.43
+	var bone := _material(Color("#9d9688")); bone.roughness = 0.58
+	var leather := _material(Color("#3c2b2b")); leather.roughness = 0.70
+	var steel := _material(Color("#56515b")); steel.roughness = 0.30; steel.metallic = 0.55
+	var glow := _material(Color("#b959ef")); glow.roughness = 0.14; glow.emission_enabled = true; glow.emission = Color("#a64adb"); glow.emission_energy_multiplier = 2.4
+	var red := _material(Color("#7d3444")); red.roughness = 0.46
+
+	_add_cylinder_mat("PedestalLower", 0.44, 0.08, Vector3(0, 0.04, 0), charcoal)
+	_add_cylinder_mat("PedestalRing", 0.40, 0.045, Vector3(0, 0.105, 0), violet)
+	_add_cylinder_mat("PedestalUpper", 0.36, 0.09, Vector3(0, 0.165, 0), steel)
+
+	_add_cylinder_mat("RobeLower", 0.30, 0.75, Vector3(0, 0.57, 0), charcoal)
+	_add_capsule_mat("Torso", 0.22, 0.55, Vector3(0, 0.98, 0), leather)
+	_add_box_mat("RobePanel", Vector3(0.15, 0.75, 0.34), Vector3(0, 0.73, -0.17), violet, Vector3(0, 0, -5))
+	_add_box_mat("ShoulderPlate_L", Vector3(0.28, 0.12, 0.34), Vector3(-0.22, 1.17, 0), steel, Vector3(0, 0, -10))
+	_add_box_mat("ShoulderPlate_R", Vector3(0.28, 0.12, 0.34), Vector3(0.22, 1.17, 0), steel, Vector3(0, 0, 10))
+
+	# Necromancer/ram head with horned ceremonial mask.
+	_add_sphere_mat("Head", 0.22, Vector3(0, 1.38, -0.02), bone, Vector3(0.90, 1.04, 0.90))
+	_add_capsule_mat("Snout", 0.07, 0.34, Vector3(0, 1.26, -0.23), bone, Vector3(30, 0, 0))
+	_add_sphere_mat("Eye_L", 0.030, Vector3(-0.075, 1.43, -0.215), glow)
+	_add_sphere_mat("Eye_R", 0.030, Vector3(0.075, 1.43, -0.215), glow)
+	_add_cylinder_mat("Horn_L", 0.035, 0.40, Vector3(-0.15, 1.62, -0.02), bone, Vector3(0, 0, -35))
+	_add_cylinder_mat("Horn_R", 0.035, 0.40, Vector3(0.15, 1.62, -0.02), bone, Vector3(0, 0, 35))
+	_add_box_mat("CrownMask", Vector3(0.36, 0.24, 0.25), Vector3(0, 1.60, -0.01), charcoal)
+	_add_box_mat("MaskRune", Vector3(0.05, 0.25, 0.025), Vector3(0, 1.60, -0.145), red)
+
+	_add_capsule_mat("Arm_L", 0.075, 0.40, Vector3(-0.28, 1.02, 0), leather, Vector3(0, 0, -16))
+	_add_capsule_mat("Arm_R", 0.075, 0.40, Vector3(0.28, 1.02, 0), leather, Vector3(0, 0, 16))
+	_add_cylinder_mat("Staff", 0.030, 1.38, Vector3(0.40, 1.05, -0.02), steel, Vector3(0, 0, -4))
+	_add_sphere_mat("StaffOrb", 0.11, Vector3(0.44, 1.75, -0.02), glow)
+	_add_box_mat("StaffProng_L", Vector3(0.045, 0.28, 0.05), Vector3(0.36, 1.77, -0.02), bone, Vector3(0, 0, -28))
+	_add_box_mat("StaffProng_R", Vector3(0.045, 0.28, 0.05), Vector3(0.52, 1.77, -0.02), bone, Vector3(0, 0, 28))
+
 func _build_anchors() -> void:
 	battle_target = _marker("BattleTarget", Vector3(0, 0.82, 0))
 	foot_target = _marker("FootTarget", Vector3(0, 0.22, 0))
@@ -477,7 +564,7 @@ func _piece_height(t: StringName) -> float:
 	match t:
 		&"Pawn": return 1.42
 		&"Knight": return 1.95
-		&"Bishop": return 1.70
+		&"Bishop": return 2.05
 		&"Rook": return 1.50
 		&"Queen": return 1.82
 		&"King": return 1.90

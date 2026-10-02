@@ -1,7 +1,7 @@
 {
-  "source_commit": "29568d76254febd7452710539f0e0ae6ff055a00",
-  "gameplay": {"score": 0.7675},
-  "battle": {"score": 0.7007},
+  "source_commit": "3180c12720b54bb6ece17f0f96f5d4595cb34ff7",
+  "gameplay": {"score": 0.7740},
+  "battle": {"score": 0.7120},
   "regression_tolerance": 0.04,
-  "note": "Verified Visual QA guided baseline after camera/lighting corrections and dedicated White/Black Pawn production blockouts. Raise only after a measured improvement."
+  "note": "Verified baseline after Knight production blockouts plus corrected battle spectator staging, lower 3/4 camera and reduced battle overexposure."
 }
