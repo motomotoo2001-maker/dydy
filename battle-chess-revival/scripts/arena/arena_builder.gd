@@ -70,14 +70,15 @@ func _build_environment() -> void:
 	env.ambient_light_color = Color("#b9a48f")
 	env.ambient_light_energy = 0.34
 	env.ssao_enabled = true
-	env.ssil_enabled = true
 	env.glow_enabled = true
 	env.glow_intensity = 0.35
 	env.fog_enabled = true
 	env.fog_density = 0.002
-	env.volumetric_fog_enabled = true
-	env.volumetric_fog_density = 0.010
-	env.volumetric_fog_length = 30.0
+	if RenderingServer.get_current_rendering_method() == "forward_plus":
+		env.ssil_enabled = true
+		env.volumetric_fog_enabled = true
+		env.volumetric_fog_density = 0.010
+		env.volumetric_fog_length = 30.0
 	world.environment = env
 	generated.add_child(world)
 
