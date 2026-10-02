@@ -114,18 +114,25 @@ func _pawn_toe_stab(attacker: PieceView, victim: PieceView, data: CaptureAnimati
 	await _animate_part_prefix(attacker, "Spear", Vector3(0, 0, -24), Vector3.ZERO, 0.14)
 	await _animate_part_prefix(attacker, "Knife", Vector3(0, 0, 32), Vector3.ZERO, 0.14)
 	await _tween(attacker.visual_root, "position", Vector3(0, -0.10, 0), 0.18)
-	await _animate_part_prefix(attacker, "Spear", Vector3(0, 0, 30), Vector3.ZERO, 0.08)
-	await _animate_part_prefix(attacker, "Knife", Vector3(0, 0, -38), Vector3.ZERO, 0.08)
-	await _tween(attacker.visual_root, "position", Vector3(0, -0.04, -0.46), 0.11)
+	await _animate_part_prefix(attacker, "Spear", Vector3(0, 0, 58), Vector3.ZERO, 0.08)
+	await _animate_part_prefix(attacker, "Knife", Vector3(0, 0, -58), Vector3.ZERO, 0.08)
+	await _parallel(attacker.visual_root, {
+		"position": Vector3(0, -0.06, -0.48),
+		"rotation_degrees:x": -12.0
+	}, 0.11)
 
 	_camera_punch(0.10)
-	_impact_burst(victim.foot_target.global_position + Vector3(0, 0.16, 0.10), Color("#ffd35c"), 0.95)
+	_impact_burst(victim.foot_target.global_position + Vector3(0.10, 0.28, 0.28), Color("#ffd35c"), 1.15)
 	_flash(victim.foot_target.global_position, Color("#ffd35c"), 0.26)
 	_comic_text("BAM!", victim.battle_target.global_position + Vector3(0, 0.65, 0), Color("#ffd84f"))
 	capture_impact.emit(data.id)
 	await _parallel(victim.visual_root, {
 		"scale": Vector3(1.18, 0.82, 1.18),
 		"position": Vector3(0, 0.22, 0)
+	}, 0.10)
+	await _parallel(attacker.visual_root, {
+		"position": Vector3(0, -0.02, -0.12),
+		"rotation_degrees:x": 0.0
 	}, 0.10)
 
 	await _tween(victim.visual_root, "position", Vector3(0.10, 0.70, 0), 0.16)
