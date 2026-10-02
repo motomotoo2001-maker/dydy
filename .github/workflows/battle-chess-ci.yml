@@ -19,7 +19,13 @@ jobs:
       - name: Install runtime dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget unzip zip xvfb libgl1 python3-pil python3-numpy
+          sudo apt-get install -y wget unzip zip xvfb libgl1 python3-pil python3-numpy python3-pip
+
+      - name: Build production mesh assets
+        run: |
+          python3 -m pip install --user --quiet trimesh
+          python3 battle-chess-revival/tools/generate_mesh_assets.py
+          test -s battle-chess-revival/assets/models/white_pawn_refined_v1.glb
 
       - name: Download Godot 4.7.2 stable
         run: |

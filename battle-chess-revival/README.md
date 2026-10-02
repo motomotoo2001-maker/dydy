@@ -97,3 +97,8 @@ The screenshot review caught an issue the numeric Visual QA did not: keeping bot
 ## Cathedral/environment pass
 
 The cathedral now gets three large emissive stained-glass windows on the visible left wall and two heraldic back-wall banners, bringing the gameplay composition closer to the approved reference. In Forward+ the battle camera also enables a restrained far depth-of-field blur so the victim army reads as spectators without competing with the capture action.
+
+
+## Imported production asset pipeline — White Pawn
+
+Asset production has moved beyond runtime primitive-only characters. CI now builds a real GLB file at `assets/models/white_pawn_refined_v1.glb` before Godot imports the project. The White Pawn loads that imported mesh scene first and falls back to the procedural blockout only if the asset is unavailable. The GLB contains 39 named mesh parts with PBR material groups (ivory, gold, blue, leather, skin, bronze, dark details), readable facial features, quilted tunic detail, helmet/cheek guards, shield and compact spear. Separate named parts are intentional preparation for the later Skeleton3D rigging pass.

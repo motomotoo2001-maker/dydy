@@ -71,6 +71,8 @@ func _build_visual() -> void:
 	add_child(visual_root)
 
 	if piece_type == &"Pawn" and side == &"White":
+		if _build_external_asset(WHITE_PAWN_ASSET_PATH, "WhitePawnRefinedMeshV1"):
+			return
 		_build_white_pawn_production_blockout()
 		return
 	if piece_type == &"Pawn" and side == &"Black":
@@ -139,6 +141,22 @@ func _build_visual() -> void:
 			_add_box_color("Crown", Vector3(0.55, 0.20, 0.55), Vector3(0, 1.82, 0), accent_color)
 		_:
 			_add_capsule_color("Body", 0.25, height * 0.70, Vector3(0, height * 0.45, 0), main_color)
+
+func _build_external_asset(path: String, asset_name: String) -> bool:
+	if not ResourceLoader.exists(path):
+		return false
+	var packed := load(path) as PackedScene
+	if packed == null:
+		push_warning("Could not load production asset: %s" % path)
+		return false
+	var instance := packed.instantiate()
+	if instance == null:
+		push_warning("Could not instantiate production asset: %s" % path)
+		return false
+	visual_root.name = "VisualRoot_%s" % asset_name
+	instance.name = asset_name
+	visual_root.add_child(instance)
+	return true
 
 func _build_white_pawn_production_blockout() -> void:
 	visual_root.name = "VisualRoot_WhitePawnProductionV1"
