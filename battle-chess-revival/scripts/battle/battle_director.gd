@@ -114,11 +114,11 @@ func _pawn_toe_stab(attacker: PieceView, victim: PieceView, data: CaptureAnimati
 	await _animate_part_prefix(attacker, "Knife", Vector3(0, 0, -38), Vector3.ZERO, 0.08)
 	await _tween(attacker.visual_root, "position", Vector3(0.38, -0.04, 0), 0.11)
 
-	capture_impact.emit(data.id)
 	_camera_punch(0.10)
 	_impact_burst(victim.foot_target.global_position + Vector3(0, 0.05, 0), Color("#ffd35c"), 0.85)
 	_flash(victim.foot_target.global_position, Color("#ffd35c"), 0.26)
 	_comic_text("BAM!", victim.battle_target.global_position + Vector3(0, 0.65, 0), Color("#ffd84f"))
+	capture_impact.emit(data.id)
 	await _parallel(victim.visual_root, {
 		"scale": Vector3(1.18, 0.82, 1.18),
 		"position": Vector3(0, 0.22, 0)
@@ -150,15 +150,15 @@ func _knight_double_kick(attacker: PieceView, victim: PieceView, data: CaptureAn
 		"position": Vector3(0.18, 0.08, 0)
 	}, 0.08)
 
-	capture_impact.emit(data.id)
 	_camera_punch(0.16)
 	_impact_burst(victim.battle_target.global_position, Color("#ffcc72"), 1.15)
+	_flash(victim.battle_target.global_position, Color("#fff0c2"), 0.28)
+	_comic_text("KICK!", victim.battle_target.global_position + Vector3(0, 0.7, 0), Color("#ffb953"))
+	capture_impact.emit(data.id)
 	await _animate_part_prefix(attacker, "Leg_", Vector3(-52, 0, 0), Vector3.ZERO, 0.065)
 	await _animate_part_prefix(attacker, "Hoof_", Vector3(-40, 0, 0), Vector3.ZERO, 0.065)
 	await _animate_part_prefix(attacker, "Leg_", Vector3(70, 0, 0), Vector3.ZERO, 0.065)
 	await _animate_part_prefix(attacker, "Hoof_", Vector3(55, 0, 0), Vector3.ZERO, 0.065)
-	_flash(victim.battle_target.global_position, Color("#fff0c2"), 0.28)
-	_comic_text("KICK!", victim.battle_target.global_position + Vector3(0, 0.7, 0), Color("#ffb953"))
 	await _parallel(victim.visual_root, {
 		"scale": Vector3(1.62, 0.62, 0.94),
 		"position": Vector3(0.55, 0.22, 0),
@@ -188,18 +188,18 @@ func _bishop_ram(attacker: PieceView, victim: PieceView, data: CaptureAnimationD
 
 	await _wait(0.10)
 
-	var charge_target := victim.global_position + Vector3(1.55, 0, 0)
+	var charge_target := victim.global_position + Vector3(0.52, 0, 0)
 	var charge := create_tween().set_parallel()
 	charge.tween_property(attacker, "global_position", charge_target, _d(0.23))
 	charge.tween_property(attacker.visual_root, "scale", Vector3(1.12, 0.88, 1.0), _d(0.23))
 	await charge.finished
 
-	capture_impact.emit(data.id)
 	_camera_punch(0.20)
 	_impact_burst(victim.battle_target.global_position, Color("#ffcb75"), 1.35)
 	_shockwave(victim.global_position, Color("#c99b62"), 0.85)
 	_flash(victim.battle_target.global_position, Color("#ffcb75"), 0.36)
 	_comic_text("WHOOSH!", victim.battle_target.global_position + Vector3(0, 0.8, 0), Color("#f0b65e"))
+	capture_impact.emit(data.id)
 	_skid_mark(attacker.global_position - Vector3(1.2, 0.36, 0))
 
 	var blast := create_tween().set_parallel()
@@ -221,17 +221,22 @@ func _rook_crush(attacker: PieceView, victim: PieceView, data: CaptureAnimationD
 		"position": Vector3(0, 6.5, 0)
 	}, 0.20)
 
+	var travel := create_tween()
+	travel.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+	travel.tween_property(attacker, "global_position", victim.global_position, _d(0.18))
+	await travel.finished
+
 	var shadow := _shadow(victim.global_position)
 	await _tween(shadow, "scale", Vector3(2.8, 1.0, 2.8), 0.42)
 	await _tween(victim.visual_root, "rotation_degrees:x", -10.0, 0.08)
 
 	await _tween(attacker.visual_root, "position", Vector3.ZERO, 0.14)
-	capture_impact.emit(data.id)
 	_camera_punch(0.28)
 	_impact_burst(victim.battle_target.global_position, Color("#f1d1a2"), 1.65)
 	_shockwave(victim.global_position, Color("#d0b28a"), 1.15)
 	_flash(victim.battle_target.global_position, Color("#f1d1a2"), 0.42)
 	_comic_text("SPLOTCH!", victim.battle_target.global_position + Vector3(0, 0.8, 0), Color("#f3d8a6"))
+	capture_impact.emit(data.id)
 	_dust(victim.global_position)
 	_dust(victim.global_position + Vector3(0.35, 0, 0.15))
 	_dust(victim.global_position + Vector3(-0.35, 0, -0.15))
@@ -252,10 +257,10 @@ func _queen_transform(attacker: PieceView, victim: PieceView, data: CaptureAnima
 	var smoke := _orb(victim.global_position + Vector3(0, 0.75, 0), Color("#7a3db4"), 0.45)
 	await _tween(smoke, "scale", Vector3.ONE * 3.0, 0.30)
 
-	capture_impact.emit(data.id)
 	_camera_punch(0.08)
 	_impact_burst(victim.battle_target.global_position, Color("#b862ff"), 1.05)
 	_comic_text("POOF!", victim.battle_target.global_position + Vector3(0, 0.8, 0), Color("#c979ff"))
+	capture_impact.emit(data.id)
 	victim.visible = false
 	var replacement := _spawn_magic_result(victim.piece_type, victim.global_position)
 	await _tween(smoke, "scale", Vector3.ONE * 0.15, 0.30)
@@ -283,9 +288,10 @@ func _king_trapdoor(attacker: PieceView, victim: PieceView, data: CaptureAnimati
 	open.tween_property(right, "position:x", 0.72, _d(0.18))
 	await open.finished
 
-	capture_impact.emit(data.id)
 	_camera_punch(0.09)
 	_shockwave(victim.global_position, Color("#7b5a48"), 0.65)
+	_comic_text("CLACK!", victim.battle_target.global_position + Vector3(0, 0.55, 0), Color("#d6a578"))
+	capture_impact.emit(data.id)
 	await _parallel(victim.visual_root, {
 		"position": Vector3(0, -5.0, 0),
 		"scale": Vector3(0.72, 0.72, 0.72)
