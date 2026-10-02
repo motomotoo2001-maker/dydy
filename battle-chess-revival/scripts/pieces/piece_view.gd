@@ -71,8 +71,11 @@ func _build_visual() -> void:
 	add_child(visual_root)
 
 	if piece_type == &"Pawn" and side == &"White":
-		if _build_external_asset(WHITE_PAWN_ASSET_PATH, "WhitePawnRefinedMeshV1"):
-			return
+		# Headless logic/smoke tests keep the lightweight fallback. The real GLB
+		# is still imported by the editor parse step and is used by Xvfb renders/gameplay.
+		if DisplayServer.get_name() != "headless":
+			if _build_external_asset(WHITE_PAWN_ASSET_PATH, "WhitePawnRefinedMeshV1"):
+				return
 		_build_white_pawn_production_blockout()
 		return
 	if piece_type == &"Pawn" and side == &"Black":
