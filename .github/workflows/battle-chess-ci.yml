@@ -1,0 +1,48 @@
+name: Battle Chess Godot 4.7.2
+
+on:
+  push:
+    branches: [ "battle-chess-revival" ]
+    paths:
+      - "battle-chess-revival/**"
+      - ".github/workflows/battle-chess-ci.yml"
+  workflow_dispatch:
+
+jobs:
+  godot-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install runtime dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget unzip
+
+      - name: Download Godot 4.7.2 stable
+        run: |
+          wget -q \
+            https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip \
+            -O godot.zip
+          unzip -q godot.zip
+          chmod +x Godot_v4.7.2-stable_linux.x86_64
+          ./Godot_v4.7.2-stable_linux.x86_64 --version
+
+      - name: Import and parse project
+        run: |
+          ./Godot_v4.7.2-stable_linux.x86_64 \
+            --headless \
+            --rendering-method gl_compatibility \
+            --path battle-chess-revival \
+            --editor \
+            --quit-after 5
+
+      - name: Run capture smoke tests
+        run: |
+          ./Godot_v4.7.2-stable_linux.x86_64 \
+            --headless \
+            --rendering-method gl_compatibility \
+            --path battle-chess-revival \
+            --script res://scripts/tests/smoke_test.gd
