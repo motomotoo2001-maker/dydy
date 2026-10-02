@@ -1,7 +1,7 @@
 {
-  "source_commit": "ead0e95ad354d408cfbe05d617f323434a16221a",
-  "gameplay": {"score": 0.718},
-  "battle": {"score": 0.658},
+  "source_commit": "29568d76254febd7452710539f0e0ae6ff055a00",
+  "gameplay": {"score": 0.7675},
+  "battle": {"score": 0.7007},
   "regression_tolerance": 0.04,
-  "note": "Initial Visual QA baseline after the board/framing/facing pass. Raise only after a verified visual improvement."
+  "note": "Verified Visual QA guided baseline after camera/lighting corrections and dedicated White/Black Pawn production blockouts. Raise only after a measured improvement."
 }
