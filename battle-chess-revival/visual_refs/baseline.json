@@ -1,7 +1,7 @@
 {
-  "source_commit": "0315403c39be3fe4c46399a3395dc659002f6739",
-  "gameplay": {"score": 0.7860},
+  "source_commit": "3b84f846a38b104688534c09bff4ecfed6f9162c",
+  "gameplay": {"score": 0.7870},
   "battle": {"score": 0.7120},
   "regression_tolerance": 0.04,
-  "note": "Best verified aggregate baseline after Pawn/Knight/Bishop/Rook production blockouts. Gameplay raised to the Rook-pass score while battle keeps the best verified cinematic score."
+  "note": "Best verified aggregate baseline through the Queen production pass; battle retains the best verified cinematic score from spectator/camera correction."
 }

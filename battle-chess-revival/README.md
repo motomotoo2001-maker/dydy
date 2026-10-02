@@ -82,3 +82,8 @@ Rooks are no longer plain blocks. White is now a carved stone castle-golem with 
 ## Queen production pass
 
 Queens now have dedicated theatrical sorceress silhouettes. White uses an ivory/gold gown, crown, expressive face and cyan magic staff. Black uses an angular dark gown, horned crown, magenta emissive eyes and spell core. The existing smoke-swap capture pipeline remains data-driven and now has a much clearer caster silhouette.
+
+
+## King production pass
+
+Kings now have dedicated personalities rather than generic columns. White is a broad comic old monarch with beard, oversized crown, robe, cape, scepter and cyan gems. Black is a red demon-lord with armor belly, fangs, horned crown, violet cape and emissive orange eyes. The red-button trapdoor remote remains an animation prop spawned by BattleDirector.

@@ -100,6 +100,12 @@ func _build_visual() -> void:
 	if piece_type == &"Queen" and side == &"Black":
 		_build_black_queen_production_blockout()
 		return
+	if piece_type == &"King" and side == &"White":
+		_build_white_king_production_blockout()
+		return
+	if piece_type == &"King" and side == &"Black":
+		_build_black_king_production_blockout()
+		return
 
 	var main_color := Color("#e9dfca") if side == &"White" else Color("#271d31")
 	var accent_color := Color("#c69b49") if side == &"White" else Color("#7647b8")
@@ -743,6 +749,105 @@ func _build_black_queen_production_blockout() -> void:
 	_add_box_mat("OrbProng_R", Vector3(0.04, 0.34, 0.04), Vector3(0.58, 1.79, -0.03), charcoal, Vector3(0,0,30))
 	_add_box_mat("SpellRune", Vector3(0.18, 0.18, 0.035), Vector3(0, 0.82, -0.34), red, Vector3(0,0,45))
 
+func _build_white_king_production_blockout() -> void:
+	visual_root.name = "VisualRoot_WhiteKingProductionV1"
+	var ivory := _material(Color("#eee4d6")); ivory.roughness = 0.50
+	var ivory_shadow := _material(Color("#c9baaa")); ivory_shadow.roughness = 0.58
+	var gold := _material(Color("#c99b45")); gold.roughness = 0.23; gold.metallic = 0.74
+	var blue := _material(Color("#3b6288")); blue.roughness = 0.45
+	var red := _material(Color("#8a3d43")); red.roughness = 0.48
+	var skin := _material(Color("#d49b75")); skin.roughness = 0.56
+	var beard := _material(Color("#e6dfd2")); beard.roughness = 0.68
+	var dark := _material(Color("#2b2526")); dark.roughness = 0.50
+	var eye := _material(Color("#33465a")); eye.roughness = 0.18
+	var gem := _material(Color("#58c5d8")); gem.roughness = 0.12; gem.emission_enabled = true; gem.emission = Color("#4ab2c6"); gem.emission_energy_multiplier = 1.7
+
+	_add_cylinder_mat("PedestalLower", 0.47, 0.08, Vector3(0, 0.04, 0), dark)
+	_add_cylinder_mat("PedestalRing", 0.43, 0.05, Vector3(0, 0.115, 0), gold)
+	_add_cylinder_mat("PedestalUpper", 0.39, 0.10, Vector3(0, 0.19, 0), ivory_shadow)
+
+	# Wide, slightly comedic royal body.
+	_add_cylinder_mat("RobeLower", 0.36, 0.78, Vector3(0, 0.57, 0), ivory)
+	_add_sphere_mat("Belly", 0.30, Vector3(0, 0.92, -0.02), red, Vector3(1.08, 0.92, 0.92))
+	_add_capsule_mat("Torso", 0.24, 0.55, Vector3(0, 1.13, 0), ivory_shadow)
+	_add_box_mat("RoyalSash", Vector3(0.11, 0.75, 0.35), Vector3(0.06, 0.91, -0.18), blue, Vector3(0,0,-12))
+	_add_box_mat("Belt", Vector3(0.64, 0.10, 0.34), Vector3(0, 0.79, 0), gold)
+
+	# Old king face and oversized beard.
+	_add_sphere_mat("Head", 0.22, Vector3(0, 1.50, -0.02), skin, Vector3(1.0, 1.0, 0.94))
+	_add_sphere_mat("Nose", 0.060, Vector3(0, 1.47, -0.235), skin, Vector3(0.95,0.78,1.25))
+	_add_sphere_mat("Eye_L", 0.026, Vector3(-0.075, 1.55, -0.225), eye)
+	_add_sphere_mat("Eye_R", 0.026, Vector3(0.075, 1.55, -0.225), eye)
+	_add_sphere_mat("BeardMain", 0.22, Vector3(0, 1.31, -0.16), beard, Vector3(0.95,1.18,0.72))
+	_add_sphere_mat("Moustache_L", 0.075, Vector3(-0.07, 1.43, -0.235), beard, Vector3(1.35,0.52,0.65))
+	_add_sphere_mat("Moustache_R", 0.075, Vector3(0.07, 1.43, -0.235), beard, Vector3(1.35,0.52,0.65))
+
+	# Large readable crown.
+	_add_cylinder_mat("CrownBand", 0.23, 0.12, Vector3(0, 1.70, 0), gold)
+	for x in [-0.16, -0.05, 0.05, 0.16]:
+		_add_box_mat("CrownPoint", Vector3(0.07, 0.31 if absf(x) < 0.10 else 0.24, 0.07), Vector3(x, 1.88 if absf(x) < 0.10 else 1.84, 0), gold, Vector3(0,0,x*50.0))
+	_add_sphere_mat("CrownGem", 0.060, Vector3(0, 1.77, -0.22), gem)
+
+	# Arms and royal cape blocks.
+	_add_box_mat("Cape_L", Vector3(0.18, 0.70, 0.10), Vector3(-0.27, 1.08, 0.18), red, Vector3(0,0,8))
+	_add_box_mat("Cape_R", Vector3(0.18, 0.70, 0.10), Vector3(0.27, 1.08, 0.18), red, Vector3(0,0,-8))
+	_add_capsule_mat("Arm_L", 0.075, 0.42, Vector3(-0.32, 1.12, 0), ivory_shadow, Vector3(0,0,-16))
+	_add_capsule_mat("Arm_R", 0.075, 0.42, Vector3(0.32, 1.12, 0), ivory_shadow, Vector3(0,0,16))
+	_add_sphere_mat("Hand_L", 0.085, Vector3(-0.37, 0.94, -0.03), skin)
+	_add_sphere_mat("Hand_R", 0.085, Vector3(0.37, 0.94, -0.03), skin)
+
+	# Scepter stays compact; trapdoor remote is spawned by BattleDirector.
+	_add_cylinder_mat("Scepter", 0.026, 0.95, Vector3(-0.43, 1.12, -0.02), gold, Vector3(0,0,5))
+	_add_sphere_mat("ScepterGem", 0.095, Vector3(-0.47, 1.60, -0.02), gem)
+
+func _build_black_king_production_blockout() -> void:
+	visual_root.name = "VisualRoot_BlackKingProductionV1"
+	var charcoal := _material(Color("#242029")); charcoal.roughness = 0.50
+	var armor := _material(Color("#514a55")); armor.roughness = 0.31; armor.metallic = 0.52
+	var red := _material(Color("#87363d")); red.roughness = 0.43
+	var crimson := _material(Color("#b63c35")); crimson.roughness = 0.40
+	var skin := _material(Color("#9a493e")); skin.roughness = 0.55
+	var horn := _material(Color("#8d8173")); horn.roughness = 0.58
+	var violet := _material(Color("#694080")); violet.roughness = 0.42
+	var glow := _material(Color("#e16a45")); glow.roughness = 0.12; glow.emission_enabled = true; glow.emission = Color("#d45132"); glow.emission_energy_multiplier = 2.5
+	var dark := _material(Color("#111116")); dark.roughness = 0.48
+
+	_add_cylinder_mat("PedestalLower", 0.47, 0.08, Vector3(0, 0.04, 0), dark)
+	_add_cylinder_mat("PedestalRing", 0.43, 0.05, Vector3(0, 0.115, 0), crimson)
+	_add_cylinder_mat("PedestalUpper", 0.39, 0.10, Vector3(0, 0.19, 0), charcoal)
+
+	# Demon-lord silhouette: broad torso, belly armor and cape.
+	_add_cylinder_mat("RobeLower", 0.37, 0.80, Vector3(0, 0.58, 0), charcoal)
+	_add_sphere_mat("BellyArmor", 0.31, Vector3(0, 0.92, -0.02), armor, Vector3(1.10,0.90,0.90))
+	_add_capsule_mat("Torso", 0.25, 0.57, Vector3(0, 1.14, 0), red)
+	_add_box_mat("ChestPlate", Vector3(0.48, 0.32, 0.07), Vector3(0, 1.14, -0.25), armor)
+	_add_box_mat("Cape_L", Vector3(0.20, 0.76, 0.11), Vector3(-0.29, 1.10, 0.19), violet, Vector3(0,0,10))
+	_add_box_mat("Cape_R", Vector3(0.20, 0.76, 0.11), Vector3(0.29, 1.10, 0.19), violet, Vector3(0,0,-10))
+
+	# Red demon face with fangs and emissive eyes.
+	_add_sphere_mat("Head", 0.22, Vector3(0, 1.51, -0.02), skin, Vector3(1.0,1.0,0.94))
+	_add_sphere_mat("Nose", 0.055, Vector3(0, 1.48, -0.23), skin, Vector3(0.90,0.75,1.20))
+	_add_sphere_mat("Eye_L", 0.030, Vector3(-0.078, 1.56, -0.225), glow)
+	_add_sphere_mat("Eye_R", 0.030, Vector3(0.078, 1.56, -0.225), glow)
+	_add_box_mat("Fang_L", Vector3(0.035, 0.12, 0.035), Vector3(-0.06, 1.38, -0.225), horn, Vector3(0,0,8))
+	_add_box_mat("Fang_R", Vector3(0.035, 0.12, 0.035), Vector3(0.06, 1.38, -0.225), horn, Vector3(0,0,-8))
+
+	# Huge horned crown.
+	_add_cylinder_mat("CrownBand", 0.23, 0.12, Vector3(0, 1.71, 0), armor)
+	_add_cylinder_mat("CrownHorn_L", 0.038, 0.45, Vector3(-0.17, 1.90, 0), horn, Vector3(0,0,-34))
+	_add_cylinder_mat("CrownHorn_R", 0.038, 0.45, Vector3(0.17, 1.90, 0), horn, Vector3(0,0,34))
+	_add_box_mat("CrownCenter", Vector3(0.09, 0.34, 0.09), Vector3(0, 1.91, 0), crimson)
+	_add_sphere_mat("CrownGem", 0.060, Vector3(0, 1.78, -0.22), glow)
+
+	_add_capsule_mat("Arm_L", 0.078, 0.43, Vector3(-0.33, 1.12, 0), red, Vector3(0,0,-18))
+	_add_capsule_mat("Arm_R", 0.078, 0.43, Vector3(0.33, 1.12, 0), red, Vector3(0,0,18))
+	_add_sphere_mat("Hand_L", 0.088, Vector3(-0.38, 0.94, -0.03), skin)
+	_add_sphere_mat("Hand_R", 0.088, Vector3(0.38, 0.94, -0.03), skin)
+
+	_add_cylinder_mat("Scepter", 0.028, 0.98, Vector3(-0.44, 1.12, -0.02), armor, Vector3(0,0,5))
+	_add_sphere_mat("ScepterCore", 0.10, Vector3(-0.48, 1.62, -0.02), glow)
+	_add_box_mat("ScepterRune", Vector3(0.18, 0.18, 0.04), Vector3(-0.48, 1.62, -0.02), violet, Vector3(0,0,45))
+
 func _build_anchors() -> void:
 	battle_target = _marker("BattleTarget", Vector3(0, 0.82, 0))
 	foot_target = _marker("FootTarget", Vector3(0, 0.22, 0))
@@ -764,7 +869,7 @@ func _piece_height(t: StringName) -> float:
 		&"Bishop": return 2.05
 		&"Rook": return 1.75
 		&"Queen": return 2.05
-		&"King": return 1.90
+		&"King": return 2.10
 	return 1.20
 
 func _design_scale(t: StringName) -> float:
