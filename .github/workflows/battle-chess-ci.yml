@@ -38,6 +38,10 @@ jobs:
           test -s battle-chess-revival/assets/models/white_king_concept_v2.glb
           test -s battle-chess-revival/assets/models/black_king_concept_v2.glb
 
+      - name: Validate concept asset contracts
+        run: |
+          python3 battle-chess-revival/tools/validate_asset_contracts.py
+
       - name: Download Godot 4.7.2 stable
         run: |
           wget -q \

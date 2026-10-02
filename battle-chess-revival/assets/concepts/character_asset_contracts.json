@@ -1,0 +1,54 @@
+{
+  "version": "concept-v2",
+  "source": "approved Battle Chess Revival character sheets",
+  "assets": {
+    "white_pawn_concept_v2.glb": {
+      "family": "Pawn", "side": "White", "min_parts": 45,
+      "required_parts": ["Head","Helmet_Dome","Shield","Spear_Shaft","Concept_Tabard","Concept_Plume_0","Concept_BootGold_L"]
+    },
+    "black_pawn_concept_v2.glb": {
+      "family": "Pawn", "side": "Black", "min_parts": 42,
+      "required_parts": ["Head","Ear_L","Shield","Knife_Blade","Concept_Tabard","Concept_Plume_0","Concept_Cape"]
+    },
+    "white_knight_concept_v2.glb": {
+      "family": "Knight", "side": "White", "min_parts": 40,
+      "required_parts": ["HorseBody","HorseHead","RiderTorso","KnightShield","Lance","Concept_HorseBardingFront","Concept_RiderTabard","Concept_Plume_0"]
+    },
+    "black_knight_concept_v2.glb": {
+      "family": "Knight", "side": "Black", "min_parts": 44,
+      "required_parts": ["HorseBody","HorseHead","RiderTorso","KnightShield","Lance","Concept_HorseArmorFront","Concept_RiderTabard","Concept_RedPlume_0"]
+    },
+    "white_bishop_concept_v2.glb": {
+      "family": "Bishop", "side": "White", "min_parts": 24,
+      "required_parts": ["Head","Trunk","Staff","MitreTall","Concept_RobeFront","Concept_Cape","Concept_InnerEar_L","Concept_ChestGem"]
+    },
+    "black_bishop_concept_v2.glb": {
+      "family": "Bishop", "side": "Black", "min_parts": 25,
+      "required_parts": ["Head","Snout","HornL","Staff","Concept_RobeFront","Concept_Cape","Concept_Skull","Concept_OrbHalo"]
+    },
+    "white_rook_concept_v2.glb": {
+      "family": "Rook", "side": "White", "min_parts": 25,
+      "required_parts": ["TowerCore","CrownBase","EyeL","Concept_Tabard","Concept_ShoulderGold_L","Concept_Brow_L"]
+    },
+    "black_rook_concept_v2.glb": {
+      "family": "Rook", "side": "Black", "min_parts": 25,
+      "required_parts": ["TowerCore","CrownBase","EyeL","Concept_Tabard","Concept_LavaCrack_-0.18_0.74","Concept_ShoulderSpike_L"]
+    },
+    "white_queen_concept_v2.glb": {
+      "family": "Queen", "side": "White", "min_parts": 24,
+      "required_parts": ["Head","Hair","CrownBand","Staff","MagicOrb","Concept_SkirtBlue","Concept_Cape_L","Concept_CrownGem"]
+    },
+    "black_queen_concept_v2.glb": {
+      "family": "Queen", "side": "Black", "min_parts": 24,
+      "required_parts": ["Head","Hair","CrownBand","Staff","MagicOrb","Concept_SkirtMagenta","Concept_Cape_L","Concept_CrownGem"]
+    },
+    "white_king_concept_v2.glb": {
+      "family": "King", "side": "White", "min_parts": 25,
+      "required_parts": ["Head","Beard","CrownBand","Scepter","Concept_FurCollar","Concept_Cape","Concept_CrownBlueGem"]
+    },
+    "black_king_concept_v2.glb": {
+      "family": "King", "side": "Black", "min_parts": 25,
+      "required_parts": ["Head","CrownBand","Scepter","Concept_FurCollar","Concept_Cape","Concept_CrownRedGem","Concept_ScepterCrystal"]
+    }
+  }
+}
