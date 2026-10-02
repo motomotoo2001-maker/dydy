@@ -92,3 +92,8 @@ Kings now have dedicated personalities rather than generic columns. White is a b
 ## Battle camera occlusion fix
 
 The screenshot review caught an issue the numeric Visual QA did not: keeping both armies visible placed the low battle camera inside the near-side white formation. Capture focus now hides non-participating attacker-side pieces while keeping the victim army as background spectators, and the close camera was moved outside the board with a safer 3/4 composition.
+
+
+## Cathedral/environment pass
+
+The cathedral now gets three large emissive stained-glass windows on the visible left wall and two heraldic back-wall banners, bringing the gameplay composition closer to the approved reference. In Forward+ the battle camera also enables a restrained far depth-of-field blur so the victim army reads as spectators without competing with the capture action.

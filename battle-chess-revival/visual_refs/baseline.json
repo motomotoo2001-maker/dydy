@@ -1,7 +1,7 @@
 {
-  "source_commit": "3b84f846a38b104688534c09bff4ecfed6f9162c",
-  "gameplay": {"score": 0.7870},
-  "battle": {"score": 0.7120},
+  "source_commit": "4e1db31b7aba2a3344e90337163f2a74cbf2493d",
+  "gameplay": {"score": 0.7890},
+  "battle": {"score": 0.7250},
   "regression_tolerance": 0.04,
-  "note": "Best verified aggregate baseline through the Queen production pass; battle retains the best verified cinematic score from spectator/camera correction."
+  "note": "Verified baseline after all six piece families received dedicated production blockouts and battle-camera occlusion was fixed."
 }

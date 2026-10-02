@@ -282,6 +282,13 @@ func _build_cameras() -> void:
 	battle_camera.position = Vector3(0, 2.20, 4.75)
 	battle_camera.fov = 42.0
 	battle_camera.current = false
+	if RenderingServer.get_current_rendering_method() == "forward_plus":
+		var battle_attributes := CameraAttributesPractical.new()
+		battle_attributes.dof_blur_far_enabled = true
+		battle_attributes.dof_blur_far_distance = 5.0
+		battle_attributes.dof_blur_far_transition = 4.0
+		battle_attributes.dof_blur_amount = 0.06
+		battle_camera.attributes = battle_attributes
 	root.add_child(battle_camera)
 	battle_camera.look_at(Vector3(0, 0.85, 0), Vector3.UP)
 
@@ -423,6 +430,18 @@ func _build_cathedral_details(root: Node3D, stone: Material, gold: Material) -> 
 	_build_banner(root, Vector3(9.6, 6.6, 3.2), black_cloth, gold)
 	_build_statue(root, Vector3(-3.7, 1.0, -11.6), stone)
 	_build_statue(root, Vector3(3.7, 1.0, -11.6), stone)
+
+	# Large side-wall stained glass to match the approved cathedral reference.
+	_build_side_window(root, Vector3(-10.72, 5.9, 5.2), Color("#e6b75a"), gold)
+	_build_side_window(root, Vector3(-10.72, 5.9, 0.0), Color("#d97f88"), gold)
+	_build_side_window(root, Vector3(-10.72, 5.9, -5.2), Color("#8dcfe4"), gold)
+
+	# Back-wall heraldic banners remain visible in the gameplay camera.
+	var red_banner := _mat(Color("#8f3f43"), 0.62, 0.0)
+	var blue_banner := _mat(Color("#405f83"), 0.62, 0.0)
+	_build_back_banner(root, Vector3(-5.1, 6.7, -13.58), red_banner, gold)
+	_build_back_banner(root, Vector3(5.1, 6.7, -13.58), blue_banner, gold)
+
 	for p in [Vector3(-6.2, 0, -8.0), Vector3(6.2, 0, -8.0), Vector3(-6.8, 0, 6.2), Vector3(6.8, 0, 6.2)]:
 		_build_candles(root, p, gold)
 
@@ -548,3 +567,21 @@ void fragment() {
 	material.set_shader_parameter("grain_color", Vector3(grain_color.r, grain_color.g, grain_color.b))
 	material.set_shader_parameter("surface_roughness", surface_roughness)
 	return material
+
+func _build_side_window(parent: Node3D, p: Vector3, color: Color, frame_mat: Material) -> void:
+	var glass := _emissive(color, 2.0)
+	_box(parent, "SideGlass", Vector3(0.08, 4.8, 2.30), p, glass)
+	_box(parent, "SideFrameTop", Vector3(0.14, 0.12, 2.55), p + Vector3(0.0, 2.42, 0.0), frame_mat)
+	_box(parent, "SideFrameBottom", Vector3(0.14, 0.12, 2.55), p + Vector3(0.0, -2.42, 0.0), frame_mat)
+	_box(parent, "SideFrameMid", Vector3(0.14, 4.95, 0.10), p, frame_mat)
+	_box(parent, "SideFrameCross", Vector3(0.14, 0.10, 2.45), p + Vector3(0.0, 0.45, 0.0), frame_mat)
+
+func _build_back_banner(parent: Node3D, p: Vector3, cloth: Material, gold: Material) -> void:
+	var root := Node3D.new()
+	root.name = "BackBanner"
+	root.position = p
+	parent.add_child(root)
+	_box(root, "Bar", Vector3(2.1, 0.10, 0.10), Vector3(0, 1.55, 0), gold)
+	_box(root, "Cloth", Vector3(1.75, 2.75, 0.06), Vector3(0, 0, 0), cloth)
+	_box(root, "CrestV", Vector3(0.12, 0.80, 0.035), Vector3(0, 0.20, -0.05), gold)
+	_box(root, "CrestH", Vector3(0.70, 0.12, 0.035), Vector3(0, 0.20, -0.05), gold)
