@@ -202,3 +202,130 @@ addb("Knife_Blade",blade,BM["steel"],(.54,.52,-.03),(0,0,-58))
 black_target=OUT / "black_pawn_refined_v1.glb"
 black_target.write_bytes(black_scene.export(file_type="glb"))
 print(f"ASSET_BUILD_PASS {black_target} bytes={black_target.stat().st_size} parts={len(black_scene.geometry)}")
+
+
+# ---------------------------------------------------------------------------
+# White Knight — imported horse-and-rider GLB.
+# ---------------------------------------------------------------------------
+WK={
+    "iv":pbr("KnightIvory","#e9e1d4",0.0,0.46),
+    "ivs":pbr("KnightIvoryShadow","#c5b9aa",0.0,0.56),
+    "blue":pbr("KnightBlue","#355d86",0.02,0.43),
+    "gold":pbr("KnightGold","#c89b46",0.72,0.25),
+    "leather":pbr("KnightLeather","#4b3328",0.0,0.70),
+    "skin":pbr("KnightSkin","#d9a27b",0.0,0.56),
+    "eye":pbr("HorseEyes","#26384f",0.0,0.18),
+    "dark":pbr("KnightDark","#252127",0.0,0.45),
+}
+white_knight=trimesh.Scene()
+def addwk(name,mesh,material,pos=(0,0,0),rot=(0,0,0),scale=(1,1,1)):
+    mesh=mesh.copy(); mesh.apply_scale(scale)
+    t=np.eye(4)
+    for axis,deg in zip(((1,0,0),(0,1,0),(0,0,1)),rot):
+        if deg: t=rotation_matrix(math.radians(deg),axis) @ t
+    t[:3,3]=pos; mesh.apply_transform(t)
+    mesh.visual=trimesh.visual.TextureVisuals(material=material)
+    white_knight.add_geometry(mesh,geom_name=name,node_name=name)
+
+addwk("PedestalLower",cyl(.45,.08),WK["dark"],(0,.04,0))
+addwk("PedestalRing",cyl(.41,.05),WK["gold"],(0,.105,0))
+addwk("PedestalUpper",cyl(.37,.10),WK["ivs"],(0,.18,0))
+addwk("HorseBody",sphere(.35),WK["iv"],(0,.78,.04),scale=(1.08,.80,1.42))
+for x in (-.20,.20):
+    for z in (-.20,.21):
+        addwk(f"Leg_{x}_{z}",capsule(.078,.55),WK["ivs"],(x,.47,z))
+        addwk(f"Hoof_{x}_{z}",capsule(.10,.22),WK["leather"],(x,.25,z-.02),(90,0,0),(1.15,1,1.25))
+addwk("Neck",capsule(.19,.66),WK["iv"],(0,1.10,-.25),(-28,0,0))
+addwk("HorseHead",sphere(.25),WK["iv"],(0,1.36,-.50),scale=(.94,.80,1.34))
+addwk("Muzzle",sphere(.17),WK["ivs"],(0,1.26,-.73),scale=(1,.72,1.18))
+for i,x in enumerate((-.13,.13)):
+    addwk(f"HorseEye_{i}",sphere(.035),WK["eye"],(x,1.42,-.65),scale=(1,.8,.55))
+    addwk(f"Ear_{i}",sphere(.075),WK["iv"],(x,1.58,-.46),scale=(.62,1.5,.55))
+addwk("Mane",box((.13,.60,.15)),WK["blue"],(0,1.30,-.23),(-18,0,0))
+addwk("BridleBand",box((.39,.055,.055)),WK["gold"],(0,1.31,-.68))
+addwk("Saddle",box((.48,.13,.56)),WK["leather"],(0,1.06,.14))
+addwk("SaddleCloth",box((.54,.07,.65)),WK["blue"],(0,1.00,.15))
+
+# Rider.
+addwk("RiderTorso",capsule(.185,.50),WK["ivs"],(0,1.40,.14))
+addwk("RiderHead",sphere(.155),WK["skin"],(0,1.72,.08))
+addwk("RiderHelmet",sphere(.185),WK["ivs"],(0,1.80,.08),scale=(1,.66,1))
+addwk("HelmetBand",box((.39,.055,.28)),WK["gold"],(0,1.75,.01))
+addwk("Plume",box((.10,.32,.12)),WK["blue"],(0,2.01,.12),(0,0,-8))
+for side in (-1,1):
+    addwk(f"RiderArm_{side}",capsule(.058,.32),WK["ivs"],(.23*side,1.44,.08),(0,0,25*side))
+    addwk(f"RiderHand_{side}",sphere(.065),WK["skin"],(.28*side,1.30,.02))
+# Shield.
+addwk("KnightShield",cyl(.21,.06),WK["blue"],(-.32,1.35,.03),(90,0,90))
+addwk("ShieldStripe",box((.045,.27,.045)),WK["gold"],(-.355,1.35,.03))
+# Lance.
+addwk("Lance",cyl(.027,1.03),WK["leather"],(.33,1.45,-.25),(42,0,0))
+ktip=trimesh.creation.cone(radius=.075,height=.20,sections=24)
+ktip.apply_transform(rotation_matrix(math.radians(90),(1,0,0)))
+addwk("LanceTip",ktip,WK["gold"],(.33,1.80,-.58),(42,0,0))
+
+wk_target=OUT/"white_knight_refined_v1.glb"
+wk_target.write_bytes(white_knight.export(file_type="glb"))
+print(f"ASSET_BUILD_PASS {wk_target} bytes={wk_target.stat().st_size} parts={len(white_knight.geometry)}")
+
+# ---------------------------------------------------------------------------
+# Black Knight — nightmare horse + dark rider, distinct silhouette.
+# ---------------------------------------------------------------------------
+BK={
+    "char":pbr("NightmareCharcoal","#2a2530",0.10,0.50),
+    "black":pbr("NightmareBlack","#15151b",0.0,0.48),
+    "bone":pbr("KnightBone","#9a948b",0.0,0.58),
+    "violet":pbr("KnightViolet","#6d3f8c",0.08,0.40),
+    "steel":pbr("KnightSteel","#57545e",0.60,0.30),
+    "leather":pbr("KnightDarkLeather","#3a2927",0.0,0.72),
+    "glow":pbr("KnightGlow","#b66bf0",0.0,0.16),
+}
+black_knight=trimesh.Scene()
+def addbk(name,mesh,material,pos=(0,0,0),rot=(0,0,0),scale=(1,1,1)):
+    mesh=mesh.copy(); mesh.apply_scale(scale)
+    t=np.eye(4)
+    for axis,deg in zip(((1,0,0),(0,1,0),(0,0,1)),rot):
+        if deg: t=rotation_matrix(math.radians(deg),axis) @ t
+    t[:3,3]=pos; mesh.apply_transform(t)
+    mesh.visual=trimesh.visual.TextureVisuals(material=material)
+    black_knight.add_geometry(mesh,geom_name=name,node_name=name)
+
+addbk("PedestalLower",cyl(.45,.08),BK["black"],(0,.04,0))
+addbk("PedestalRing",cyl(.41,.05),BK["violet"],(0,.105,0))
+addbk("PedestalUpper",cyl(.37,.10),BK["char"],(0,.18,0))
+addbk("HorseBody",sphere(.34),BK["char"],(0,.78,.04),scale=(1.04,.75,1.48))
+for x in (-.20,.20):
+    for z in (-.20,.21):
+        addbk(f"Leg_{x}_{z}",capsule(.068,.57),BK["black"],(x,.47,z))
+        addbk(f"Knee_{x}_{z}",sphere(.087),BK["bone"],(x,.53,z))
+        addbk(f"Hoof_{x}_{z}",capsule(.108,.23),BK["black"],(x,.24,z-.03),(90,0,0),(1.2,1,1.3))
+addbk("Neck",capsule(.18,.69),BK["char"],(0,1.10,-.26),(-30,0,0))
+addbk("HorseHead",sphere(.24),BK["char"],(0,1.37,-.51),scale=(.90,.74,1.38))
+addbk("Muzzle",sphere(.155),BK["black"],(0,1.27,-.75),scale=(1,.68,1.20))
+for i,x in enumerate((-.13,.13)):
+    addbk(f"Eye_{i}",sphere(.037),BK["glow"],(x,1.43,-.66),scale=(1,.76,.55))
+addbk("Mane",box((.12,.64,.15)),BK["violet"],(0,1.30,-.22),(-20,0,0))
+addbk("HorseHorn_L",cyl(.037,.27),BK["bone"],(-.13,1.60,-.47),(-30,0,-28))
+addbk("HorseHorn_R",cyl(.037,.27),BK["bone"],(.13,1.60,-.47),(-30,0,28))
+addbk("Saddle",box((.48,.13,.56)),BK["leather"],(0,1.06,.14))
+addbk("SaddleCloth",box((.54,.07,.65)),BK["violet"],(0,1.00,.15))
+# Rider.
+addbk("RiderTorso",capsule(.185,.52),BK["steel"],(0,1.40,.14))
+addbk("RiderHead",sphere(.15),BK["black"],(0,1.72,.08))
+addbk("RiderHelmet",sphere(.185),BK["char"],(0,1.80,.08),scale=(1,.67,1))
+addbk("HelmetHorn_L",cyl(.03,.28),BK["bone"],(-.14,1.94,.05),(0,0,-38))
+addbk("HelmetHorn_R",cyl(.03,.28),BK["bone"],(.14,1.94,.05),(0,0,38))
+for i,x in enumerate((-.055,.055)):
+    addbk(f"VisorEye_{i}",sphere(.027),BK["glow"],(x,1.79,-.105),scale=(1,.75,.5))
+for side in (-1,1):
+    addbk(f"RiderArm_{side}",capsule(.058,.33),BK["steel"],(.23*side,1.44,.08),(0,0,27*side))
+addbk("KnightShield",cyl(.21,.06),BK["char"],(-.32,1.35,.03),(90,0,90))
+addbk("ShieldRune",box((.05,.27,.045)),BK["violet"],(-.355,1.35,.03),(0,0,18))
+addbk("Lance",cyl(.027,1.03),BK["black"],(.33,1.45,-.25),(42,0,0))
+btip=trimesh.creation.cone(radius=.078,height=.21,sections=4)
+btip.apply_transform(rotation_matrix(math.radians(90),(1,0,0)))
+addbk("LanceTip",btip,BK["violet"],(.33,1.80,-.58),(42,0,0))
+
+bk_target=OUT/"black_knight_refined_v1.glb"
+bk_target.write_bytes(black_knight.export(file_type="glb"))
+print(f"ASSET_BUILD_PASS {bk_target} bytes={bk_target.stat().st_size} parts={len(black_knight.geometry)}")

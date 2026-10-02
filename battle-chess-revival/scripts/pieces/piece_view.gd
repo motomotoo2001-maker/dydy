@@ -3,6 +3,8 @@ extends Node3D
 
 const WHITE_PAWN_ASSET_PATH := "res://assets/models/white_pawn_refined_v1.glb"
 const BLACK_PAWN_ASSET_PATH := "res://assets/models/black_pawn_refined_v1.glb"
+const WHITE_KNIGHT_ASSET_PATH := "res://assets/models/white_knight_refined_v1.glb"
+const BLACK_KNIGHT_ASSET_PATH := "res://assets/models/black_knight_refined_v1.glb"
 
 var piece_type: StringName = &"Pawn"
 var side: StringName = &"White"
@@ -88,9 +90,15 @@ func _build_visual() -> void:
 		_build_black_pawn_production_blockout()
 		return
 	if piece_type == &"Knight" and side == &"White":
+		if DisplayServer.get_name() != "headless":
+			if _build_external_asset(WHITE_KNIGHT_ASSET_PATH, "WhiteKnightRefinedMeshV1"):
+				return
 		_build_white_knight_production_blockout()
 		return
 	if piece_type == &"Knight" and side == &"Black":
+		if DisplayServer.get_name() != "headless":
+			if _build_external_asset(BLACK_KNIGHT_ASSET_PATH, "BlackKnightRefinedMeshV1"):
+				return
 		_build_black_knight_production_blockout()
 		return
 	if piece_type == &"Bishop" and side == &"White":

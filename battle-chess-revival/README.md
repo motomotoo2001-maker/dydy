@@ -107,3 +107,8 @@ Asset production has moved beyond runtime primitive-only characters. CI now buil
 ## Imported production asset pipeline — Black Pawn
 
 The Black Pawn now also uses a real generated/imported GLB instead of the runtime-only primitive character during rendered gameplay. Its geometry is deliberately asymmetric and separate from White: wide goblin ears, long nose, bucket helmet with patch/rivets, ragged dark armor, crooked shield, oversized hands/boots and a dedicated toe-stab knife. Both Pawn GLBs keep named parts for the later rig/Skeleton3D pass.
+
+
+## Imported production asset pipeline — Knights
+
+Both Knights now have real imported GLB scenes in rendered gameplay. White keeps the approved noble animated-film silhouette: broad ivory horse, expressive muzzle/eyes, blue mane and saddle cloth, gold bridle, compact rider, shield and lance. Black is structurally different: lean nightmare horse, exposed bony knees, horns, violet mane, dark armored rider with horned helmet and angular lance tip. Each GLB preserves named horse/rider/prop parts for the future rigging pass.
