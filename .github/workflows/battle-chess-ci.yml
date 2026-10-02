@@ -25,18 +25,18 @@ jobs:
         run: |
           python3 -m pip install --user --quiet trimesh
           python3 battle-chess-revival/tools/generate_mesh_assets.py
-          test -s battle-chess-revival/assets/models/white_pawn_refined_v1.glb
-          test -s battle-chess-revival/assets/models/black_pawn_refined_v1.glb
-          test -s battle-chess-revival/assets/models/white_knight_refined_v1.glb
-          test -s battle-chess-revival/assets/models/black_knight_refined_v1.glb
-          test -s battle-chess-revival/assets/models/white_bishop_refined_v1.glb
-          test -s battle-chess-revival/assets/models/black_bishop_refined_v1.glb
-          test -s battle-chess-revival/assets/models/white_rook_refined_v1.glb
-          test -s battle-chess-revival/assets/models/black_rook_refined_v1.glb
-          test -s battle-chess-revival/assets/models/white_queen_refined_v1.glb
-          test -s battle-chess-revival/assets/models/black_queen_refined_v1.glb
-          test -s battle-chess-revival/assets/models/white_king_refined_v1.glb
-          test -s battle-chess-revival/assets/models/black_king_refined_v1.glb
+          test -s battle-chess-revival/assets/models/white_pawn_concept_v2.glb
+          test -s battle-chess-revival/assets/models/black_pawn_concept_v2.glb
+          test -s battle-chess-revival/assets/models/white_knight_concept_v2.glb
+          test -s battle-chess-revival/assets/models/black_knight_concept_v2.glb
+          test -s battle-chess-revival/assets/models/white_bishop_concept_v2.glb
+          test -s battle-chess-revival/assets/models/black_bishop_concept_v2.glb
+          test -s battle-chess-revival/assets/models/white_rook_concept_v2.glb
+          test -s battle-chess-revival/assets/models/black_rook_concept_v2.glb
+          test -s battle-chess-revival/assets/models/white_queen_concept_v2.glb
+          test -s battle-chess-revival/assets/models/black_queen_concept_v2.glb
+          test -s battle-chess-revival/assets/models/white_king_concept_v2.glb
+          test -s battle-chess-revival/assets/models/black_king_concept_v2.glb
 
       - name: Download Godot 4.7.2 stable
         run: |

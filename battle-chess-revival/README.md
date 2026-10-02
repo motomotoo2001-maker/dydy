@@ -129,3 +129,8 @@ CI now captures the exact impact frame for all six signatures and assembles a 3x
 ## Animation/VFX polish pass
 
 The imported asset milestone is followed by a dedicated motion pass. Idle motion now drives named GLB sub-parts (heads, crests, horse heads/manes, staffs, magic orbs, beards and scepters) instead of only bobbing the whole piece. Signature captures add camera punch, radial impact bursts and ground shockwaves at their main contact frames. The environment now uses AgX tonemapping with restrained highlight rolloff, and key warm lights cast shadows for stronger contact. CI publishes all six capture screenshots in addition to gameplay/battle reference frames.
+
+
+## Concept-sheet integration v2
+
+The approved character sheets are now the direct production target. All 12 imported GLBs moved to `*_concept_v2.glb` and receive a second authored detail pass after the base modular mesh is built. The pass adds the concept-specific visual language: White blue/gold heraldry, polished armor and cloth; Black crimson/bronze/purple accents; multi-part helmet plumes; tabards/capes; bishop inner ears and robe layers; rook heraldry/lava cracks; queen hair/cape/jewelry; king fur mantles/capes and crown/scepter gems. All added parts are named for animation rather than baked into a single mesh. Pawn and Knight capture motion now also drives plume/shield/rider/horse-head parts so the approved animation sheets begin to read in motion.

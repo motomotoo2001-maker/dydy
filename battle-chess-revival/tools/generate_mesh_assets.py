@@ -114,7 +114,7 @@ tip=trimesh.creation.cone(radius=.075,height=.20,sections=24)
 tip.apply_transform(rotation_matrix(math.radians(90),(1,0,0)))
 add("Spear_Tip",tip,M["gold"],(.54,1.39,-.03),(0,0,-7))
 
-target=OUT / "white_pawn_refined_v1.glb"
+target=OUT / "white_pawn_concept_v2.glb"
 target.write_bytes(scene.export(file_type="glb"))
 print(f"ASSET_BUILD_PASS {target} bytes={target.stat().st_size} parts={len(scene.geometry)}")
 
@@ -197,7 +197,7 @@ blade=trimesh.creation.cone(radius=.065,height=.30,sections=4)
 blade.apply_transform(rotation_matrix(math.radians(90),(1,0,0)))
 addb("Knife_Blade",blade,BM["steel"],(.54,.52,-.03),(0,0,-58))
 
-black_target=OUT / "black_pawn_refined_v1.glb"
+black_target=OUT / "black_pawn_concept_v2.glb"
 black_target.write_bytes(black_scene.export(file_type="glb"))
 print(f"ASSET_BUILD_PASS {black_target} bytes={black_target.stat().st_size} parts={len(black_scene.geometry)}")
 
@@ -262,7 +262,7 @@ ktip=trimesh.creation.cone(radius=.075,height=.20,sections=24)
 ktip.apply_transform(rotation_matrix(math.radians(90),(1,0,0)))
 addwk("LanceTip",ktip,WK["gold"],(.33,1.80,-.58),(42,0,0))
 
-wk_target=OUT/"white_knight_refined_v1.glb"
+wk_target=OUT/"white_knight_concept_v2.glb"
 wk_target.write_bytes(white_knight.export(file_type="glb"))
 print(f"ASSET_BUILD_PASS {wk_target} bytes={wk_target.stat().st_size} parts={len(white_knight.geometry)}")
 
@@ -324,7 +324,7 @@ btip=trimesh.creation.cone(radius=.078,height=.21,sections=4)
 btip.apply_transform(rotation_matrix(math.radians(90),(1,0,0)))
 addbk("LanceTip",btip,BK["violet"],(.33,1.80,-.58),(42,0,0))
 
-bk_target=OUT/"black_knight_refined_v1.glb"
+bk_target=OUT/"black_knight_concept_v2.glb"
 bk_target.write_bytes(black_knight.export(file_type="glb"))
 print(f"ASSET_BUILD_PASS {bk_target} bytes={bk_target.stat().st_size} parts={len(black_knight.geometry)}")
 
@@ -366,7 +366,7 @@ emit(sc,"MitreBase",box((.39,.20,.31)),BIW["ivs"],(0,1.66,0)); emit(sc,"MitreTal
 for side in (-1,1):
     emit(sc,f"Arm_{side}",capsule(.076,.40),BIW["ivs"],(.29*side,1.08,0),(0,0,15*side)); emit(sc,f"Hand_{side}",sphere(.087),BIW["skin"],(.34*side,.90,-.02))
 emit(sc,"Staff",cyl(.03,1.42),BIW["wood"],(.42,1.10,-.02),(0,0,-4)); emit(sc,"StaffGem",sphere(.11),BIW["cyan"],(.46,1.82,-.02)); emit(sc,"StaffCross",box((.30,.045,.045)),BIW["gold"],(.46,1.72,-.02))
-export_scene(sc,"white_bishop_refined_v1.glb")
+export_scene(sc,"white_bishop_concept_v2.glb")
 
 BIB={
  "char":pbr("NecroCharcoal","#26232c",.10,.52),"violet":pbr("NecroViolet","#654080",.05,.43),
@@ -384,7 +384,7 @@ emit(sc,"Mask",box((.37,.25,.26)),BIB["char"],(0,1.67,0)); emit(sc,"MaskRune",bo
 for side in (-1,1): emit(sc,f"Arm_{side}",capsule(.076,.42),BIB["leather"],(.29*side,1.07,0),(0,0,17*side))
 emit(sc,"Staff",cyl(.031,1.44),BIB["steel"],(.42,1.10,-.02),(0,0,-4)); emit(sc,"StaffOrb",sphere(.115),BIB["glow"],(.46,1.84,-.02))
 emit(sc,"ProngL",box((.045,.30,.05)),BIB["bone"],(.37,1.86,-.02),(0,0,-28)); emit(sc,"ProngR",box((.045,.30,.05)),BIB["bone"],(.55,1.86,-.02),(0,0,28))
-export_scene(sc,"black_bishop_refined_v1.glb")
+export_scene(sc,"black_bishop_concept_v2.glb")
 
 # ---- Rooks -----------------------------------------------------------------
 RW={
@@ -402,7 +402,7 @@ emit(sc,"CrownBase",box((.82,.18,.82)),RW["light"],(0,1.34,0))
 for x in (-.30,0,.30):
     emit(sc,f"CrenelF{x}",box((.18,.25,.21)),RW["stone"],(x,1.54,-.30)); emit(sc,f"CrenelB{x}",box((.18,.25,.21)),RW["stone"],(x,1.54,.30))
 emit(sc,"Heraldry",box((.27,.31,.04)),RW["blue"],(0,.73,-.34)); emit(sc,"HeraldryV",box((.05,.25,.045)),RW["gold"],(0,.73,-.37)); emit(sc,"HeraldryH",box((.21,.05,.045)),RW["gold"],(0,.73,-.37))
-export_scene(sc,"white_rook_refined_v1.glb")
+export_scene(sc,"white_rook_concept_v2.glb")
 
 RB={
  "obs":pbr("Obsidian","#242127",.15,.40),"obsl":pbr("ObsidianEdge","#3a343c",.18,.46),
@@ -419,7 +419,7 @@ emit(sc,"CrownBase",box((.83,.18,.83)),RB["obsl"],(0,1.35,0))
 for x in (-.30,0,.30):
     emit(sc,f"CrenelF{x}",box((.18,.26,.21)),RB["obs"],(x,1.55,-.30)); emit(sc,f"CrenelB{x}",box((.18,.26,.21)),RB["obs"],(x,1.55,.30))
 emit(sc,"RunePlate",box((.28,.32,.04)),RB["violet"],(0,.73,-.35)); emit(sc,"RuneV",box((.05,.26,.045)),RB["lava"],(0,.73,-.38),(0,0,20))
-export_scene(sc,"black_rook_refined_v1.glb")
+export_scene(sc,"black_rook_concept_v2.glb")
 
 # ---- Queens ----------------------------------------------------------------
 QW={
@@ -437,7 +437,7 @@ emit(sc,"CrownBand",cyl(.205,.10),QW["gold"],(0,1.79,0))
 for x in (-.13,0,.13): emit(sc,f"CrownPoint{x}",box((.08,.31 if x==0 else .24,.08)),QW["gold"],(x,1.96 if x==0 else 1.91,0),(0,0,x*45))
 for side in (-1,1): emit(sc,f"Arm_{side}",capsule(.07,.44),QW["ivs"],(.29*side,1.14,0),(0,0,23*side)); emit(sc,f"Hand_{side}",sphere(.08),QW["skin"],(.35*side,.94,-.03))
 emit(sc,"Staff",cyl(.028,1.35),QW["gold"],(.44,1.14,-.03),(0,0,-3)); emit(sc,"MagicOrb",sphere(.135),QW["cyan"],(.47,1.84,-.03)); emit(sc,"OrbHaloV",box((.038,.36,.038)),QW["gold"],(.47,1.84,-.03)); emit(sc,"OrbHaloH",box((.36,.038,.038)),QW["gold"],(.47,1.84,-.03))
-export_scene(sc,"white_queen_refined_v1.glb")
+export_scene(sc,"white_queen_concept_v2.glb")
 
 QB={
  "char":pbr("DarkQueenCharcoal","#24212b",0,.50),"violet":pbr("DarkQueenViolet","#68407f",0,.42),
@@ -453,7 +453,7 @@ for i,x in enumerate((-.067,.067)): emit(sc,f"Eye_{i}",sphere(.027),QB["magic"],
 emit(sc,"CrownBand",cyl(.205,.10),QB["steel"],(0,1.80,0)); emit(sc,"CrownHornL",cyl(.034,.36),QB["char"],(-.14,1.98,0),(0,0,-30)); emit(sc,"CrownHornR",cyl(.034,.36),QB["char"],(.14,1.98,0),(0,0,30)); emit(sc,"CrownGem",sphere(.058),QB["magic"],(0,1.86,-.20))
 for side in (-1,1): emit(sc,f"Arm_{side}",capsule(.07,.44),QB["vd"],(.29*side,1.14,0),(0,0,24*side))
 emit(sc,"Staff",cyl(.03,1.36),QB["steel"],(.44,1.14,-.03),(0,0,-4)); emit(sc,"MagicOrb",sphere(.14),QB["magic"],(.48,1.85,-.03)); emit(sc,"ProngL",box((.04,.36,.04)),QB["char"],(.37,1.85,-.03),(0,0,-30)); emit(sc,"ProngR",box((.04,.36,.04)),QB["char"],(.59,1.85,-.03),(0,0,30))
-export_scene(sc,"black_queen_refined_v1.glb")
+export_scene(sc,"black_queen_concept_v2.glb")
 
 # ---- Kings -----------------------------------------------------------------
 KW={
@@ -474,7 +474,7 @@ for x in (-.16,-.05,.05,.16): emit(sc,f"Crown{x}",box((.072,.32 if abs(x)<.1 els
 emit(sc,"CrownGem",sphere(.062),KW["gem"],(0,1.86,-.22))
 for side in (-1,1): emit(sc,f"Cape_{side}",box((.19,.72,.11)),KW["red"],(.28*side,1.13,.19),(0,0,-8*side)); emit(sc,f"Arm_{side}",capsule(.078,.44),KW["ivs"],(.33*side,1.17,0),(0,0,17*side))
 emit(sc,"Scepter",cyl(.028,1.00),KW["gold"],(-.44,1.17,-.02),(0,0,5)); emit(sc,"ScepterGem",sphere(.10),KW["gem"],(-.48,1.68,-.02))
-export_scene(sc,"white_king_refined_v1.glb")
+export_scene(sc,"white_king_concept_v2.glb")
 
 KB={
  "char":pbr("DemonCharcoal","#242029",0,.50),"armor":pbr("DemonArmor","#514a55",.52,.31),
@@ -492,4 +492,189 @@ for i,x in enumerate((-.08,.08)): emit(sc,f"Eye_{i}",sphere(.032),KB["glow"],(x,
 emit(sc,"FangL",box((.038,.13,.038)),KB["horn"],(-.06,1.45,-.23),(0,0,8)); emit(sc,"FangR",box((.038,.13,.038)),KB["horn"],(.06,1.45,-.23),(0,0,-8))
 emit(sc,"CrownBand",cyl(.235,.12),KB["armor"],(0,1.81,0)); emit(sc,"CrownHornL",cyl(.04,.47),KB["horn"],(-.18,2.01,0),(0,0,-34)); emit(sc,"CrownHornR",cyl(.04,.47),KB["horn"],(.18,2.01,0),(0,0,34)); emit(sc,"CrownCenter",box((.095,.36,.095)),KB["crimson"],(0,2.01,0)); emit(sc,"CrownGem",sphere(.062),KB["glow"],(0,1.88,-.22))
 emit(sc,"Scepter",cyl(.03,1.02),KB["armor"],(-.45,1.18,-.02),(0,0,5)); emit(sc,"ScepterCore",sphere(.105),KB["glow"],(-.49,1.70,-.02)); emit(sc,"ScepterRune",box((.19,.19,.04)),KB["violet"],(-.49,1.70,-.02),(0,0,45))
-export_scene(sc,"black_king_refined_v1.glb")
+export_scene(sc,"black_king_concept_v2.glb")
+
+
+# ---------------------------------------------------------------------------
+# Concept-sheet integration pass v2
+# Adds the strong silhouette, cloth, heraldry, hair/plume, fur and ornament
+# layers visible in the approved Battle Chess Revival character sheets.
+# This runs after the base modular GLBs are authored and overwrites the same
+# concept_v2 files with additional named, animation-friendly parts.
+# ---------------------------------------------------------------------------
+def _polish_scene(filename, callback):
+    path = OUT / filename
+    sc = trimesh.load(path, force="scene", process=False)
+    callback(sc)
+    path.write_bytes(sc.export(file_type="glb"))
+    print(f"CONCEPT_POLISH_PASS {path} parts={len(sc.geometry)}")
+
+def _addp(sc,name,mesh,mat,pos=(0,0,0),rot=(0,0,0),scale=(1,1,1)):
+    mesh=mesh.copy()
+    mesh.apply_scale(scale)
+    t=np.eye(4)
+    for axis,deg in zip(((1,0,0),(0,1,0),(0,0,1)),rot):
+        if deg:
+            t=rotation_matrix(math.radians(deg),axis) @ t
+    t[:3,3]=pos
+    mesh.visual=trimesh.visual.TextureVisuals(material=mat)
+    sc.add_geometry(mesh,geom_name=name,node_name=name,transform=t)
+
+CIV=pbr("ConceptIvory","#f0e6d7",0.0,0.42)
+CGOLD=pbr("ConceptPolishedGold","#d4a84f",0.76,0.20)
+CBLUE=pbr("ConceptRoyalBlue","#244f92",0.02,0.40)
+CRED=pbr("ConceptCrimson","#8d243d",0.03,0.40)
+CCHAR=pbr("ConceptCharcoal","#232129",0.15,0.40)
+CBRONZE=pbr("ConceptBronze","#8d6237",0.55,0.30)
+CGREEN=pbr("ConceptGoblinSkin","#7e914f",0.0,0.54)
+CPINK=pbr("ConceptInnerEar","#d58e92",0.0,0.58)
+CPURPLE=pbr("ConceptPurple","#6e2f83",0.02,0.38)
+CLAVA=pbr("ConceptLava","#ef6227",0.0,0.16)
+CFUR=pbr("ConceptFur","#e9e0d4",0.0,0.82)
+CBLACKFUR=pbr("ConceptBlackFur","#201d24",0.0,0.82)
+CHAIR=pbr("ConceptHair","#6f4a31",0.0,0.58)
+CDARKHAIR=pbr("ConceptDarkHair","#241b28",0.0,0.52)
+CMAGENTA=pbr("ConceptMagicMagenta","#d847df",0.0,0.14)
+CCYAN=pbr("ConceptMagicCyan","#63dff2",0.0,0.14)
+
+def polish_white_pawn(sc):
+    _addp(sc,"Concept_Tabard",box((.28,.42,.045)),CBLUE,(0,.79,-.29))
+    _addp(sc,"Concept_TabardGoldV",box((.045,.38,.052)),CGOLD,(0,.79,-.318))
+    _addp(sc,"Concept_TabardGoldH",box((.22,.045,.052)),CGOLD,(0,.67,-.318))
+    _addp(sc,"Concept_ShoulderTrim_L",box((.26,.07,.18)),CGOLD,(-.30,.97,-.02),(0,0,-12))
+    _addp(sc,"Concept_ShoulderTrim_R",box((.26,.07,.18)),CGOLD,(.30,.97,-.02),(0,0,12))
+    for i,(y,s) in enumerate(((1.59,(1.00,.75,1.00)),(1.70,(.88,.70,.92)),(1.80,(.68,.58,.78)))):
+        _addp(sc,f"Concept_Plume_{i}",sphere(.115),CBLUE,(0,y,.04),scale=s)
+    _addp(sc,"Concept_Cheek_L",sphere(.045),M["skin"],(-.11,1.15,-.23),scale=(1.15,.75,.55))
+    _addp(sc,"Concept_Cheek_R",sphere(.045),M["skin"],(.11,1.15,-.23),scale=(1.15,.75,.55))
+    _addp(sc,"Concept_BootGold_L",box((.23,.055,.22)),CGOLD,(-.14,.27,-.02))
+    _addp(sc,"Concept_BootGold_R",box((.23,.055,.22)),CGOLD,(.14,.27,-.02))
+
+def polish_black_pawn(sc):
+    _addp(sc,"Concept_Tabard",box((.29,.43,.045)),CRED,(0,.78,-.29),(0,0,-3))
+    _addp(sc,"Concept_TabardGold",box((.05,.39,.052)),CBRONZE,(0,.78,-.318),(0,0,-3))
+    for i,(y,x,s) in enumerate(((1.57,-.02,(1.05,.76,1.0)),(1.69,-.05,(.92,.70,.95)),(1.80,-.08,(.72,.58,.82)))):
+        _addp(sc,f"Concept_Plume_{i}",sphere(.12),CRED,(x,y,.04),scale=s)
+    _addp(sc,"Concept_Cape",box((.42,.45,.055)),CRED,(0,.78,.19),(10,0,0))
+    _addp(sc,"Concept_ShoulderSpike_L",trimesh.creation.cone(radius=.06,height=.20,sections=8),CBRONZE,(-.34,1.02,-.02),(0,0,-35))
+    _addp(sc,"Concept_ShoulderSpike_R",trimesh.creation.cone(radius=.06,height=.20,sections=8),CBRONZE,(.34,1.02,-.02),(0,0,35))
+    _addp(sc,"Concept_EarInner_L",sphere(.085),CPINK,(-.29,1.18,-.03),scale=(1.35,.32,.48))
+    _addp(sc,"Concept_EarInner_R",sphere(.085),CPINK,(.29,1.18,-.03),scale=(1.35,.32,.48))
+    _addp(sc,"Concept_BackSpear",cyl(.024,.88),CBRONZE,(-.29,.96,.18),(-12,0,8))
+
+def polish_white_knight(sc):
+    _addp(sc,"Concept_HorseFace",sphere(.19),CIV,(0,1.33,-.69),scale=(.82,.62,.55))
+    _addp(sc,"Concept_HorseNostril_L",sphere(.025),WK["dark"],(-.06,1.28,-.84),scale=(1,.7,.45))
+    _addp(sc,"Concept_HorseNostril_R",sphere(.025),WK["dark"],(.06,1.28,-.84),scale=(1,.7,.45))
+    _addp(sc,"Concept_HorseBardingFront",box((.38,.34,.07)),CBLUE,(0,.87,-.46),(10,0,0))
+    _addp(sc,"Concept_HorseBardingGold",box((.07,.30,.075)),CGOLD,(0,.87,-.50),(10,0,0))
+    _addp(sc,"Concept_RiderTabard",box((.22,.33,.04)),CBLUE,(0,1.42,-.07))
+    _addp(sc,"Concept_RiderTabardGold",box((.045,.29,.046)),CGOLD,(0,1.42,-.095))
+    _addp(sc,"Concept_RiderFace",sphere(.12),WK["skin"],(0,1.72,-.07),scale=(1,.92,.70))
+    for i,(y,s) in enumerate(((2.03,(1.0,.65,1.0)),(2.13,(.85,.60,.90)),(2.22,(.68,.52,.78)))):
+        _addp(sc,f"Concept_Plume_{i}",sphere(.10),CBLUE,(0,y,.12),scale=s)
+
+def polish_black_knight(sc):
+    _addp(sc,"Concept_HorseArmorFront",box((.40,.36,.075)),CCHAR,(0,.88,-.47),(10,0,0))
+    _addp(sc,"Concept_HorseArmorRune",box((.07,.31,.08)),CRED,(0,.88,-.515),(10,0,0))
+    _addp(sc,"Concept_RiderFace",sphere(.12),CGREEN,(0,1.72,-.07),scale=(1,.92,.70))
+    _addp(sc,"Concept_RiderTabard",box((.23,.34,.04)),CRED,(0,1.42,-.07))
+    for i,(y,s) in enumerate(((2.03,(1.05,.66,1.0)),(2.14,(.90,.60,.92)),(2.24,(.70,.52,.80)))):
+        _addp(sc,f"Concept_RedPlume_{i}",sphere(.105),CRED,(0,y,.12),scale=s)
+    _addp(sc,"Concept_Cape",box((.43,.46,.05)),CRED,(0,1.31,.26),(12,0,0))
+    _addp(sc,"Concept_EyeGlow_L",sphere(.032),CMAGENTA,(-.06,1.75,-.18),scale=(1,.75,.5))
+    _addp(sc,"Concept_EyeGlow_R",sphere(.032),CMAGENTA,(.06,1.75,-.18),scale=(1,.75,.5))
+
+def polish_white_bishop(sc):
+    _addp(sc,"Concept_RobeFront",box((.32,.68,.045)),CIV,(0,.78,-.31))
+    _addp(sc,"Concept_RobeBlue",box((.13,.62,.052)),CBLUE,(0,.78,-.34))
+    _addp(sc,"Concept_RobeGold",box((.045,.58,.058)),CGOLD,(0,.78,-.37))
+    _addp(sc,"Concept_InnerEar_L",sphere(.16),CPINK,(-.25,1.44,-.02),scale=(.56,1.08,.30))
+    _addp(sc,"Concept_InnerEar_R",sphere(.16),CPINK,(.25,1.44,-.02),scale=(.56,1.08,.30))
+    _addp(sc,"Concept_Cape",box((.48,.66,.045)),CBLUE,(0,1.00,.24),(8,0,0))
+    _addp(sc,"Concept_ChestGem",sphere(.065),CCYAN,(0,1.20,-.34))
+    _addp(sc,"Concept_StaffHalo",cyl(.12,.025),CGOLD,(.46,1.82,-.02),(90,0,0))
+
+def polish_black_bishop(sc):
+    _addp(sc,"Concept_RobeFront",box((.34,.70,.045)),CCHAR,(0,.78,-.32))
+    _addp(sc,"Concept_RobePurple",box((.14,.65,.052)),CPURPLE,(0,.78,-.35))
+    _addp(sc,"Concept_Cape",box((.52,.70,.05)),CRED,(0,1.00,.25),(10,0,0))
+    _addp(sc,"Concept_Skull",sphere(.085),BIB["bone"],(0,1.08,-.36),scale=(1,.86,.72))
+    _addp(sc,"Concept_SkullEye_L",sphere(.018),CCHAR,(-.025,1.09,-.43))
+    _addp(sc,"Concept_SkullEye_R",sphere(.018),CCHAR,(.025,1.09,-.43))
+    _addp(sc,"Concept_OrbHalo",cyl(.14,.025),CMAGENTA,(.46,1.84,-.02),(90,0,0))
+    _addp(sc,"Concept_InnerEar_L",sphere(.15),CPINK,(-.24,1.45,-.02),scale=(.55,1.0,.30))
+    _addp(sc,"Concept_InnerEar_R",sphere(.15),CPINK,(.24,1.45,-.02),scale=(.55,1.0,.30))
+
+def polish_white_rook(sc):
+    _addp(sc,"Concept_Tabard",box((.29,.50,.05)),CBLUE,(0,.77,-.37))
+    _addp(sc,"Concept_TabardGoldV",box((.05,.45,.055)),CGOLD,(0,.77,-.40))
+    _addp(sc,"Concept_TabardGoldH",box((.22,.05,.055)),CGOLD,(0,.60,-.40))
+    _addp(sc,"Concept_ShoulderGold_L",box((.31,.075,.37)),CGOLD,(-.45,1.04,0),(0,0,-11))
+    _addp(sc,"Concept_ShoulderGold_R",box((.31,.075,.37)),CGOLD,(.45,1.04,0),(0,0,11))
+    _addp(sc,"Concept_Brow_L",box((.19,.06,.05)),RW["shadow"],(-.15,1.10,-.39),(0,0,-14))
+    _addp(sc,"Concept_Brow_R",box((.19,.06,.05)),RW["shadow"],(.15,1.10,-.39),(0,0,14))
+
+def polish_black_rook(sc):
+    _addp(sc,"Concept_Tabard",box((.30,.51,.05)),CRED,(0,.77,-.38))
+    _addp(sc,"Concept_TabardGold",box((.05,.46,.055)),CBRONZE,(0,.77,-.41))
+    for x,y,ang in ((-.18,.74,14),(.11,.87,-18),(.22,.61,9)):
+        _addp(sc,f"Concept_LavaCrack_{x}_{y}",box((.035,.30,.035)),CLAVA,(x,y,-.382),(0,0,ang))
+    _addp(sc,"Concept_ShoulderSpike_L",trimesh.creation.cone(radius=.07,height=.22,sections=8),CCHAR,(-.50,1.12,-.02),(0,0,-35))
+    _addp(sc,"Concept_ShoulderSpike_R",trimesh.creation.cone(radius=.07,height=.22,sections=8),CCHAR,(.50,1.12,-.02),(0,0,35))
+
+def polish_white_queen(sc):
+    _addp(sc,"Concept_SkirtBlue",box((.29,.70,.045)),CBLUE,(0,.67,-.34))
+    _addp(sc,"Concept_SkirtGoldV",box((.05,.64,.052)),CGOLD,(0,.67,-.37))
+    _addp(sc,"Concept_Cape_L",box((.24,.68,.04)),CIV,(-.30,1.02,.24),(0,0,-9))
+    _addp(sc,"Concept_Cape_R",box((.24,.68,.04)),CIV,(.30,1.02,.24),(0,0,9))
+    for side in (-1,1):
+        _addp(sc,f"Concept_HairCurl_{side}",sphere(.13),CHAIR,(.20*side,1.48,.12),scale=(.75,1.55,.75))
+        _addp(sc,f"Concept_Earring_{side}",sphere(.035),CCYAN,(.16*side,1.48,-.04))
+    _addp(sc,"Concept_CrownGem",sphere(.07),CCYAN,(0,1.91,-.13))
+    _addp(sc,"Concept_StaffRing",cyl(.16,.022),CGOLD,(.47,1.84,-.03),(90,0,0))
+
+def polish_black_queen(sc):
+    _addp(sc,"Concept_SkirtMagenta",box((.30,.72,.045)),CMAGENTA,(0,.68,-.35))
+    _addp(sc,"Concept_SkirtGold",box((.05,.66,.052)),CBRONZE,(0,.68,-.38))
+    _addp(sc,"Concept_Cape_L",box((.25,.70,.04)),CPURPLE,(-.31,1.03,.25),(0,0,-10))
+    _addp(sc,"Concept_Cape_R",box((.25,.70,.04)),CPURPLE,(.31,1.03,.25),(0,0,10))
+    for side in (-1,1):
+        _addp(sc,f"Concept_HairCurl_{side}",sphere(.14),CDARKHAIR,(.20*side,1.49,.13),scale=(.78,1.58,.78))
+    _addp(sc,"Concept_CrownGem",sphere(.072),CMAGENTA,(0,1.92,-.13))
+    _addp(sc,"Concept_StaffRing",cyl(.17,.022),CMAGENTA,(.48,1.85,-.03),(90,0,0))
+
+def polish_white_king(sc):
+    for side in (-1,1):
+        _addp(sc,f"Concept_FurShoulder_{side}",sphere(.22),CFUR,(.26*side,1.31,.09),scale=(1.10,.72,.88))
+    _addp(sc,"Concept_FurCollar",box((.58,.15,.32)),CFUR,(0,1.34,.04))
+    _addp(sc,"Concept_Cape",box((.58,.78,.05)),CBLUE,(0,1.03,.28),(9,0,0))
+    _addp(sc,"Concept_CapeGold",box((.08,.70,.055)),CGOLD,(0,1.03,.31),(9,0,0))
+    _addp(sc,"Concept_CrownBlueGem",sphere(.075),CBLUE,(0,1.90,-.20))
+    _addp(sc,"Concept_ScepterOrb",sphere(.12),CBLUE,(-.48,1.70,-.02))
+
+def polish_black_king(sc):
+    for side in (-1,1):
+        _addp(sc,f"Concept_FurShoulder_{side}",sphere(.23),CBLACKFUR,(.27*side,1.32,.10),scale=(1.12,.74,.90))
+    _addp(sc,"Concept_FurCollar",box((.61,.16,.34)),CBLACKFUR,(0,1.35,.05))
+    _addp(sc,"Concept_Cape",box((.60,.80,.05)),CRED,(0,1.04,.29),(10,0,0))
+    _addp(sc,"Concept_CapeGold",box((.08,.72,.055)),CBRONZE,(0,1.04,.32),(10,0,0))
+    _addp(sc,"Concept_CrownRedGem",sphere(.078),CRED,(0,1.92,-.21))
+    _addp(sc,"Concept_ScepterCrystal",sphere(.125),CRED,(-.49,1.71,-.02))
+
+_POLISHERS = {
+    "white_pawn_concept_v2.glb": polish_white_pawn,
+    "black_pawn_concept_v2.glb": polish_black_pawn,
+    "white_knight_concept_v2.glb": polish_white_knight,
+    "black_knight_concept_v2.glb": polish_black_knight,
+    "white_bishop_concept_v2.glb": polish_white_bishop,
+    "black_bishop_concept_v2.glb": polish_black_bishop,
+    "white_rook_concept_v2.glb": polish_white_rook,
+    "black_rook_concept_v2.glb": polish_black_rook,
+    "white_queen_concept_v2.glb": polish_white_queen,
+    "black_queen_concept_v2.glb": polish_black_queen,
+    "white_king_concept_v2.glb": polish_white_king,
+    "black_king_concept_v2.glb": polish_black_king,
+}
+for _filename,_callback in _POLISHERS.items():
+    _polish_scene(_filename,_callback)
