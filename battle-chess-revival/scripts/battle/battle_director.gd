@@ -10,6 +10,8 @@ var time_scale := 1.0
 
 var arena: ArenaBuilder
 var registry := CaptureRegistry.new()
+var _camera_rest_position := Vector3.ZERO
+var _camera_rest_rotation := Vector3.ZERO
 
 func setup(p_arena: ArenaBuilder) -> void:
 	arena = p_arena
@@ -113,6 +115,8 @@ func _pawn_toe_stab(attacker: PieceView, victim: PieceView, data: CaptureAnimati
 	await _tween(attacker.visual_root, "position", Vector3(0.38, -0.04, 0), 0.11)
 
 	capture_impact.emit(data.id)
+	_camera_punch(0.10)
+	_impact_burst(victim.foot_target.global_position + Vector3(0, 0.05, 0), Color("#ffd35c"), 0.85)
 	_flash(victim.foot_target.global_position, Color("#ffd35c"), 0.26)
 	_comic_text("BAM!", victim.battle_target.global_position + Vector3(0, 0.65, 0), Color("#ffd84f"))
 	await _parallel(victim.visual_root, {
@@ -147,6 +151,8 @@ func _knight_double_kick(attacker: PieceView, victim: PieceView, data: CaptureAn
 	}, 0.08)
 
 	capture_impact.emit(data.id)
+	_camera_punch(0.16)
+	_impact_burst(victim.battle_target.global_position, Color("#ffcc72"), 1.15)
 	await _animate_part_prefix(attacker, "Leg_", Vector3(-52, 0, 0), Vector3.ZERO, 0.065)
 	await _animate_part_prefix(attacker, "Hoof_", Vector3(-40, 0, 0), Vector3.ZERO, 0.065)
 	await _animate_part_prefix(attacker, "Leg_", Vector3(70, 0, 0), Vector3.ZERO, 0.065)
@@ -189,6 +195,9 @@ func _bishop_ram(attacker: PieceView, victim: PieceView, data: CaptureAnimationD
 	await charge.finished
 
 	capture_impact.emit(data.id)
+	_camera_punch(0.20)
+	_impact_burst(victim.battle_target.global_position, Color("#ffcb75"), 1.35)
+	_shockwave(victim.global_position, Color("#c99b62"), 0.85)
 	_flash(victim.battle_target.global_position, Color("#ffcb75"), 0.36)
 	_comic_text("WHOOSH!", victim.battle_target.global_position + Vector3(0, 0.8, 0), Color("#f0b65e"))
 	_skid_mark(attacker.global_position - Vector3(1.2, 0.36, 0))
@@ -218,6 +227,9 @@ func _rook_crush(attacker: PieceView, victim: PieceView, data: CaptureAnimationD
 
 	await _tween(attacker.visual_root, "position", Vector3.ZERO, 0.14)
 	capture_impact.emit(data.id)
+	_camera_punch(0.28)
+	_impact_burst(victim.battle_target.global_position, Color("#f1d1a2"), 1.65)
+	_shockwave(victim.global_position, Color("#d0b28a"), 1.15)
 	_flash(victim.battle_target.global_position, Color("#f1d1a2"), 0.42)
 	_comic_text("SPLOTCH!", victim.battle_target.global_position + Vector3(0, 0.8, 0), Color("#f3d8a6"))
 	_dust(victim.global_position)
@@ -241,6 +253,8 @@ func _queen_transform(attacker: PieceView, victim: PieceView, data: CaptureAnima
 	await _tween(smoke, "scale", Vector3.ONE * 3.0, 0.30)
 
 	capture_impact.emit(data.id)
+	_camera_punch(0.08)
+	_impact_burst(victim.battle_target.global_position, Color("#b862ff"), 1.05)
 	_comic_text("POOF!", victim.battle_target.global_position + Vector3(0, 0.8, 0), Color("#c979ff"))
 	victim.visible = false
 	var replacement := _spawn_magic_result(victim.piece_type, victim.global_position)
@@ -270,6 +284,8 @@ func _king_trapdoor(attacker: PieceView, victim: PieceView, data: CaptureAnimati
 	await open.finished
 
 	capture_impact.emit(data.id)
+	_camera_punch(0.09)
+	_shockwave(victim.global_position, Color("#7b5a48"), 0.65)
 	await _parallel(victim.visual_root, {
 		"position": Vector3(0, -5.0, 0),
 		"scale": Vector3(0.72, 0.72, 0.72)
@@ -308,6 +324,84 @@ func _animate_part_prefix(
 		if position_offset != Vector3.ZERO:
 			tween.tween_property(part, "position", rest_position + position_offset, _d(seconds))
 	await tween.finished
+
+
+func _camera_punch(strength: float = 0.12) -> void:
+	if arena == null or arena.battle_camera == null:
+		return
+	var camera := arena.battle_camera
+	camera.position = _camera_rest_position + Vector3(strength * 0.55, strength * 0.28, -strength)
+	camera.rotation_degrees = _camera_rest_rotation + Vector3(-strength * 18.0, strength * 11.0, strength * 8.0)
+	var tween := create_tween().set_parallel()
+	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(camera, "position", _camera_rest_position, _d(0.12))
+	tween.tween_property(camera, "rotation_degrees", _camera_rest_rotation, _d(0.12))
+
+func _impact_burst(p: Vector3, color: Color, size: float = 1.0) -> void:
+	var root := Node3D.new()
+	root.name = "ImpactBurst"
+	add_child(root)
+	root.global_position = p
+
+	var center_mesh := SphereMesh.new()
+	center_mesh.radius = 0.12 * size
+	center_mesh.height = 0.24 * size
+	var center := MeshInstance3D.new()
+	center.name = "Core"
+	center.mesh = center_mesh
+	center.material_override = _fx_material(color, 5.0)
+	root.add_child(center)
+
+	for i in range(10):
+		var ray_mesh := BoxMesh.new()
+		ray_mesh.size = Vector3(0.42 * size, 0.055 * size, 0.035 * size)
+		var ray := MeshInstance3D.new()
+		ray.name = "Ray_%02d" % i
+		ray.mesh = ray_mesh
+		ray.material_override = _fx_material(color.lightened(0.12), 3.2)
+		ray.rotation_degrees.z = float(i) * 36.0
+		var angle := TAU * float(i) / 10.0
+		ray.position = Vector3(cos(angle) * 0.22 * size, sin(angle) * 0.22 * size, 0)
+		root.add_child(ray)
+
+	for i in range(6):
+		var spark_mesh := SphereMesh.new()
+		spark_mesh.radius = 0.035 * size
+		spark_mesh.height = 0.07 * size
+		var spark := MeshInstance3D.new()
+		spark.mesh = spark_mesh
+		spark.material_override = _fx_material(color.lightened(0.22), 4.0)
+		root.add_child(spark)
+		var angle := TAU * float(i) / 6.0 + 0.22
+		var target := Vector3(cos(angle) * 0.85 * size, sin(angle) * 0.55 * size, 0)
+		var spark_tween := create_tween()
+		spark_tween.tween_property(spark, "position", target, _d(0.16))
+
+	root.scale = Vector3.ONE * 0.35
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(root, "scale", Vector3.ONE * 1.15, _d(0.07))
+	tween.tween_property(root, "scale", Vector3.ONE * 0.10, _d(0.13))
+	tween.tween_callback(root.queue_free)
+
+func _shockwave(p: Vector3, color: Color, radius: float = 1.0) -> void:
+	var mesh := TorusMesh.new()
+	mesh.inner_radius = 0.22 * radius
+	mesh.outer_radius = 0.28 * radius
+	mesh.rings = 24
+	mesh.ring_segments = 8
+	var ring := MeshInstance3D.new()
+	ring.name = "Shockwave"
+	ring.mesh = mesh
+	ring.material_override = _fx_material(color, 2.5)
+	add_child(ring)
+	ring.global_position = p + Vector3(0, 0.04, 0)
+	ring.rotation_degrees.x = 90.0
+	ring.scale = Vector3.ONE * 0.25
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(ring, "scale", Vector3.ONE * 3.3, _d(0.20))
+	tween.tween_callback(ring.queue_free)
 
 func _tween(object: Object, property: NodePath, value: Variant, seconds: float) -> void:
 	var tween := create_tween()
@@ -582,6 +676,8 @@ func _set_battle_camera(profile: StringName) -> void:
 			arena.battle_camera.position = Vector3(2.20, 1.90, 6.20)
 	arena.battle_camera.fov = 45.0
 	arena.battle_camera.look_at(Vector3(0, 0.86, -0.20), Vector3.UP)
+	_camera_rest_position = arena.battle_camera.position
+	_camera_rest_rotation = arena.battle_camera.rotation_degrees
 
 func _comic_text(text_value: String, p: Vector3, color: Color) -> void:
 	var label := Label3D.new()

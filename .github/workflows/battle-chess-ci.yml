@@ -112,6 +112,7 @@ jobs:
           path: |
             battle-chess-revival/gameplay_reference.png
             battle-chess-revival/battle_reference.png
+            battle-chess-revival/capture_*.png
             battle-chess-revival/capture_pawn.png
             battle-chess-revival/capture_knight.png
             battle-chess-revival/capture_bishop.png

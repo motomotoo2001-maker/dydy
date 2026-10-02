@@ -159,6 +159,9 @@ func _build_environment() -> void:
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.ambient_light_color = Color("#e0c8aa")
 	env.ambient_light_energy = 0.34
+	env.tonemap_mode = Environment.TONE_MAPPER_AGX
+	env.tonemap_agx_contrast = 1.18
+	env.tonemap_agx_white = 8.0
 	env.ssao_enabled = true
 	env.glow_enabled = true
 	env.glow_intensity = 0.24
@@ -311,6 +314,7 @@ func _build_lighting() -> void:
 	warm.light_color = Color("#f6c898")
 	warm.light_energy = 1.45
 	warm.omni_range = 15.0
+	warm.shadow_enabled = true
 	root.add_child(warm)
 
 	var cool := OmniLight3D.new()
@@ -327,6 +331,7 @@ func _build_lighting() -> void:
 	window_key.light_color = Color("#ffe2ac")
 	window_key.light_energy = 1.75
 	window_key.omni_range = 16.0
+	window_key.shadow_enabled = true
 	root.add_child(window_key)
 
 func _build_selection_root() -> void:

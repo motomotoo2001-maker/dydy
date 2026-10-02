@@ -29,6 +29,7 @@ var vfx_anchor: Marker3D
 var _base_materials: Array[StandardMaterial3D] = []
 var _base_colors: Array[Color] = []
 var _visual_part_rest: Dictionary = {}
+var _named_parts: Dictionary = {}
 var _idle_clock := 0.0
 var _idle_phase := 0.0
 var _battle_animation_active := false
@@ -45,6 +46,7 @@ func _process(delta: float) -> void:
 	var slow_wave := sin(_idle_clock * profile.x * 0.47 + _idle_phase * 0.7)
 	visual_root.position.y = wave * profile.y
 	visual_root.rotation_degrees.z = slow_wave * profile.z
+	_apply_secondary_idle(wave, slow_wave)
 
 func setup(
 	p_piece_type: StringName,
@@ -88,6 +90,7 @@ func change_type(new_type: StringName) -> void:
 	_base_materials.clear()
 	_base_colors.clear()
 	_visual_part_rest.clear()
+	_named_parts.clear()
 	for child in get_children():
 		child.free()
 	_build_visual()
@@ -109,6 +112,8 @@ func get_visual_parts(prefix: String) -> Array[Node3D]:
 	return result
 
 func get_visual_part(part_name: String) -> Node3D:
+	if _named_parts.has(part_name):
+		return _named_parts[part_name] as Node3D
 	if visual_root == null:
 		return null
 	var found := visual_root.find_child(part_name, true, false)
@@ -130,6 +135,53 @@ func get_part_rest_position(part: Node3D) -> Vector3:
 		return _visual_part_rest[key]["position"]
 	return part.position
 
+func _apply_secondary_idle(wave: float, slow_wave: float) -> void:
+	match piece_type:
+		&"Pawn":
+			_idle_named(["Head"], Vector3(slow_wave * 1.2, 0, wave * 0.7))
+			_idle_named(["Helmet_Crest", "HelmetCrest"], Vector3(0, slow_wave * 0.8, wave * 1.8))
+			_idle_named(["Spear_Shaft", "SpearShaft", "Knife_Grip", "KnifeGrip"], Vector3(0, 0, slow_wave * 1.6))
+		&"Knight":
+			_idle_named(["HorseHead"], Vector3(wave * 1.8, 0, slow_wave * 0.9))
+			_idle_named(["Mane"], Vector3(wave * 1.2, 0, slow_wave * 1.6))
+			_idle_named(["Plume"], Vector3(0, wave * 0.9, slow_wave * 2.4))
+			_idle_named(["RiderTorso"], Vector3(slow_wave * 0.8, 0, wave * 0.5))
+		&"Bishop":
+			_idle_named(["Head"], Vector3(slow_wave * 0.8, 0, wave * 0.45))
+			_idle_named(["Trunk", "Snout"], Vector3(wave * 1.5, 0, 0))
+			_idle_named(["Staff"], Vector3(0, 0, slow_wave * 1.4))
+		&"Rook":
+			_idle_named(["Fist_L", "Fist_R", "Fist_-1", "Fist_1"], Vector3(0, 0, wave * 0.7))
+			_idle_named(["CrownBase"], Vector3(0, slow_wave * 0.25, 0))
+		&"Queen":
+			_idle_named(["Head"], Vector3(slow_wave * 0.7, 0, wave * 0.5))
+			_idle_named(["Staff"], Vector3(0, 0, slow_wave * 1.3))
+			_idle_named(["MagicOrb"], Vector3.ZERO, Vector3(0, wave * 0.010, 0))
+			_idle_named(["Hair", "HairBack"], Vector3(wave * 0.8, 0, slow_wave * 0.8))
+		&"King":
+			_idle_named(["Head"], Vector3(slow_wave * 0.65, 0, wave * 0.35))
+			_idle_named(["Beard", "BeardMain"], Vector3(wave * 0.7, 0, slow_wave * 0.5))
+			_idle_named(["Scepter"], Vector3(0, 0, slow_wave * 1.0))
+
+func _idle_named(
+	names: Array,
+	rotation_offset: Vector3,
+	position_offset: Vector3 = Vector3.ZERO
+) -> void:
+	for candidate in names:
+		var key := String(candidate)
+		if not _named_parts.has(key):
+			continue
+		var part := _named_parts[key] as Node3D
+		if part == null:
+			continue
+		var id := part.get_instance_id()
+		if not _visual_part_rest.has(id):
+			continue
+		var rest: Dictionary = _visual_part_rest[id]
+		part.rotation_degrees = rest["rotation"] + rotation_offset
+		part.position = rest["position"] + position_offset
+
 func _idle_profile(t: StringName) -> Vector3:
 	match t:
 		&"Pawn": return Vector3(2.1, 0.020, 0.55)
@@ -150,6 +202,7 @@ func _collect_visual_parts(node: Node, prefix: String, out: Array[Node3D]) -> vo
 
 func _cache_visual_part_rest() -> void:
 	_visual_part_rest.clear()
+	_named_parts.clear()
 	if visual_root == null:
 		return
 	_cache_visual_node(visual_root)
@@ -163,6 +216,8 @@ func _cache_visual_node(node: Node) -> void:
 				"rotation": n.rotation_degrees,
 				"scale": n.scale
 			}
+			if not _named_parts.has(String(n.name)):
+				_named_parts[String(n.name)] = n
 		_cache_visual_node(child)
 
 func _restore_visual_part_rest() -> void:

@@ -124,3 +124,8 @@ Every piece family now has a real imported White/Black GLB in rendered gameplay:
 Imported GLB transforms are now preserved as scene-node transforms rather than baked into vertex positions. That makes named sub-parts genuinely animation-ready. PieceView caches every imported part's rest transform and exposes prefix-based part lookup; capture choreography now articulates weapons, Knight legs/hooves, Bishop trunk/staff, Rook arms/fists, Queen staff, and King arms/scepter in addition to whole-body squash/stretch. Gameplay also gets per-piece subtle idle breathing/sway, disabled automatically during captures.
 
 CI now captures the exact impact frame for all six signatures and assembles a 3x2 contact sheet, so animation regressions are visible in every build rather than only testing the Pawn capture.
+
+
+## Animation/VFX polish pass
+
+The imported asset milestone is followed by a dedicated motion pass. Idle motion now drives named GLB sub-parts (heads, crests, horse heads/manes, staffs, magic orbs, beards and scepters) instead of only bobbing the whole piece. Signature captures add camera punch, radial impact bursts and ground shockwaves at their main contact frames. The environment now uses AgX tonemapping with restrained highlight rolloff, and key warm lights cast shadows for stronger contact. CI publishes all six capture screenshots in addition to gameplay/battle reference frames.
