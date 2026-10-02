@@ -33,3 +33,8 @@ The current characters are animation blockout placeholders. They are intentional
 The vertical slice includes real chess legality, check/checkmate/stalemate detection, castling, en passant, automatic queen promotion, a deterministic black AI, mouse square selection, legal-move highlights, and signature capture cinematics integrated into board captures.
 
 Left-click a white piece and then a highlighted destination. Black replies automatically.
+
+
+## Polish controls
+
+R restarts the match. A toggles the black AI so local two-player testing is possible. Normal moves tween across the board; Knights use a short hop arc. Battle camera profiles vary by capture signature. Comic impact text is generated in 3D. Cathedral blockout includes arches, banners, statues and candle clusters. CI packages a downloadable source ZIP after all Godot tests pass.

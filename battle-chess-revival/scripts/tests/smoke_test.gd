@@ -54,6 +54,14 @@ func _run() -> void:
 
 	_check(arena.get_piece_count() == 32, "capture demos preserve board roster")
 
+	var board_attacker := arena.find_piece(&"White", &"Queen")
+	var board_victim := arena.find_piece(&"Black", &"Knight")
+	await director.play_board_capture(board_attacker, board_victim)
+	_check(not director.busy, "board capture pipeline completes")
+	_check(not board_victim.visible, "board capture leaves victim hidden for removal")
+	board_victim.reset_visual()
+	arena.set_demo_focus(board_attacker, board_victim, false)
+
 	root.queue_free()
 	await process_frame
 

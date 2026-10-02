@@ -55,6 +55,38 @@ func move_piece(piece: PieceView, square: StringName) -> void:
 	_piece_by_square[square] = piece
 	piece.global_position = get_socket(square).global_position
 
+func animate_piece_move(piece: PieceView, square: StringName) -> void:
+	if piece == null or not _sockets.has(square):
+		return
+	_piece_by_square.erase(piece.current_square)
+	piece.current_square = square
+	_piece_by_square[square] = piece
+	var target := get_socket(square).global_position
+	if piece.piece_type == &"Knight":
+		var midpoint := (piece.global_position + target) * 0.5
+		midpoint.y += 0.62
+		var tween := create_tween()
+		tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		tween.tween_property(piece, "global_position", midpoint, 0.18)
+		tween.set_ease(Tween.EASE_IN)
+		tween.tween_property(piece, "global_position", target, 0.18)
+		await tween.finished
+	else:
+		var tween := create_tween()
+		tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+		tween.tween_property(piece, "global_position", target, 0.28)
+		await tween.finished
+
+func reset_pieces() -> void:
+	clear_selection()
+	if pieces_root == null:
+		return
+	for child in pieces_root.get_children():
+		child.free()
+	_pieces.clear()
+	_piece_by_square.clear()
+	_populate_pieces()
+
 func remove_piece(piece: PieceView) -> void:
 	if piece == null:
 		return
@@ -148,6 +180,8 @@ func _build_cathedral() -> void:
 		_box(root, "StainedGlass", Vector3(2.5 if x != 0.0 else 3.8, 5.2 if x != 0.0 else 6.4, 0.08),
 			Vector3(x, 7.6, -13.70), pane)
 		_box(root, "WindowFrameV", Vector3(0.10, 6.5, 0.14), Vector3(x, 7.6, -13.62), gold)
+
+	_build_cathedral_details(root, stone, gold)
 
 func _build_board() -> void:
 	board_root = Node3D.new()
@@ -278,7 +312,9 @@ func _build_pieces() -> void:
 	pieces_root = Node3D.new()
 	pieces_root.name = "Pieces"
 	generated.add_child(pieces_root)
+	_populate_pieces()
 
+func _populate_pieces() -> void:
 	var back_rank: Array[StringName] = [
 		&"Rook", &"Knight", &"Bishop", &"Queen",
 		&"King", &"Bishop", &"Knight", &"Rook"
@@ -336,3 +372,84 @@ func _cylinder(parent: Node, node_name: String, radius: float, height: float, p:
 	mi.material_override = material
 	parent.add_child(mi)
 	return mi
+
+func _build_cathedral_details(root: Node3D, stone: Material, gold: Material) -> void:
+	_build_arch(root, "CenterArch", Vector3(0, 4.8, -13.35), 4.9, 3.9, stone)
+	_build_arch(root, "LeftArch", Vector3(-5.7, 4.7, -13.35), 3.0, 3.2, stone)
+	_build_arch(root, "RightArch", Vector3(5.7, 4.7, -13.35), 3.0, 3.2, stone)
+	var white_cloth := _mat(Color("#d8cfbb"), 0.66, 0.0)
+	var black_cloth := _mat(Color("#281d36"), 0.60, 0.0)
+	_build_banner(root, Vector3(-9.6, 6.6, -5.0), white_cloth, gold)
+	_build_banner(root, Vector3(-9.6, 6.6, 3.2), white_cloth, gold)
+	_build_banner(root, Vector3(9.6, 6.6, -5.0), black_cloth, gold)
+	_build_banner(root, Vector3(9.6, 6.6, 3.2), black_cloth, gold)
+	_build_statue(root, Vector3(-3.7, 1.0, -11.6), stone)
+	_build_statue(root, Vector3(3.7, 1.0, -11.6), stone)
+	for p in [Vector3(-6.2, 0, -8.0), Vector3(6.2, 0, -8.0), Vector3(-6.8, 0, 6.2), Vector3(6.8, 0, 6.2)]:
+		_build_candles(root, p, gold)
+
+func _build_arch(parent: Node3D, arch_name: String, center: Vector3, width: float, height: float, material: Material) -> void:
+	var arch := Node3D.new()
+	arch.name = arch_name
+	arch.position = center
+	parent.add_child(arch)
+	var radius := width * 0.5
+	_box(arch, "LeftPillar", Vector3(0.34, height, 0.34), Vector3(-radius, height * 0.5, 0), material)
+	_box(arch, "RightPillar", Vector3(0.34, height, 0.34), Vector3(radius, height * 0.5, 0), material)
+	var segments := 13
+	for i in range(segments):
+		var t := float(i) / float(segments - 1)
+		var angle := lerpf(PI, 0.0, t)
+		var segment := _box(arch, "Arch_%02d" % i, Vector3(width / float(segments) * 1.38, 0.34, 0.34), Vector3(cos(angle) * radius, height + sin(angle) * radius, 0), material)
+		segment.rotation.z = -angle + PI * 0.5
+
+func _build_banner(parent: Node3D, p: Vector3, cloth: Material, gold: Material) -> void:
+	var root := Node3D.new()
+	root.name = "TeamBanner"
+	root.position = p
+	parent.add_child(root)
+	_box(root, "TopBar", Vector3(1.8, 0.10, 0.10), Vector3(0, 1.35, 0), gold)
+	_box(root, "Cloth", Vector3(1.5, 2.45, 0.06), Vector3(0, 0, 0), cloth)
+
+func _build_statue(parent: Node3D, p: Vector3, material: Material) -> void:
+	var root := Node3D.new()
+	root.name = "Statue"
+	root.position = p
+	parent.add_child(root)
+	_box(root, "Pedestal", Vector3(1.15, 0.85, 1.15), Vector3(0, 0.425, 0), material)
+	_cylinder(root, "Body", 0.30, 1.75, Vector3(0, 1.65, 0), material)
+	var head_mesh := SphereMesh.new()
+	head_mesh.radius = 0.32
+	head_mesh.height = 0.64
+	var head := MeshInstance3D.new()
+	head.mesh = head_mesh
+	head.material_override = material
+	head.position = Vector3(0, 2.75, 0)
+	root.add_child(head)
+
+func _build_candles(parent: Node3D, p: Vector3, holder: Material) -> void:
+	var root := Node3D.new()
+	root.name = "CandleCluster"
+	root.position = p
+	parent.add_child(root)
+	var wax := _mat(Color("#e7d8b3"), 0.72, 0.0)
+	var flame := _emissive(Color("#ffad55"), 4.0)
+	for i in range(5):
+		var angle := TAU * float(i) / 5.0
+		var cp := Vector3(cos(angle) * 0.22, 0.30 + (i % 2) * 0.06, sin(angle) * 0.22)
+		_cylinder(root, "Candle", 0.045, 0.45 + (i % 2) * 0.10, cp, wax)
+		var flame_mesh := SphereMesh.new()
+		flame_mesh.radius = 0.05
+		flame_mesh.height = 0.13
+		var f := MeshInstance3D.new()
+		f.mesh = flame_mesh
+		f.material_override = flame
+		f.position = cp + Vector3(0, 0.28, 0)
+		root.add_child(f)
+	_cylinder(root, "Holder", 0.34, 0.08, Vector3(0, 0.04, 0), holder)
+	var light := OmniLight3D.new()
+	light.position = Vector3(0, 0.75, 0)
+	light.light_color = Color("#ffb064")
+	light.light_energy = 0.8
+	light.omni_range = 2.8
+	root.add_child(light)

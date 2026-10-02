@@ -10,6 +10,7 @@ var selected_moves: Array[Dictionary] = []
 var input_locked := false
 var ai_enabled := true
 var status_label: Label
+var help_label: Label
 
 func setup(p_arena: ArenaBuilder, p_battle_director: BattleDirector) -> void:
 	arena = p_arena
@@ -20,6 +21,14 @@ func setup(p_arena: ArenaBuilder, p_battle_director: BattleDirector) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if arena == null or input_locked or battle_director.busy:
 		return
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_R:
+			restart_game()
+			return
+		if event.keycode == KEY_A:
+			ai_enabled = not ai_enabled
+			_refresh_hud()
+			return
 	if ai_enabled and state.turn == ChessState.BLACK:
 		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
@@ -72,7 +81,10 @@ func _execute_move(move: Dictionary, allow_ai_reply: bool) -> void:
 		arena.remove_piece(victim)
 
 	state.make_move(move)
-	arena.move_piece(attacker, to_square)
+	if victim == null:
+		await arena.animate_piece_move(attacker, to_square)
+	else:
+		arena.move_piece(attacker, to_square)
 	if castle_kind != &"":
 		_move_castle_rook(attacker.side, castle_kind)
 
@@ -137,16 +149,25 @@ func _build_hud() -> void:
 	status_label.size = Vector2(430, 32)
 	status_label.add_theme_font_size_override("font_size", 20)
 	panel.add_child(status_label)
-	var help := Label.new()
-	help.position = Vector2(18, 44)
-	help.size = Vector2(440, 32)
-	help.text = "ЛКМ: выбрать/ходить • 1–6: демо добиваний • Чёрные: AI"
-	help.add_theme_font_size_override("font_size", 13)
-	panel.add_child(help)
+	help_label = Label.new()
+	help_label.position = Vector2(18, 44)
+	help_label.size = Vector2(440, 32)
+	help_label.add_theme_font_size_override("font_size", 13)
+	panel.add_child(help_label)
+
+func restart_game() -> void:
+	if input_locked or battle_director.busy:
+		return
+	state.reset()
+	arena.reset_pieces()
+	_clear_selection()
+	_refresh_hud()
 
 func _refresh_hud() -> void:
 	if status_label == null:
 		return
+	if help_label != null:
+		help_label.text = "ЛКМ: ход • 1–6: демо • R: новая игра • A: AI %s" % ("ON" if ai_enabled else "OFF")
 	var status := state.get_game_status()
 	var side_text := "Белые" if state.turn == ChessState.WHITE else "Чёрные"
 	match status:

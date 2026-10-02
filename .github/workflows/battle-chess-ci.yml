@@ -19,7 +19,7 @@ jobs:
       - name: Install runtime dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget unzip
+          sudo apt-get install -y wget unzip zip
 
       - name: Download Godot 4.7.2 stable
         run: |
@@ -54,3 +54,14 @@ jobs:
             --rendering-method gl_compatibility \
             --path battle-chess-revival \
             --script res://scripts/tests/smoke_test.gd
+
+      - name: Package Godot project
+        run: |
+          zip -qr BattleChessRevival-Godot-4.7.2.zip battle-chess-revival
+
+      - name: Upload project artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BattleChessRevival-Godot-4.7.2
+          path: BattleChessRevival-Godot-4.7.2.zip
+          if-no-files-found: error

@@ -64,6 +64,7 @@ func _run_capture(id: StringName, attacker: PieceView, victim: PieceView, restor
 	victim.rotation = Vector3.ZERO
 
 	arena.gameplay_camera.current = false
+	_set_battle_camera(data.camera_profile)
 	arena.battle_camera.current = true
 
 	match id:
@@ -103,6 +104,7 @@ func _pawn_toe_stab(attacker: PieceView, victim: PieceView, data: CaptureAnimati
 
 	capture_impact.emit(data.id)
 	_flash(victim.foot_target.global_position, Color("#ffd35c"), 0.26)
+	_comic_text("BAM!", victim.battle_target.global_position + Vector3(0, 0.65, 0), Color("#ffd84f"))
 	victim.set_tint(Color("#ff665e"))
 	await _parallel(victim.visual_root, {
 		"scale": Vector3(1.18, 0.82, 1.18),
@@ -130,6 +132,7 @@ func _knight_double_kick(attacker: PieceView, victim: PieceView, data: CaptureAn
 
 	capture_impact.emit(data.id)
 	_flash(victim.battle_target.global_position, Color("#fff0c2"), 0.28)
+	_comic_text("KICK!", victim.battle_target.global_position + Vector3(0, 0.7, 0), Color("#ffb953"))
 	await _parallel(victim.visual_root, {
 		"scale": Vector3(1.62, 0.62, 0.94),
 		"position": Vector3(0.55, 0.22, 0),
@@ -165,6 +168,7 @@ func _bishop_ram(attacker: PieceView, victim: PieceView, data: CaptureAnimationD
 
 	capture_impact.emit(data.id)
 	_flash(victim.battle_target.global_position, Color("#ffcb75"), 0.36)
+	_comic_text("WHOOSH!", victim.battle_target.global_position + Vector3(0, 0.8, 0), Color("#f0b65e"))
 	_skid_mark(attacker.global_position - Vector3(1.2, 0.36, 0))
 
 	var blast := create_tween().set_parallel()
@@ -191,6 +195,7 @@ func _rook_crush(attacker: PieceView, victim: PieceView, data: CaptureAnimationD
 	await _tween(attacker.visual_root, "position", Vector3.ZERO, 0.14)
 	capture_impact.emit(data.id)
 	_flash(victim.battle_target.global_position, Color("#f1d1a2"), 0.42)
+	_comic_text("SPLOTCH!", victim.battle_target.global_position + Vector3(0, 0.8, 0), Color("#f3d8a6"))
 	_dust(victim.global_position)
 	_dust(victim.global_position + Vector3(0.35, 0, 0.15))
 	_dust(victim.global_position + Vector3(-0.35, 0, -0.15))
@@ -211,6 +216,7 @@ func _queen_transform(attacker: PieceView, victim: PieceView, data: CaptureAnima
 	await _tween(smoke, "scale", Vector3.ONE * 3.0, 0.30)
 
 	capture_impact.emit(data.id)
+	_comic_text("POOF!", victim.battle_target.global_position + Vector3(0, 0.8, 0), Color("#c979ff"))
 	victim.visible = false
 	var replacement := _spawn_magic_result(victim.piece_type, victim.global_position)
 	await _tween(smoke, "scale", Vector3.ONE * 0.15, 0.30)
@@ -226,6 +232,7 @@ func _king_trapdoor(attacker: PieceView, victim: PieceView, data: CaptureAnimati
 	await _tween(attacker.visual_root, "rotation_degrees:z", -8.0, 0.20)
 	await _wait(0.16)
 	_flash(remote.global_position + Vector3(0, 0.12, 0), Color("#ff3333"), 0.16)
+	_comic_text("CLICK!", remote.global_position + Vector3(0, 0.45, 0), Color("#ff5b4d"))
 
 	var trap := _trapdoor(victim.global_position - Vector3(0, 0.35, 0))
 	var left: Node3D = trap.get_node("Left")
@@ -514,3 +521,31 @@ func _spawn_crowned_frog(p: Vector3) -> Node3D:
 	crown.position = Vector3(0, 0.52, 0)
 	root.add_child(crown)
 	return root
+
+func _set_battle_camera(profile: StringName) -> void:
+	match profile:
+		&"BattleSide":
+			arena.battle_camera.position = Vector3(4.4, 2.0, 2.5)
+		&"BattleWide":
+			arena.battle_camera.position = Vector3(0, 3.2, 6.2)
+		&"BattleLow":
+			arena.battle_camera.position = Vector3(0, 1.45, 5.0)
+		_:
+			arena.battle_camera.position = Vector3(0, 2.55, 5.4)
+	arena.battle_camera.look_at(Vector3(0, 0.90, 0), Vector3.UP)
+
+func _comic_text(text_value: String, p: Vector3, color: Color) -> void:
+	var label := Label3D.new()
+	label.text = text_value
+	label.font_size = 64
+	label.outline_size = 12
+	label.modulate = color
+	label.scale = Vector3.ONE * 0.012
+	add_child(label)
+	label.global_position = p
+	var tween := create_tween().set_parallel()
+	tween.tween_property(label, "scale", Vector3.ONE * 0.020, _d(0.10))
+	tween.tween_property(label, "position:y", label.position.y + 0.45, _d(0.28))
+	await get_tree().create_timer(_d(0.34)).timeout
+	if is_instance_valid(label):
+		label.queue_free()
