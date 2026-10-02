@@ -1,7 +1,7 @@
 {
-  "source_commit": "c32dfda6b1593a5ff2671e0134b25385bdb3c7a5",
-  "gameplay": {"score": 0.7900},
-  "battle": {"score": 0.7290},
+  "source_commit": "87496261b3a99db894d3c8e13e432154a6a1b785",
+  "gameplay": {"score": 0.8140},
+  "battle": {"score": 0.7590},
   "regression_tolerance": 0.04,
-  "note": "Verified production-blockout baseline after all six piece families, spectator battle staging, battle camera correction, stained-glass cathedral composition and Forward+ battle DOF."
+  "note": "Verified asset-first animation polish baseline: imported GLB army, AgX lighting, secondary idle motion, contact-distance staging, rook target landing, readable impact VFX, and refined Pawn toe-stab."
 }
