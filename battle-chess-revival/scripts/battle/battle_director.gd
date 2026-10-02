@@ -273,8 +273,8 @@ func _flash(p: Vector3, color: Color, size: float) -> void:
 	var node := MeshInstance3D.new()
 	node.mesh = mesh
 	node.material_override = _fx_material(color, 3.5)
-	node.global_position = p
 	add_child(node)
+	node.global_position = p
 	var tween := create_tween()
 	tween.tween_property(node, "scale", Vector3.ONE * 1.8, _d(0.10))
 	tween.tween_callback(node.queue_free)
@@ -287,8 +287,8 @@ func _dust(p: Vector3) -> void:
 		var node := MeshInstance3D.new()
 		node.mesh = mesh
 		node.material_override = _fx_material(Color("#bca78d"), 0.0)
-		node.global_position = p + Vector3(0, 0.12, 0)
 		add_child(node)
+		node.global_position = p + Vector3(0, 0.12, 0)
 		var angle := TAU * float(i) / 5.0
 		var target := node.position + Vector3(cos(angle) * 0.55, 0.22, sin(angle) * 0.55)
 		var tween := create_tween()
@@ -303,9 +303,9 @@ func _shadow(p: Vector3) -> Node3D:
 	var node := MeshInstance3D.new()
 	node.mesh = mesh
 	node.material_override = _fx_material(Color("#161116"), 0.0)
+	add_child(node)
 	node.global_position = p - Vector3(0, 0.34, 0)
 	node.scale = Vector3(0.3, 1.0, 0.3)
-	add_child(node)
 	return node
 
 func _skid_mark(p: Vector3) -> void:
@@ -314,8 +314,8 @@ func _skid_mark(p: Vector3) -> void:
 	var node := MeshInstance3D.new()
 	node.mesh = mesh
 	node.material_override = _fx_material(Color("#1b1715"), 0.0)
-	node.global_position = p
 	add_child(node)
+	node.global_position = p
 	var tween := create_tween()
 	tween.tween_interval(_d(0.7))
 	tween.tween_callback(node.queue_free)
@@ -327,15 +327,15 @@ func _orb(p: Vector3, color: Color, radius: float) -> Node3D:
 	var node := MeshInstance3D.new()
 	node.mesh = mesh
 	node.material_override = _fx_material(color, 4.0)
-	node.global_position = p
 	add_child(node)
+	node.global_position = p
 	return node
 
 func _spawn_duck(p: Vector3) -> Node3D:
 	var root := Node3D.new()
 	root.name = "RubberDuck"
-	root.global_position = p
 	add_child(root)
+	root.global_position = p
 
 	var yellow := _fx_material(Color("#ffd34d"), 0.4)
 	var orange := _fx_material(Color("#ff8a2b"), 0.2)
@@ -371,8 +371,8 @@ func _spawn_duck(p: Vector3) -> Node3D:
 func _remote(p: Vector3) -> Node3D:
 	var root := Node3D.new()
 	root.name = "KingRemote"
-	root.global_position = p
 	add_child(root)
+	root.global_position = p
 
 	var body_mesh := BoxMesh.new()
 	body_mesh.size = Vector3(0.22, 0.32, 0.10)
@@ -395,8 +395,8 @@ func _remote(p: Vector3) -> Node3D:
 func _trapdoor(p: Vector3) -> Node3D:
 	var root := Node3D.new()
 	root.name = "TrapdoorEffect"
-	root.global_position = p
 	add_child(root)
+	root.global_position = p
 
 	var dark := _fx_material(Color("#171216"), 0.0)
 	for pair in [["Left", -0.34], ["Right", 0.34]]:
