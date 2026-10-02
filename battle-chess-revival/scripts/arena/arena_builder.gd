@@ -314,6 +314,7 @@ func _build_lighting() -> void:
 	warm.light_color = Color("#f6c898")
 	warm.light_energy = 1.45
 	warm.omni_range = 15.0
+	warm.shadow_enabled = true
 	root.add_child(warm)
 
 	var cool := OmniLight3D.new()
@@ -330,6 +331,7 @@ func _build_lighting() -> void:
 	window_key.light_color = Color("#ffe2ac")
 	window_key.light_energy = 1.75
 	window_key.omni_range = 16.0
+	window_key.shadow_enabled = true
 	root.add_child(window_key)
 
 func _build_selection_root() -> void:
