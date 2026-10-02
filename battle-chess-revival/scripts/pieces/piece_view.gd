@@ -94,6 +94,12 @@ func _build_visual() -> void:
 	if piece_type == &"Rook" and side == &"Black":
 		_build_black_rook_production_blockout()
 		return
+	if piece_type == &"Queen" and side == &"White":
+		_build_white_queen_production_blockout()
+		return
+	if piece_type == &"Queen" and side == &"Black":
+		_build_black_queen_production_blockout()
+		return
 
 	var main_color := Color("#e9dfca") if side == &"White" else Color("#271d31")
 	var accent_color := Color("#c69b49") if side == &"White" else Color("#7647b8")
@@ -642,6 +648,101 @@ func _build_black_rook_production_blockout() -> void:
 	_add_box_mat("RuneV", Vector3(0.045, 0.25, 0.045), Vector3(0, 0.69, -0.37), lava, Vector3(0,0,20))
 	_add_box_mat("RuneH", Vector3(0.20, 0.045, 0.045), Vector3(0, 0.69, -0.37), lava, Vector3(0,0,-20))
 
+func _build_white_queen_production_blockout() -> void:
+	visual_root.name = "VisualRoot_WhiteQueenProductionV1"
+	var ivory := _material(Color("#eee5d7")); ivory.roughness = 0.48
+	var ivory_shadow := _material(Color("#cbbdad")); ivory_shadow.roughness = 0.56
+	var gold := _material(Color("#c89c49")); gold.roughness = 0.24; gold.metallic = 0.72
+	var blue := _material(Color("#416b91")); blue.roughness = 0.44
+	var skin := _material(Color("#d8a07d")); skin.roughness = 0.55
+	var hair := _material(Color("#a4774f")); hair.roughness = 0.58
+	var dark := _material(Color("#262228")); dark.roughness = 0.46
+	var cyan := _material(Color("#67d5e6")); cyan.roughness = 0.12; cyan.emission_enabled = true; cyan.emission = Color("#54c8dc"); cyan.emission_energy_multiplier = 2.5
+
+	_add_cylinder_mat("PedestalLower", 0.45, 0.08, Vector3(0, 0.04, 0), dark)
+	_add_cylinder_mat("PedestalRing", 0.41, 0.045, Vector3(0, 0.105, 0), gold)
+	_add_cylinder_mat("PedestalUpper", 0.37, 0.09, Vector3(0, 0.165, 0), ivory_shadow)
+
+	# Layered gown with a broad readable silhouette.
+	_add_cylinder_mat("SkirtLower", 0.34, 0.82, Vector3(0, 0.58, 0), ivory)
+	_add_cylinder_mat("SkirtGoldBand", 0.35, 0.06, Vector3(0, 0.29, 0), gold)
+	_add_capsule_mat("Torso", 0.21, 0.58, Vector3(0, 1.05, 0), ivory_shadow)
+	_add_box_mat("CorsetPanel", Vector3(0.26, 0.42, 0.055), Vector3(0, 1.04, -0.22), blue)
+	_add_box_mat("Collar", Vector3(0.46, 0.09, 0.34), Vector3(0, 1.29, 0), gold)
+
+	# Head, hair and expressive eyes.
+	_add_sphere_mat("Head", 0.19, Vector3(0, 1.49, -0.01), skin, Vector3(0.95, 1.06, 0.92))
+	_add_sphere_mat("HairBack", 0.22, Vector3(0, 1.50, 0.10), hair, Vector3(1.06, 1.15, 0.90))
+	_add_sphere_mat("Eye_L", 0.025, Vector3(-0.065, 1.53, -0.19), blue)
+	_add_sphere_mat("Eye_R", 0.025, Vector3(0.065, 1.53, -0.19), blue)
+	_add_box_mat("Brow_L", Vector3(0.085, 0.016, 0.018), Vector3(-0.068, 1.58, -0.195), hair, Vector3(0,0,-6))
+	_add_box_mat("Brow_R", Vector3(0.085, 0.016, 0.018), Vector3(0.068, 1.58, -0.195), hair, Vector3(0,0,6))
+
+	# Tall crown.
+	_add_cylinder_mat("CrownBand", 0.20, 0.10, Vector3(0, 1.70, 0), gold)
+	for x in [-0.13, 0.0, 0.13]:
+		_add_box_mat("CrownPoint", Vector3(0.08, 0.30 if x == 0.0 else 0.23, 0.08), Vector3(x, 1.86 if x == 0.0 else 1.82, 0), gold, Vector3(0,0,x*45.0))
+	_add_sphere_mat("CrownGem", 0.055, Vector3(0, 1.76, -0.19), cyan)
+
+	# Arms, gloves and theatrical staff.
+	_add_capsule_mat("Arm_L", 0.068, 0.42, Vector3(-0.28, 1.10, 0), ivory_shadow, Vector3(0,0,-22))
+	_add_capsule_mat("Arm_R", 0.068, 0.42, Vector3(0.28, 1.10, 0), ivory_shadow, Vector3(0,0,22))
+	_add_sphere_mat("Hand_L", 0.078, Vector3(-0.34, 0.91, -0.03), skin)
+	_add_sphere_mat("Hand_R", 0.078, Vector3(0.34, 0.91, -0.03), skin)
+	_add_cylinder_mat("Staff", 0.026, 1.30, Vector3(0.43, 1.10, -0.03), gold, Vector3(0,0,-3))
+	_add_sphere_mat("MagicOrb", 0.13, Vector3(0.46, 1.78, -0.03), cyan)
+	_add_box_mat("OrbHaloV", Vector3(0.035, 0.34, 0.035), Vector3(0.46, 1.78, -0.03), gold)
+	_add_box_mat("OrbHaloH", Vector3(0.34, 0.035, 0.035), Vector3(0.46, 1.78, -0.03), gold)
+
+func _build_black_queen_production_blockout() -> void:
+	visual_root.name = "VisualRoot_BlackQueenProductionV1"
+	var charcoal := _material(Color("#24212b")); charcoal.roughness = 0.50
+	var violet := _material(Color("#68407f")); violet.roughness = 0.42
+	var violet_dark := _material(Color("#402a50")); violet_dark.roughness = 0.50
+	var steel := _material(Color("#5b5361")); steel.roughness = 0.30; steel.metallic = 0.52
+	var skin := _material(Color("#9b839c")); skin.roughness = 0.55
+	var hair := _material(Color("#211a28")); hair.roughness = 0.52
+	var magenta := _material(Color("#d05bea")); magenta.roughness = 0.12; magenta.emission_enabled = true; magenta.emission = Color("#bd48dc"); magenta.emission_energy_multiplier = 2.8
+	var red := _material(Color("#7c334d")); red.roughness = 0.45
+	var dark := _material(Color("#111116")); dark.roughness = 0.48
+
+	_add_cylinder_mat("PedestalLower", 0.45, 0.08, Vector3(0, 0.04, 0), dark)
+	_add_cylinder_mat("PedestalRing", 0.41, 0.045, Vector3(0, 0.105, 0), magenta)
+	_add_cylinder_mat("PedestalUpper", 0.37, 0.09, Vector3(0, 0.165, 0), charcoal)
+
+	# Angular sorceress gown.
+	_add_cylinder_mat("SkirtLower", 0.35, 0.84, Vector3(0, 0.59, 0), charcoal)
+	_add_box_mat("SkirtPanel", Vector3(0.28, 0.72, 0.055), Vector3(0, 0.62, -0.31), violet, Vector3(0,0,-5))
+	_add_capsule_mat("Torso", 0.21, 0.58, Vector3(0, 1.06, 0), violet_dark)
+	_add_box_mat("ChestArmor", Vector3(0.38, 0.30, 0.06), Vector3(0, 1.10, -0.22), steel)
+	_add_box_mat("Collar", Vector3(0.52, 0.11, 0.36), Vector3(0, 1.31, 0), charcoal)
+
+	# Pale face, black hair and glowing eyes.
+	_add_sphere_mat("Head", 0.19, Vector3(0, 1.50, -0.01), skin, Vector3(0.93, 1.08, 0.90))
+	_add_sphere_mat("HairBack", 0.23, Vector3(0, 1.50, 0.11), hair, Vector3(1.08, 1.22, 0.92))
+	_add_sphere_mat("Eye_L", 0.026, Vector3(-0.065, 1.54, -0.19), magenta)
+	_add_sphere_mat("Eye_R", 0.026, Vector3(0.065, 1.54, -0.19), magenta)
+	_add_box_mat("Brow_L", Vector3(0.09, 0.018, 0.018), Vector3(-0.067, 1.59, -0.195), hair, Vector3(0,0,-12))
+	_add_box_mat("Brow_R", Vector3(0.09, 0.018, 0.018), Vector3(0.067, 1.59, -0.195), hair, Vector3(0,0,12))
+
+	# Horned crown.
+	_add_cylinder_mat("CrownBand", 0.20, 0.10, Vector3(0, 1.71, 0), steel)
+	_add_cylinder_mat("CrownHorn_L", 0.032, 0.34, Vector3(-0.13, 1.88, 0), charcoal, Vector3(0,0,-30))
+	_add_cylinder_mat("CrownHorn_R", 0.032, 0.34, Vector3(0.13, 1.88, 0), charcoal, Vector3(0,0,30))
+	_add_sphere_mat("CrownGem", 0.055, Vector3(0, 1.77, -0.19), magenta)
+
+	_add_capsule_mat("Arm_L", 0.068, 0.43, Vector3(-0.28, 1.10, 0), violet_dark, Vector3(0,0,-24))
+	_add_capsule_mat("Arm_R", 0.068, 0.43, Vector3(0.28, 1.10, 0), violet_dark, Vector3(0,0,24))
+	_add_sphere_mat("Hand_L", 0.078, Vector3(-0.34, 0.91, -0.03), skin)
+	_add_sphere_mat("Hand_R", 0.078, Vector3(0.34, 0.91, -0.03), skin)
+
+	# Crooked dark staff with magenta spell core.
+	_add_cylinder_mat("Staff", 0.028, 1.32, Vector3(0.43, 1.10, -0.03), steel, Vector3(0,0,-4))
+	_add_sphere_mat("MagicOrb", 0.135, Vector3(0.47, 1.79, -0.03), magenta)
+	_add_box_mat("OrbProng_L", Vector3(0.04, 0.34, 0.04), Vector3(0.36, 1.79, -0.03), charcoal, Vector3(0,0,-30))
+	_add_box_mat("OrbProng_R", Vector3(0.04, 0.34, 0.04), Vector3(0.58, 1.79, -0.03), charcoal, Vector3(0,0,30))
+	_add_box_mat("SpellRune", Vector3(0.18, 0.18, 0.035), Vector3(0, 0.82, -0.34), red, Vector3(0,0,45))
+
 func _build_anchors() -> void:
 	battle_target = _marker("BattleTarget", Vector3(0, 0.82, 0))
 	foot_target = _marker("FootTarget", Vector3(0, 0.22, 0))
@@ -662,7 +763,7 @@ func _piece_height(t: StringName) -> float:
 		&"Knight": return 1.95
 		&"Bishop": return 2.05
 		&"Rook": return 1.75
-		&"Queen": return 1.82
+		&"Queen": return 2.05
 		&"King": return 1.90
 	return 1.20
 

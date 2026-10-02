@@ -1,7 +1,7 @@
 {
-  "source_commit": "3180c12720b54bb6ece17f0f96f5d4595cb34ff7",
-  "gameplay": {"score": 0.7740},
+  "source_commit": "0315403c39be3fe4c46399a3395dc659002f6739",
+  "gameplay": {"score": 0.7860},
   "battle": {"score": 0.7120},
   "regression_tolerance": 0.04,
-  "note": "Verified baseline after Knight production blockouts plus corrected battle spectator staging, lower 3/4 camera and reduced battle overexposure."
+  "note": "Best verified aggregate baseline after Pawn/Knight/Bishop/Rook production blockouts. Gameplay raised to the Rook-pass score while battle keeps the best verified cinematic score."
 }

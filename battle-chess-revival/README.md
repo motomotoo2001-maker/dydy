@@ -77,3 +77,8 @@ Both Bishops now have dedicated silhouettes. White is an original elephant-cleri
 ## Rook production pass
 
 Rooks are no longer plain blocks. White is now a carved stone castle-golem with articulated arms, fists, angry glowing eyes, crenellations and heraldry. Black is an obsidian/lava tower-golem with emissive cracks, ember eyes, heavy fists and dark rune plate. The jump-crush capture continues to use the same BattleDirector timing and squash/stretch root.
+
+
+## Queen production pass
+
+Queens now have dedicated theatrical sorceress silhouettes. White uses an ivory/gold gown, crown, expressive face and cyan magic staff. Black uses an angular dark gown, horned crown, magenta emissive eyes and spell core. The existing smoke-swap capture pipeline remains data-driven and now has a much clearer caster silhouette.
