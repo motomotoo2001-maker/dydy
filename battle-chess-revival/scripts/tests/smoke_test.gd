@@ -3,7 +3,13 @@ extends SceneTree
 var failures := 0
 
 func _initialize() -> void:
+	call_deferred("_watchdog")
 	call_deferred("_run")
+
+func _watchdog() -> void:
+	await create_timer(15.0).timeout
+	push_error("SMOKE_TIMEOUT: capture suite exceeded 15 seconds")
+	quit(2)
 
 func _check(condition: bool, message: String) -> void:
 	if condition:
