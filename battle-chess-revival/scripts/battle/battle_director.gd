@@ -64,6 +64,7 @@ func _run_capture(id: StringName, attacker: PieceView, victim: PieceView, restor
 	victim.look_at(attacker.global_position, Vector3.UP)
 
 	arena.gameplay_camera.current = false
+	arena.set_battle_lighting(true)
 	_set_battle_camera(data.camera_profile)
 	arena.battle_camera.current = true
 
@@ -94,6 +95,7 @@ func _run_capture(id: StringName, attacker: PieceView, victim: PieceView, restor
 			piece.visible = piece != victim
 
 	arena.battle_camera.current = false
+	arena.set_battle_lighting(false)
 	arena.gameplay_camera.current = true
 	busy = false
 	capture_finished.emit(id)
@@ -531,8 +533,8 @@ func _set_battle_camera(profile: StringName) -> void:
 		&"BattleLow":
 			arena.battle_camera.position = Vector3(0, 1.45, 5.0)
 		_:
-			arena.battle_camera.position = Vector3(0, 2.55, 5.4)
-	arena.battle_camera.look_at(Vector3(0, 0.90, 0), Vector3.UP)
+			arena.battle_camera.position = Vector3(0, 1.72, 4.15)
+	arena.battle_camera.look_at(Vector3(0, 0.86, 0), Vector3.UP)
 
 func _comic_text(text_value: String, p: Vector3, color: Color) -> void:
 	var label := Label3D.new()

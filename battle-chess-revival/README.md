@@ -57,3 +57,8 @@ The Visual QA step writes `visual_report/report.json`, `report.md`, side-by-side
 ## Visual QA guided pass v2
 
 The first automated report flagged over-bright lighting, weak board occupancy/framing, and low silhouette detail. This pass responds directly to those findings: the gameplay camera moves closer to the approved board composition, cathedral lighting is reduced toward the reference luminance, and Black Pawns receive a dedicated goblin production-style blockout with readable face, ears, bucket helmet, shield, armor and toe-stab knife.
+
+
+## Knight production pass
+
+White and Black Knights now use dedicated stylized horse-and-rider production blockouts instead of generic capsules. White uses an ivory horse, blue/gold tack, readable face, rider shield and compact lance. Black uses a lean nightmare horse, bony joints, violet emissive eyes, horns, dark rider and rune shield. The battle camera was lowered/closed in and battle-only warm lighting is reduced in response to Visual QA.

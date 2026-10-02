@@ -126,6 +126,25 @@ func set_demo_focus(attacker: PieceView, victim: PieceView, focused: bool) -> vo
 		else:
 			piece.visible = not focused
 
+func set_battle_lighting(active: bool) -> void:
+	if generated == null:
+		return
+	var lighting := generated.get_node_or_null("Lighting")
+	if lighting == null:
+		return
+	var sun := lighting.get_node_or_null("SunWarm") as DirectionalLight3D
+	var warm := lighting.get_node_or_null("WarmFill") as OmniLight3D
+	var cool := lighting.get_node_or_null("CoolRim") as OmniLight3D
+	var window := lighting.get_node_or_null("WindowSunFill") as OmniLight3D
+	if sun:
+		sun.light_energy = 0.92 if active else 1.18
+	if warm:
+		warm.light_energy = 0.72 if active else 1.45
+	if cool:
+		cool.light_energy = 1.15 if active else 1.35
+	if window:
+		window.light_energy = 0.78 if active else 1.75
+
 func _build_environment() -> void:
 	var world := WorldEnvironment.new()
 	world.name = "WorldEnvironment"

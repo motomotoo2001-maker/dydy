@@ -76,6 +76,12 @@ func _build_visual() -> void:
 	if piece_type == &"Pawn" and side == &"Black":
 		_build_black_pawn_production_blockout()
 		return
+	if piece_type == &"Knight" and side == &"White":
+		_build_white_knight_production_blockout()
+		return
+	if piece_type == &"Knight" and side == &"Black":
+		_build_black_knight_production_blockout()
+		return
 
 	var main_color := Color("#e9dfca") if side == &"White" else Color("#271d31")
 	var accent_color := Color("#c69b49") if side == &"White" else Color("#7647b8")
@@ -293,6 +299,166 @@ func _build_black_pawn_production_blockout() -> void:
 	blade.rotation_degrees = Vector3(0, 0, -58)
 	visual_root.add_child(blade)
 
+func _build_white_knight_production_blockout() -> void:
+	visual_root.name = "VisualRoot_WhiteKnightProductionV1"
+
+	var ivory := _material(Color("#e9e1d4"))
+	ivory.roughness = 0.48
+	var ivory_shadow := _material(Color("#c5b9aa"))
+	ivory_shadow.roughness = 0.56
+	var blue := _material(Color("#355d86"))
+	blue.roughness = 0.44
+	var gold := _material(Color("#c89b46"))
+	gold.roughness = 0.25
+	gold.metallic = 0.72
+	var leather := _material(Color("#4b3328"))
+	leather.roughness = 0.70
+	var skin := _material(Color("#d9a27b"))
+	skin.roughness = 0.56
+	var dark := _material(Color("#252127"))
+	dark.roughness = 0.42
+	var eye := _material(Color("#26384f"))
+	eye.roughness = 0.18
+
+	_add_cylinder_mat("PedestalLower", 0.45, 0.08, Vector3(0, 0.04, 0), dark)
+	_add_cylinder_mat("PedestalRing", 0.41, 0.045, Vector3(0, 0.105, 0), gold)
+	_add_cylinder_mat("PedestalUpper", 0.37, 0.09, Vector3(0, 0.165, 0), ivory_shadow)
+
+	# Horse body and four separated legs.
+	_add_sphere_mat("HorseBody", 0.34, Vector3(0, 0.72, 0.03), ivory, Vector3(1.08, 0.82, 1.42))
+	for x in [-0.20, 0.20]:
+		for z in [-0.19, 0.21]:
+			_add_capsule_mat("HorseLeg", 0.075, 0.52, Vector3(x, 0.43, z), ivory_shadow)
+			_add_capsule_mat("Hoof", 0.095, 0.20, Vector3(x, 0.22, z - 0.02), leather, Vector3(90, 0, 0))
+
+	# Neck and expressive head, projecting toward the enemy side (-Z).
+	_add_capsule_mat("HorseNeck", 0.18, 0.62, Vector3(0, 1.02, -0.24), ivory, Vector3(-28, 0, 0))
+	_add_sphere_mat("HorseHead", 0.24, Vector3(0, 1.26, -0.46), ivory, Vector3(0.92, 0.78, 1.30))
+	_add_sphere_mat("Muzzle", 0.16, Vector3(0, 1.17, -0.68), ivory_shadow, Vector3(1.0, 0.76, 1.15))
+	_add_sphere_mat("Eye_L", 0.032, Vector3(-0.13, 1.34, -0.61), eye)
+	_add_sphere_mat("Eye_R", 0.032, Vector3(0.13, 1.34, -0.61), eye)
+	_add_sphere_mat("Ear_L", 0.075, Vector3(-0.12, 1.50, -0.43), ivory, Vector3(0.65, 1.45, 0.55))
+	_add_sphere_mat("Ear_R", 0.075, Vector3(0.12, 1.50, -0.43), ivory, Vector3(0.65, 1.45, 0.55))
+	_add_box_mat("Mane", Vector3(0.12, 0.56, 0.13), Vector3(0, 1.21, -0.22), blue, Vector3(-18, 0, 0))
+
+	# Saddle and rider.
+	_add_box_mat("Saddle", Vector3(0.44, 0.12, 0.50), Vector3(0, 1.00, 0.13), leather)
+	_add_capsule_mat("RiderTorso", 0.18, 0.48, Vector3(0, 1.31, 0.14), ivory_shadow)
+	_add_sphere_mat("RiderHead", 0.15, Vector3(0, 1.62, 0.09), skin)
+	_add_sphere_mat("RiderHelmet", 0.18, Vector3(0, 1.70, 0.09), ivory_shadow, Vector3(1.0, 0.65, 1.0))
+	_add_box_mat("HelmetBand", Vector3(0.38, 0.05, 0.26), Vector3(0, 1.65, 0.02), gold)
+	_add_box_mat("Plume", Vector3(0.09, 0.30, 0.11), Vector3(0, 1.91, 0.12), blue, Vector3(0, 0, -8))
+
+	# Rider arms, shield and compact lance.
+	_add_capsule_mat("RiderArm_L", 0.055, 0.30, Vector3(-0.22, 1.36, 0.09), ivory_shadow, Vector3(0, 0, -28))
+	_add_capsule_mat("RiderArm_R", 0.055, 0.30, Vector3(0.22, 1.36, 0.09), ivory_shadow, Vector3(0, 0, 22))
+	var shield_mesh := CylinderMesh.new()
+	shield_mesh.top_radius = 0.20
+	shield_mesh.bottom_radius = 0.20
+	shield_mesh.height = 0.055
+	var shield := MeshInstance3D.new()
+	shield.name = "KnightShield"
+	shield.mesh = shield_mesh
+	shield.material_override = blue
+	shield.position = Vector3(-0.31, 1.28, 0.05)
+	shield.rotation_degrees = Vector3(0, 0, 90)
+	visual_root.add_child(shield)
+	_add_box_mat("ShieldStripe", Vector3(0.04, 0.24, 0.04), Vector3(-0.34, 1.28, 0.05), gold)
+
+	_add_cylinder_mat("Lance", 0.025, 0.95, Vector3(0.31, 1.36, -0.24), leather, Vector3(42, 0, 0))
+	var tip_mesh := CylinderMesh.new()
+	tip_mesh.top_radius = 0.0
+	tip_mesh.bottom_radius = 0.07
+	tip_mesh.height = 0.18
+	var tip := MeshInstance3D.new()
+	tip.name = "LanceTip"
+	tip.mesh = tip_mesh
+	tip.material_override = gold
+	tip.position = Vector3(0.31, 1.68, -0.55)
+	tip.rotation_degrees = Vector3(42, 0, 0)
+	visual_root.add_child(tip)
+
+func _build_black_knight_production_blockout() -> void:
+	visual_root.name = "VisualRoot_BlackKnightProductionV1"
+
+	var charcoal := _material(Color("#2a2530"))
+	charcoal.roughness = 0.52
+	var black := _material(Color("#15151b"))
+	black.roughness = 0.48
+	var bone := _material(Color("#9a948b"))
+	bone.roughness = 0.56
+	var violet := _material(Color("#6d3f8c"))
+	violet.roughness = 0.40
+	var steel := _material(Color("#57545e"))
+	steel.roughness = 0.30
+	steel.metallic = 0.58
+	var leather := _material(Color("#3a2927"))
+	leather.roughness = 0.72
+	var glow := _material(Color("#b66bf0"))
+	glow.roughness = 0.15
+	glow.emission_enabled = true
+	glow.emission = Color("#9c55d8")
+	glow.emission_energy_multiplier = 2.2
+
+	_add_cylinder_mat("PedestalLower", 0.45, 0.08, Vector3(0, 0.04, 0), black)
+	_add_cylinder_mat("PedestalRing", 0.41, 0.045, Vector3(0, 0.105, 0), violet)
+	_add_cylinder_mat("PedestalUpper", 0.37, 0.09, Vector3(0, 0.165, 0), charcoal)
+
+	# Lean nightmare horse with bony joints and oversized hooves.
+	_add_sphere_mat("HorseBody", 0.33, Vector3(0, 0.72, 0.04), charcoal, Vector3(1.02, 0.76, 1.45))
+	for x in [-0.20, 0.20]:
+		for z in [-0.19, 0.21]:
+			_add_capsule_mat("HorseLeg", 0.067, 0.53, Vector3(x, 0.43, z), black)
+			_add_sphere_mat("Knee", 0.085, Vector3(x, 0.48, z), bone)
+			_add_capsule_mat("Hoof", 0.105, 0.21, Vector3(x, 0.21, z - 0.03), black, Vector3(90, 0, 0))
+
+	_add_capsule_mat("HorseNeck", 0.17, 0.65, Vector3(0, 1.03, -0.25), charcoal, Vector3(-30, 0, 0))
+	_add_sphere_mat("HorseHead", 0.23, Vector3(0, 1.28, -0.47), charcoal, Vector3(0.88, 0.73, 1.34))
+	_add_sphere_mat("Muzzle", 0.15, Vector3(0, 1.18, -0.70), black, Vector3(1.0, 0.70, 1.18))
+	_add_sphere_mat("Eye_L", 0.034, Vector3(-0.13, 1.34, -0.62), glow)
+	_add_sphere_mat("Eye_R", 0.034, Vector3(0.13, 1.34, -0.62), glow)
+	_add_box_mat("Mane", Vector3(0.11, 0.61, 0.13), Vector3(0, 1.22, -0.21), violet, Vector3(-20, 0, 0))
+	_add_cylinder_mat("Horn_L", 0.035, 0.24, Vector3(-0.12, 1.50, -0.45), bone, Vector3(-30, 0, -28))
+	_add_cylinder_mat("Horn_R", 0.035, 0.24, Vector3(0.12, 1.50, -0.45), bone, Vector3(-30, 0, 28))
+
+	# Dark rider with horned helmet.
+	_add_box_mat("Saddle", Vector3(0.44, 0.12, 0.50), Vector3(0, 1.00, 0.13), leather)
+	_add_capsule_mat("RiderTorso", 0.18, 0.50, Vector3(0, 1.31, 0.14), steel)
+	_add_sphere_mat("RiderHead", 0.145, Vector3(0, 1.62, 0.09), black)
+	_add_sphere_mat("RiderHelmet", 0.18, Vector3(0, 1.70, 0.09), charcoal, Vector3(1.0, 0.66, 1.0))
+	_add_cylinder_mat("HelmetHorn_L", 0.028, 0.25, Vector3(-0.13, 1.84, 0.06), bone, Vector3(0, 0, -38))
+	_add_cylinder_mat("HelmetHorn_R", 0.028, 0.25, Vector3(0.13, 1.84, 0.06), bone, Vector3(0, 0, 38))
+	_add_sphere_mat("VisorGlow_L", 0.025, Vector3(-0.055, 1.69, -0.09), glow)
+	_add_sphere_mat("VisorGlow_R", 0.025, Vector3(0.055, 1.69, -0.09), glow)
+
+	_add_capsule_mat("RiderArm_L", 0.055, 0.31, Vector3(-0.22, 1.36, 0.09), steel, Vector3(0, 0, -30))
+	_add_capsule_mat("RiderArm_R", 0.055, 0.31, Vector3(0.22, 1.36, 0.09), steel, Vector3(0, 0, 24))
+	var shield_mesh := CylinderMesh.new()
+	shield_mesh.top_radius = 0.20
+	shield_mesh.bottom_radius = 0.20
+	shield_mesh.height = 0.055
+	var shield := MeshInstance3D.new()
+	shield.name = "KnightShield"
+	shield.mesh = shield_mesh
+	shield.material_override = charcoal
+	shield.position = Vector3(-0.31, 1.28, 0.05)
+	shield.rotation_degrees = Vector3(0, 0, 90)
+	visual_root.add_child(shield)
+	_add_box_mat("ShieldRune", Vector3(0.045, 0.24, 0.04), Vector3(-0.34, 1.28, 0.05), violet, Vector3(0, 0, 18))
+
+	_add_cylinder_mat("Lance", 0.025, 0.95, Vector3(0.31, 1.36, -0.24), black, Vector3(42, 0, 0))
+	var tip_mesh := CylinderMesh.new()
+	tip_mesh.top_radius = 0.0
+	tip_mesh.bottom_radius = 0.07
+	tip_mesh.height = 0.18
+	var tip := MeshInstance3D.new()
+	tip.name = "LanceTip"
+	tip.mesh = tip_mesh
+	tip.material_override = violet
+	tip.position = Vector3(0.31, 1.68, -0.55)
+	tip.rotation_degrees = Vector3(42, 0, 0)
+	visual_root.add_child(tip)
+
 func _build_anchors() -> void:
 	battle_target = _marker("BattleTarget", Vector3(0, 0.82, 0))
 	foot_target = _marker("FootTarget", Vector3(0, 0.22, 0))
@@ -310,7 +476,7 @@ func _marker(marker_name: String, p: Vector3) -> Marker3D:
 func _piece_height(t: StringName) -> float:
 	match t:
 		&"Pawn": return 1.42
-		&"Knight": return 1.60
+		&"Knight": return 1.95
 		&"Bishop": return 1.70
 		&"Rook": return 1.50
 		&"Queen": return 1.82
