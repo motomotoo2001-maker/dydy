@@ -28,6 +28,23 @@ var vfx_anchor: Marker3D
 
 var _base_materials: Array[StandardMaterial3D] = []
 var _base_colors: Array[Color] = []
+var _visual_part_rest: Dictionary = {}
+var _idle_clock := 0.0
+var _idle_phase := 0.0
+var _battle_animation_active := false
+
+func _ready() -> void:
+	set_process(DisplayServer.get_name() != "headless")
+
+func _process(delta: float) -> void:
+	if visual_root == null or _battle_animation_active:
+		return
+	_idle_clock += delta
+	var profile := _idle_profile(piece_type)
+	var wave := sin(_idle_clock * profile.x + _idle_phase)
+	var slow_wave := sin(_idle_clock * profile.x * 0.47 + _idle_phase * 0.7)
+	visual_root.position.y = wave * profile.y
+	visual_root.rotation_degrees.z = slow_wave * profile.z
 
 func setup(
 	p_piece_type: StringName,
@@ -42,7 +59,9 @@ func setup(
 	name = "%s_%s_%s" % [String(side), String(piece_type), String(home_square)]
 	position = world_position
 	rotation_degrees.y = 180.0 if side == &"Black" else 0.0
+	_idle_phase = float(abs(hash(String(home_square) + String(side)))) * 0.00017
 	_build_visual()
+	_cache_visual_part_rest()
 	_build_anchors()
 	_apply_rest_pose()
 
@@ -51,6 +70,7 @@ func reset_visual() -> void:
 		return
 	visual_root.position = Vector3.ZERO
 	visual_root.rotation = Vector3.ZERO
+	_restore_visual_part_rest()
 	_apply_rest_pose()
 	visible = true
 	reset_tint()
@@ -67,11 +87,93 @@ func change_type(new_type: StringName) -> void:
 	piece_type = new_type
 	_base_materials.clear()
 	_base_colors.clear()
+	_visual_part_rest.clear()
 	for child in get_children():
 		child.free()
 	_build_visual()
+	_cache_visual_part_rest()
 	_build_anchors()
 	_apply_rest_pose()
+
+func set_battle_animation_active(active: bool) -> void:
+	_battle_animation_active = active
+	if active and visual_root != null:
+		visual_root.position = Vector3.ZERO
+		visual_root.rotation = Vector3.ZERO
+
+func get_visual_parts(prefix: String) -> Array[Node3D]:
+	var result: Array[Node3D] = []
+	if visual_root == null:
+		return result
+	_collect_visual_parts(visual_root, prefix, result)
+	return result
+
+func get_visual_part(part_name: String) -> Node3D:
+	if visual_root == null:
+		return null
+	var found := visual_root.find_child(part_name, true, false)
+	return found as Node3D
+
+func get_part_rest_rotation(part: Node3D) -> Vector3:
+	if part == null:
+		return Vector3.ZERO
+	var key := part.get_instance_id()
+	if _visual_part_rest.has(key):
+		return _visual_part_rest[key]["rotation"]
+	return part.rotation_degrees
+
+func get_part_rest_position(part: Node3D) -> Vector3:
+	if part == null:
+		return Vector3.ZERO
+	var key := part.get_instance_id()
+	if _visual_part_rest.has(key):
+		return _visual_part_rest[key]["position"]
+	return part.position
+
+func _idle_profile(t: StringName) -> Vector3:
+	match t:
+		&"Pawn": return Vector3(2.1, 0.020, 0.55)
+		&"Knight": return Vector3(1.55, 0.028, 0.70)
+		&"Bishop": return Vector3(1.35, 0.018, 0.48)
+		&"Rook": return Vector3(0.85, 0.008, 0.16)
+		&"Queen": return Vector3(1.15, 0.022, 0.42)
+		&"King": return Vector3(0.95, 0.016, 0.32)
+	return Vector3(1.0, 0.01, 0.2)
+
+func _collect_visual_parts(node: Node, prefix: String, out: Array[Node3D]) -> void:
+	for child in node.get_children():
+		if child is Node3D:
+			var n := child as Node3D
+			if String(n.name).begins_with(prefix):
+				out.append(n)
+		_collect_visual_parts(child, prefix, out)
+
+func _cache_visual_part_rest() -> void:
+	_visual_part_rest.clear()
+	if visual_root == null:
+		return
+	_cache_visual_node(visual_root)
+
+func _cache_visual_node(node: Node) -> void:
+	for child in node.get_children():
+		if child is Node3D:
+			var n := child as Node3D
+			_visual_part_rest[n.get_instance_id()] = {
+				"position": n.position,
+				"rotation": n.rotation_degrees,
+				"scale": n.scale
+			}
+		_cache_visual_node(child)
+
+func _restore_visual_part_rest() -> void:
+	for key in _visual_part_rest.keys():
+		var entry: Dictionary = _visual_part_rest[key]
+		var node := instance_from_id(int(key)) as Node3D
+		if node == null:
+			continue
+		node.position = entry["position"]
+		node.rotation_degrees = entry["rotation"]
+		node.scale = entry["scale"]
 
 func _apply_rest_pose() -> void:
 	if visual_root == null:

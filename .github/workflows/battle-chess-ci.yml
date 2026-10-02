@@ -79,6 +79,10 @@ jobs:
             --path battle-chess-revival \
             --script res://scripts/tests/render_capture.gd
 
+      - name: Build capture animation contact sheet
+        run: |
+          python3 battle-chess-revival/tools/make_capture_contact_sheet.py
+
       - name: Visual QA against approved video reference
         run: |
           python3 battle-chess-revival/tools/visual_qa.py \
@@ -108,6 +112,13 @@ jobs:
           path: |
             battle-chess-revival/gameplay_reference.png
             battle-chess-revival/battle_reference.png
+            battle-chess-revival/capture_pawn.png
+            battle-chess-revival/capture_knight.png
+            battle-chess-revival/capture_bishop.png
+            battle-chess-revival/capture_rook.png
+            battle-chess-revival/capture_queen.png
+            battle-chess-revival/capture_king.png
+            battle-chess-revival/capture_contact_sheet.png
           if-no-files-found: error
 
 

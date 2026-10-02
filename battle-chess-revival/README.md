@@ -117,3 +117,10 @@ Both Knights now have real imported GLB scenes in rendered gameplay. White keeps
 ## Imported production asset milestone — full army
 
 Every piece family now has a real imported White/Black GLB in rendered gameplay: Pawn, Knight, Bishop, Rook, Queen and King. The procedural builders remain only as safe headless/fallback implementations. The imported scenes preserve deliberately different team silhouettes and named sub-parts for the upcoming Skeleton3D rig pass. This completes the first asset-first conversion milestone before any new animation/VFX polish.
+
+
+## Animation upgrade — articulated imported parts
+
+Imported GLB transforms are now preserved as scene-node transforms rather than baked into vertex positions. That makes named sub-parts genuinely animation-ready. PieceView caches every imported part's rest transform and exposes prefix-based part lookup; capture choreography now articulates weapons, Knight legs/hooves, Bishop trunk/staff, Rook arms/fists, Queen staff, and King arms/scepter in addition to whole-body squash/stretch. Gameplay also gets per-piece subtle idle breathing/sway, disabled automatically during captures.
+
+CI now captures the exact impact frame for all six signatures and assembles a 3x2 contact sheet, so animation regressions are visible in every build rather than only testing the Pawn capture.

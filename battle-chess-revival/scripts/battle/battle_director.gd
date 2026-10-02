@@ -57,6 +57,8 @@ func _run_capture(id: StringName, attacker: PieceView, victim: PieceView, restor
 	arena.set_demo_focus(attacker, victim, true)
 	attacker.reset_visual()
 	victim.reset_visual()
+	attacker.set_battle_animation_active(true)
+	victim.set_battle_animation_active(true)
 
 	attacker.global_position = arena.battle_stage.get_node("AttackerAnchor").global_position
 	victim.global_position = arena.battle_stage.get_node("VictimAnchor").global_position
@@ -94,6 +96,8 @@ func _run_capture(id: StringName, attacker: PieceView, victim: PieceView, restor
 		for piece in arena.get_all_pieces():
 			piece.visible = piece != victim
 
+	attacker.set_battle_animation_active(false)
+	victim.set_battle_animation_active(false)
 	arena.battle_camera.current = false
 	arena.set_battle_lighting(false)
 	arena.gameplay_camera.current = true
@@ -101,8 +105,12 @@ func _run_capture(id: StringName, attacker: PieceView, victim: PieceView, restor
 	capture_finished.emit(id)
 
 func _pawn_toe_stab(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
-	await _tween(attacker.visual_root, "position", Vector3(0, -0.10, 0), 0.22)
-	await _tween(attacker.visual_root, "position", Vector3(0.38, -0.04, 0), 0.16)
+	await _animate_part_prefix(attacker, "Spear", Vector3(0, 0, -24), Vector3.ZERO, 0.14)
+	await _animate_part_prefix(attacker, "Knife", Vector3(0, 0, 32), Vector3.ZERO, 0.14)
+	await _tween(attacker.visual_root, "position", Vector3(0, -0.10, 0), 0.18)
+	await _animate_part_prefix(attacker, "Spear", Vector3(0, 0, 30), Vector3.ZERO, 0.08)
+	await _animate_part_prefix(attacker, "Knife", Vector3(0, 0, -38), Vector3.ZERO, 0.08)
+	await _tween(attacker.visual_root, "position", Vector3(0.38, -0.04, 0), 0.11)
 
 	capture_impact.emit(data.id)
 	_flash(victim.foot_target.global_position, Color("#ffd35c"), 0.26)
@@ -122,16 +130,27 @@ func _pawn_toe_stab(attacker: PieceView, victim: PieceView, data: CaptureAnimati
 	await _wait(0.10)
 
 func _knight_double_kick(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
-	await _tween(attacker.visual_root, "rotation_degrees:y", 180.0, 0.36)
-	await _tween(attacker.visual_root, "position", Vector3(0, 0.18, 0), 0.16)
+	await _tween(attacker.visual_root, "rotation_degrees:y", 180.0, 0.30)
+	await _parallel(attacker.visual_root, {
+		"position": Vector3(0, 0.20, 0),
+		"rotation_degrees:x": -7.0
+	}, 0.14)
+	await _animate_part_prefix(attacker, "Leg_", Vector3(-38, 0, 0), Vector3.ZERO, 0.11)
+	await _animate_part_prefix(attacker, "Hoof_", Vector3(-28, 0, 0), Vector3.ZERO, 0.11)
 
 	_flash(victim.battle_target.global_position, Color("#f4d29a"), 0.18)
+	await _animate_part_prefix(attacker, "Leg_", Vector3(62, 0, 0), Vector3.ZERO, 0.07)
+	await _animate_part_prefix(attacker, "Hoof_", Vector3(48, 0, 0), Vector3.ZERO, 0.07)
 	await _parallel(victim.visual_root, {
 		"scale": Vector3(1.35, 0.75, 1.05),
 		"position": Vector3(0.18, 0.08, 0)
 	}, 0.08)
 
 	capture_impact.emit(data.id)
+	await _animate_part_prefix(attacker, "Leg_", Vector3(-52, 0, 0), Vector3.ZERO, 0.065)
+	await _animate_part_prefix(attacker, "Hoof_", Vector3(-40, 0, 0), Vector3.ZERO, 0.065)
+	await _animate_part_prefix(attacker, "Leg_", Vector3(70, 0, 0), Vector3.ZERO, 0.065)
+	await _animate_part_prefix(attacker, "Hoof_", Vector3(55, 0, 0), Vector3.ZERO, 0.065)
 	_flash(victim.battle_target.global_position, Color("#fff0c2"), 0.28)
 	_comic_text("KICK!", victim.battle_target.global_position + Vector3(0, 0.7, 0), Color("#ffb953"))
 	await _parallel(victim.visual_root, {
@@ -150,6 +169,8 @@ func _knight_double_kick(attacker: PieceView, victim: PieceView, data: CaptureAn
 	await _wait(0.10)
 
 func _bishop_ram(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
+	await _animate_part_prefix(attacker, "Trunk", Vector3(-22, 0, 0), Vector3.ZERO, 0.16)
+	await _animate_part_prefix(attacker, "Staff", Vector3(0, 0, -18), Vector3.ZERO, 0.16)
 	await _parallel(attacker.visual_root, {
 		"rotation_degrees:z": -42.0,
 		"scale": Vector3(1.0, 0.92, 1.0)
@@ -183,7 +204,9 @@ func _bishop_ram(attacker: PieceView, victim: PieceView, data: CaptureAnimationD
 	await _tween(attacker.visual_root, "rotation_degrees:y", 0.0, 0.10)
 
 func _rook_crush(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
-	await _tween(attacker.visual_root, "scale", Vector3(1.20, 0.58, 1.20), 0.26)
+	await _animate_part_prefix(attacker, "Arm_", Vector3(0, 0, 26), Vector3.ZERO, 0.14)
+	await _animate_part_prefix(attacker, "Fist_", Vector3(0, 0, 32), Vector3.ZERO, 0.14)
+	await _tween(attacker.visual_root, "scale", Vector3(1.20, 0.58, 1.20), 0.22)
 	await _parallel(attacker.visual_root, {
 		"scale": Vector3(0.90, 1.18, 0.90),
 		"position": Vector3(0, 6.5, 0)
@@ -208,7 +231,8 @@ func _rook_crush(attacker: PieceView, victim: PieceView, data: CaptureAnimationD
 	await _wait(0.12)
 
 func _queen_transform(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
-	await _tween(attacker.visual_root, "rotation_degrees:z", 12.0, 0.20)
+	await _animate_part_prefix(attacker, "Staff", Vector3(0, 0, 28), Vector3.ZERO, 0.16)
+	await _tween(attacker.visual_root, "rotation_degrees:z", 12.0, 0.18)
 	var orb := _orb(victim.global_position + Vector3(0, 1.45, 0), Color("#a854ff"), 0.12)
 	await _tween(orb, "scale", Vector3.ONE * 3.5, 0.42)
 	await _wait(0.18)
@@ -229,6 +253,8 @@ func _queen_transform(attacker: PieceView, victim: PieceView, data: CaptureAnima
 	await _tween(attacker.visual_root, "rotation_degrees:z", 0.0, 0.18)
 
 func _king_trapdoor(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
+	await _animate_part_prefix(attacker, "Arm_", Vector3(0, 0, -18), Vector3.ZERO, 0.12)
+	await _animate_part_prefix(attacker, "Scepter", Vector3(0, 0, -14), Vector3.ZERO, 0.12)
 	var remote := _remote(attacker.global_position + Vector3(0.32, 0.92, 0))
 	await _tween(attacker.visual_root, "rotation_degrees:z", -8.0, 0.20)
 	await _wait(0.16)
@@ -261,6 +287,27 @@ func _king_trapdoor(attacker: PieceView, victim: PieceView, data: CaptureAnimati
 
 	await _tween(attacker.visual_root, "rotation_degrees:z", 6.0, 0.10)
 	await _tween(attacker.visual_root, "rotation_degrees:z", 0.0, 0.12)
+
+func _animate_part_prefix(
+	piece: PieceView,
+	prefix: String,
+	rotation_offset: Vector3,
+	position_offset: Vector3,
+	seconds: float
+) -> void:
+	if piece == null:
+		return
+	var parts := piece.get_visual_parts(prefix)
+	if parts.is_empty():
+		return
+	var tween := create_tween().set_parallel()
+	for part in parts:
+		var rest_rotation := piece.get_part_rest_rotation(part)
+		var rest_position := piece.get_part_rest_position(part)
+		tween.tween_property(part, "rotation_degrees", rest_rotation + rotation_offset, _d(seconds))
+		if position_offset != Vector3.ZERO:
+			tween.tween_property(part, "position", rest_position + position_offset, _d(seconds))
+	await tween.finished
 
 func _tween(object: Object, property: NodePath, value: Variant, seconds: float) -> void:
 	var tween := create_tween()

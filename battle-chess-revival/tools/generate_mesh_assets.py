@@ -43,9 +43,8 @@ def add(name, mesh, material, pos=(0,0,0), rot=(0,0,0), scale=(1,1,1)):
         if deg:
             transform=rotation_matrix(math.radians(deg),axis) @ transform
     transform[:3,3]=pos
-    mesh.apply_transform(transform)
     mesh.visual=trimesh.visual.TextureVisuals(material=material)
-    scene.add_geometry(mesh,geom_name=name,node_name=name)
+    scene.add_geometry(mesh,geom_name=name,node_name=name,transform=transform)
 
 def cyl(radius,height):
     mesh=trimesh.creation.cylinder(radius=radius,height=height,sections=24)
@@ -146,9 +145,8 @@ def addb(name, mesh, material, pos=(0,0,0), rot=(0,0,0), scale=(1,1,1)):
         if deg:
             transform=rotation_matrix(math.radians(deg),axis) @ transform
     transform[:3,3]=pos
-    mesh.apply_transform(transform)
     mesh.visual=trimesh.visual.TextureVisuals(material=material)
-    black_scene.add_geometry(mesh,geom_name=name,node_name=name)
+    black_scene.add_geometry(mesh,geom_name=name,node_name=name,transform=transform)
 
 # Pedestal.
 addb("Pedestal_Lower",cyl(.43,.08),BM["dark"],(0,.04,0))
@@ -340,9 +338,9 @@ def emit(sc,name,mesh,mat,pos=(0,0,0),rot=(0,0,0),scale=(1,1,1)):
     t=np.eye(4)
     for axis,deg in zip(((1,0,0),(0,1,0),(0,0,1)),rot):
         if deg: t=rotation_matrix(math.radians(deg),axis) @ t
-    t[:3,3]=pos; mesh.apply_transform(t)
+    t[:3,3]=pos
     mesh.visual=trimesh.visual.TextureVisuals(material=mat)
-    sc.add_geometry(mesh,geom_name=name,node_name=name)
+    sc.add_geometry(mesh,geom_name=name,node_name=name,transform=t)
 
 def export_scene(sc, filename):
     target=OUT/filename
