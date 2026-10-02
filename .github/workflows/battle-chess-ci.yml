@@ -39,6 +39,14 @@ jobs:
             --editor \
             --quit-after 5
 
+      - name: Run chess rules tests
+        run: |
+          ./Godot_v4.7.2-stable_linux.x86_64 \
+            --headless \
+            --rendering-method gl_compatibility \
+            --path battle-chess-revival \
+            --script res://scripts/tests/chess_rules_test.gd
+
       - name: Run capture smoke tests
         run: |
           ./Godot_v4.7.2-stable_linux.x86_64 \

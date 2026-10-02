@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/arena/arena_builder.gd" id="2_arena"]
 [ext_resource type="Script" path="res://scripts/battle/battle_director.gd" id="3_battle"]
+[ext_resource type="Script" path="res://scripts/chess/chess_controller.gd" id="4_chess"]
 
 [node name="BattleChessRevival" type="Node3D"]
 script = ExtResource("1_main")
@@ -12,3 +13,7 @@ script = ExtResource("2_arena")
 
 [node name="BattleDirector" type="Node3D" parent="."]
 script = ExtResource("3_battle")
+
+
+[node name="ChessController" type="Node" parent="."]
+script = ExtResource("4_chess")

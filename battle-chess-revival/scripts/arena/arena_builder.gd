@@ -14,6 +14,8 @@ var battle_camera: Camera3D
 
 var _pieces: Array[PieceView] = []
 var _sockets: Dictionary = {}
+var _piece_by_square: Dictionary = {}
+var selection_root: Node3D
 
 func build() -> void:
 	if generated != null and is_instance_valid(generated):
@@ -31,6 +33,7 @@ func build() -> void:
 	_build_cameras()
 	_build_lighting()
 	_build_pieces()
+	_build_selection_root()
 
 func get_square_count() -> int:
 	return _sockets.size()
@@ -40,6 +43,37 @@ func get_piece_count() -> int:
 
 func get_all_pieces() -> Array[PieceView]:
 	return _pieces
+
+func get_piece_at(square: StringName) -> PieceView:
+	return _piece_by_square.get(square) as PieceView
+
+func move_piece(piece: PieceView, square: StringName) -> void:
+	if piece == null or not _sockets.has(square):
+		return
+	_piece_by_square.erase(piece.current_square)
+	piece.current_square = square
+	_piece_by_square[square] = piece
+	piece.global_position = get_socket(square).global_position
+
+func remove_piece(piece: PieceView) -> void:
+	if piece == null:
+		return
+	_piece_by_square.erase(piece.current_square)
+	_pieces.erase(piece)
+	piece.queue_free()
+
+func clear_selection() -> void:
+	if selection_root == null:
+		return
+	for child in selection_root.get_children():
+		child.queue_free()
+
+func show_selection(square: StringName, moves: Array[Dictionary]) -> void:
+	clear_selection()
+	_add_square_overlay(square, Color(0.95, 0.78, 0.18, 0.42))
+	for move in moves:
+		var color := Color(0.95, 0.25, 0.25, 0.48) if move.get("capture", false) else Color(0.25, 0.82, 0.48, 0.38)
+		_add_square_overlay(move["to"], color)
 
 func get_socket(square: StringName) -> Marker3D:
 	return _sockets.get(square) as Marker3D
@@ -216,6 +250,30 @@ func _build_lighting() -> void:
 	cool.omni_range = 12.0
 	root.add_child(cool)
 
+func _build_selection_root() -> void:
+	selection_root = Node3D.new()
+	selection_root.name = "SelectionOverlay"
+	generated.add_child(selection_root)
+
+func _add_square_overlay(square: StringName, color: Color) -> void:
+	var marker := get_socket(square)
+	if marker == null:
+		return
+	var mat := StandardMaterial3D.new()
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.albedo_color = color
+	mat.emission_enabled = true
+	mat.emission = Color(color.r, color.g, color.b, 1.0)
+	mat.emission_energy_multiplier = 1.3
+
+	var mesh := BoxMesh.new()
+	mesh.size = Vector3(CELL_SIZE * 0.90, 0.018, CELL_SIZE * 0.90)
+	var overlay := MeshInstance3D.new()
+	overlay.mesh = mesh
+	overlay.material_override = mat
+	selection_root.add_child(overlay)
+	overlay.global_position = marker.global_position + Vector3(0, 0.055, 0)
+
 func _build_pieces() -> void:
 	pieces_root = Node3D.new()
 	pieces_root.name = "Pieces"
@@ -239,6 +297,7 @@ func _spawn_piece(p_side: StringName, p_type: StringName, square: StringName) ->
 	pieces_root.add_child(piece)
 	piece.setup(p_type, p_side, square, marker.global_position)
 	_pieces.append(piece)
+	_piece_by_square[square] = piece
 
 func _mat(color: Color, roughness: float, metallic: float) -> StandardMaterial3D:
 	var mat := StandardMaterial3D.new()

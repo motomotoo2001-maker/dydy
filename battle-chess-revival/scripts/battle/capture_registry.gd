@@ -24,6 +24,16 @@ func size() -> int:
 func get_data(id: StringName) -> CaptureAnimationData:
 	return _items.get(id) as CaptureAnimationData
 
+func signature_for_attacker(attacker_type: StringName) -> StringName:
+	match attacker_type:
+		&"Pawn": return &"pawn_toe_stab"
+		&"Knight": return &"knight_double_kick"
+		&"Bishop": return &"bishop_ram"
+		&"Rook": return &"rook_crush"
+		&"Queen": return &"queen_transform"
+		&"King": return &"king_trapdoor"
+	return &""
+
 func _add(
 	id: StringName,
 	attacker: StringName,

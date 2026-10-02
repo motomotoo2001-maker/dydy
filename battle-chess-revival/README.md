@@ -26,3 +26,10 @@ Run the project and press keys 1 through 6 to preview each capture signature.
 Target: Godot 4.7.2 stable, GDScript.
 
 The current characters are animation blockout placeholders. They are intentionally separated from final production meshes/rigs so timing and battle direction can be validated before final character art.
+
+
+## Playable chess layer
+
+The vertical slice includes real chess legality, check/checkmate/stalemate detection, castling, en passant, automatic queen promotion, a deterministic black AI, mouse square selection, legal-move highlights, and signature capture cinematics integrated into board captures.
+
+Left-click a white piece and then a highlighted destination. Black replies automatically.

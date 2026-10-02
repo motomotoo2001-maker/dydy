@@ -27,11 +27,25 @@ func play_signature(id: StringName) -> void:
 	if data == null:
 		push_warning("Unknown capture signature: %s" % String(id))
 		return
-
 	var attacker := arena.find_piece(&"White", data.attacker_type)
 	var victim := arena.find_piece(&"Black", data.victim_type)
 	if attacker == null or victim == null:
 		push_error("Missing demo pieces for %s" % String(id))
+		return
+	await _run_capture(id, attacker, victim, true)
+
+func play_board_capture(attacker: PieceView, victim: PieceView) -> void:
+	if busy or arena == null or attacker == null or victim == null:
+		return
+	var id := registry.signature_for_attacker(attacker.piece_type)
+	if id == &"":
+		push_warning("No signature capture for attacker %s" % String(attacker.piece_type))
+		return
+	await _run_capture(id, attacker, victim, false)
+
+func _run_capture(id: StringName, attacker: PieceView, victim: PieceView, restore_after: bool) -> void:
+	var data := registry.get_data(id)
+	if data == null:
 		return
 
 	busy = true
@@ -66,15 +80,20 @@ func play_signature(id: StringName) -> void:
 		&"king_trapdoor":
 			await _king_trapdoor(attacker, victim, data)
 
-	attacker.global_transform = attacker_transform
-	victim.global_transform = victim_transform
-	attacker.reset_visual()
-	victim.reset_visual()
-	arena.set_demo_focus(attacker, victim, false)
+	if restore_after:
+		attacker.global_transform = attacker_transform
+		victim.global_transform = victim_transform
+		attacker.reset_visual()
+		victim.reset_visual()
+		arena.set_demo_focus(attacker, victim, false)
+	else:
+		attacker.reset_visual()
+		victim.reset_visual()
+		for piece in arena.get_all_pieces():
+			piece.visible = piece != victim
 
 	arena.battle_camera.current = false
 	arena.gameplay_camera.current = true
-
 	busy = false
 	capture_finished.emit(id)
 
@@ -193,16 +212,12 @@ func _queen_transform(attacker: PieceView, victim: PieceView, data: CaptureAnima
 
 	capture_impact.emit(data.id)
 	victim.visible = false
-	var duck := _spawn_duck(victim.global_position)
+	var replacement := _spawn_magic_result(victim.piece_type, victim.global_position)
 	await _tween(smoke, "scale", Vector3.ONE * 0.15, 0.30)
 	smoke.queue_free()
 	orb.queue_free()
 
-	await _tween(duck, "rotation_degrees:z", 10.0, 0.08)
-	await _tween(duck, "rotation_degrees:z", -10.0, 0.08)
-	await _tween(duck, "rotation_degrees:z", 0.0, 0.08)
-	await _tween(duck, "position:x", duck.position.x + 4.2, 0.52)
-	duck.queue_free()
+	await _play_magic_aftermath(replacement, victim.piece_type)
 
 	await _tween(attacker.visual_root, "rotation_degrees:z", 0.0, 0.18)
 
@@ -331,6 +346,36 @@ func _orb(p: Vector3, color: Color, radius: float) -> Node3D:
 	node.global_position = p
 	return node
 
+func _spawn_magic_result(victim_type: StringName, p: Vector3) -> Node3D:
+	match victim_type:
+		&"Bishop":
+			return _spawn_ash_pile(p)
+		&"Rook":
+			return _spawn_jelly(p)
+		&"King":
+			return _spawn_crowned_frog(p)
+	return _spawn_duck(p)
+
+func _play_magic_aftermath(node: Node3D, victim_type: StringName) -> void:
+	if node == null:
+		return
+	match victim_type:
+		&"Bishop":
+			await _tween(node, "scale", Vector3(1.25, 0.55, 1.25), 0.22)
+			await _wait(0.18)
+		&"Rook":
+			await _tween(node, "scale", Vector3(1.35, 0.55, 1.35), 0.20)
+			await _tween(node, "scale", Vector3(1.55, 0.28, 1.55), 0.20)
+		&"King":
+			await _tween(node, "position:y", node.position.y + 0.55, 0.14)
+			await _tween(node, "position:x", node.position.x + 3.8, 0.48)
+		_:
+			await _tween(node, "rotation_degrees:z", 10.0, 0.08)
+			await _tween(node, "rotation_degrees:z", -10.0, 0.08)
+			await _tween(node, "rotation_degrees:z", 0.0, 0.08)
+			await _tween(node, "position:x", node.position.x + 4.2, 0.52)
+	node.queue_free()
+
 func _spawn_duck(p: Vector3) -> Node3D:
 	var root := Node3D.new()
 	root.name = "RubberDuck"
@@ -409,4 +454,63 @@ func _trapdoor(p: Vector3) -> Node3D:
 		panel.position = Vector3(pair[1], 0, 0)
 		root.add_child(panel)
 
+	return root
+
+func _spawn_ash_pile(p: Vector3) -> Node3D:
+	var root := Node3D.new()
+	root.name = "AshPile"
+	add_child(root)
+	root.global_position = p
+	var ash := _fx_material(Color("#554f50"), 0.0)
+	for i in range(5):
+		var mesh := SphereMesh.new()
+		mesh.radius = 0.16 + i * 0.025
+		mesh.height = 0.16
+		var lump := MeshInstance3D.new()
+		lump.mesh = mesh
+		lump.material_override = ash
+		lump.position = Vector3((i - 2) * 0.13, 0.08, sin(float(i)) * 0.10)
+		root.add_child(lump)
+	return root
+
+func _spawn_jelly(p: Vector3) -> Node3D:
+	var root := Node3D.new()
+	root.name = "PinkJelly"
+	add_child(root)
+	root.global_position = p
+	var mesh := BoxMesh.new()
+	mesh.size = Vector3(0.62, 0.62, 0.62)
+	var cube := MeshInstance3D.new()
+	cube.mesh = mesh
+	cube.material_override = _fx_material(Color("#f06aa7"), 0.8)
+	cube.position = Vector3(0, 0.31, 0)
+	root.add_child(cube)
+	return root
+
+func _spawn_crowned_frog(p: Vector3) -> Node3D:
+	var root := Node3D.new()
+	root.name = "CrownedFrog"
+	add_child(root)
+	root.global_position = p
+	var green := _fx_material(Color("#64b85b"), 0.2)
+	var gold := _fx_material(Color("#d7a73d"), 0.7)
+
+	var body_mesh := SphereMesh.new()
+	body_mesh.radius = 0.25
+	body_mesh.height = 0.38
+	var body := MeshInstance3D.new()
+	body.mesh = body_mesh
+	body.material_override = green
+	body.position = Vector3(0, 0.22, 0)
+	root.add_child(body)
+
+	var crown_mesh := CylinderMesh.new()
+	crown_mesh.top_radius = 0.13
+	crown_mesh.bottom_radius = 0.18
+	crown_mesh.height = 0.18
+	var crown := MeshInstance3D.new()
+	crown.mesh = crown_mesh
+	crown.material_override = gold
+	crown.position = Vector3(0, 0.52, 0)
+	root.add_child(crown)
 	return root

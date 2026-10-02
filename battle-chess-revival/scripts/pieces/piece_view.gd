@@ -4,6 +4,7 @@ extends Node3D
 var piece_type: StringName = &"Pawn"
 var side: StringName = &"White"
 var home_square: StringName = &"A1"
+var current_square: StringName = &"A1"
 
 var visual_root: Node3D
 var battle_target: Marker3D
@@ -24,6 +25,7 @@ func setup(
 	piece_type = p_piece_type
 	side = p_side
 	home_square = p_square
+	current_square = p_square
 	name = "%s_%s_%s" % [String(side), String(piece_type), String(home_square)]
 	position = world_position
 	_build_visual()
@@ -161,3 +163,12 @@ func _add_sphere(node_name: String, radius: float, p: Vector3, color: Color) -> 
 	mi.position = p
 	mi.material_override = _material(color)
 	visual_root.add_child(mi)
+
+func change_type(new_type: StringName) -> void:
+	piece_type = new_type
+	_base_materials.clear()
+	_base_colors.clear()
+	for child in get_children():
+		child.free()
+	_build_visual()
+	_build_anchors()

@@ -2,6 +2,7 @@ extends Node3D
 
 @onready var arena = $ArenaBuilder
 @onready var battle_director = $BattleDirector
+@onready var chess_controller = $ChessController
 
 const DEMO_KEYS := {
 	KEY_1: &"pawn_toe_stab",
@@ -15,6 +16,7 @@ const DEMO_KEYS := {
 func _ready() -> void:
 	arena.build()
 	battle_director.setup(arena)
+	chess_controller.setup(arena, battle_director)
 	print("Battle Chess Revival ready. Press 1-6 for capture demos.")
 
 func _unhandled_input(event: InputEvent) -> void:
