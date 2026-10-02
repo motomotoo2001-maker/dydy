@@ -2,6 +2,7 @@ class_name PieceView
 extends Node3D
 
 const WHITE_PAWN_ASSET_PATH := "res://assets/models/white_pawn_refined_v1.glb"
+const BLACK_PAWN_ASSET_PATH := "res://assets/models/black_pawn_refined_v1.glb"
 
 var piece_type: StringName = &"Pawn"
 var side: StringName = &"White"
@@ -81,6 +82,9 @@ func _build_visual() -> void:
 		_build_white_pawn_production_blockout()
 		return
 	if piece_type == &"Pawn" and side == &"Black":
+		if DisplayServer.get_name() != "headless":
+			if _build_external_asset(BLACK_PAWN_ASSET_PATH, "BlackPawnRefinedMeshV1"):
+				return
 		_build_black_pawn_production_blockout()
 		return
 	if piece_type == &"Knight" and side == &"White":

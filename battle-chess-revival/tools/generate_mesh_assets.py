@@ -118,3 +118,87 @@ add("Spear_Tip",tip,M["gold"],(.54,1.39,-.03),(0,0,-7))
 target=OUT / "white_pawn_refined_v1.glb"
 target.write_bytes(scene.export(file_type="glb"))
 print(f"ASSET_BUILD_PASS {target} bytes={target.stat().st_size} parts={len(scene.geometry)}")
+
+
+# ---------------------------------------------------------------------------
+# Black Pawn — separate imported GLB, intentionally a different silhouette.
+# ---------------------------------------------------------------------------
+BM={
+    "char":pbr("Charcoal","#302a31",0.12,0.54),
+    "char2":pbr("CharcoalEdge","#4a414b",0.18,0.44),
+    "leather":pbr("DarkLeather","#3b2926",0.0,0.72),
+    "bronze":pbr("OldBronze","#79583b",0.46,0.36),
+    "violet":pbr("EnemyViolet","#58306f",0.06,0.44),
+    "green":pbr("GoblinSkin","#718250",0.0,0.58),
+    "green2":pbr("GoblinShadow","#465330",0.0,0.64),
+    "red":pbr("EnemyRed","#8d3943",0.0,0.43),
+    "eye":pbr("GoblinEyes","#d7c55f",0.0,0.18),
+    "steel":pbr("KnifeSteel","#8b8a86",0.68,0.28),
+    "dark":pbr("NearBlack","#171419",0.0,0.50),
+}
+black_scene=trimesh.Scene()
+
+def addb(name, mesh, material, pos=(0,0,0), rot=(0,0,0), scale=(1,1,1)):
+    mesh=mesh.copy()
+    mesh.apply_scale(scale)
+    transform=np.eye(4)
+    for axis,deg in zip(((1,0,0),(0,1,0),(0,0,1)),rot):
+        if deg:
+            transform=rotation_matrix(math.radians(deg),axis) @ transform
+    transform[:3,3]=pos
+    mesh.apply_transform(transform)
+    mesh.visual=trimesh.visual.TextureVisuals(material=material)
+    black_scene.add_geometry(mesh,geom_name=name,node_name=name)
+
+# Pedestal.
+addb("Pedestal_Lower",cyl(.43,.08),BM["dark"],(0,.04,0))
+addb("Pedestal_Bronze_Ring",cyl(.39,.05),BM["bronze"],(0,.105,0))
+addb("Pedestal_Upper",cyl(.35,.10),BM["char"],(0,.18,0))
+
+# Compact crouched goblin stance.
+for i,x in enumerate((-.14,.14)):
+    addb(f"Boot_{i}",capsule(.125,.31),BM["dark"],(x,.34,.04),(90,0,0),(1.08,1,1.22))
+    addb(f"Shin_{i}",capsule(.08,.32),BM["char"],(x,.48,0),(0,0,5*(-1 if i==0 else 1)))
+addb("Torso",capsule(.27,.62),BM["leather"],(0,.77,0),scale=(1.08,.98,.94))
+addb("ChestPlate",box((.46,.30,.06)),BM["char2"],(0,.83,-.245))
+addb("Belt",box((.55,.10,.31)),BM["dark"],(0,.65,0))
+addb("Buckle",box((.12,.10,.04)),BM["bronze"],(0,.65,-.175))
+
+# Ragged shoulder armor + long green arms.
+for side in (-1,1):
+    addb(f"Shoulder_{side}",sphere(.15),BM["char"],(.30*side,.94,0),scale=(1.10,.72,1.0))
+    addb(f"Arm_{side}",capsule(.078,.42),BM["green2"],(.35*side,.76,0),(0,0,20*side))
+    addb(f"Hand_{side}",sphere(.102),BM["green"],(.41*side,.58,-.025),scale=(1.08,.94,1))
+addb("Shield",cyl(.28,.075),BM["char"],(-.45,.72,-.01),(90,0,90))
+addb("ShieldSlashA",box((.055,.33,.05)),BM["red"],(-.486,.72,-.02),(0,0,20))
+addb("ShieldSlashB",box((.055,.05,.31)),BM["red"],(-.486,.72,-.02),(90,0,0))
+
+# Head: much wider ears and nose than the White Pawn.
+addb("Head",sphere(.24),BM["green"],(0,1.16,-.01),scale=(1.05,.93,.92))
+addb("Nose",sphere(.075),BM["green2"],(0,1.12,-.238),scale=(1.08,.72,1.35))
+addb("Ear_L",sphere(.12),BM["green"],(-.26,1.18,-.01),rot=(0,0,-8),scale=(1.65,.50,.72))
+addb("Ear_R",sphere(.12),BM["green"],(.26,1.18,-.01),rot=(0,0,8),scale=(1.65,.50,.72))
+for i,x in enumerate((-.078,.078)):
+    addb(f"Eye_{i}",sphere(.034),BM["eye"],(x,1.22,-.225),scale=(1.0,.76,.55))
+addb("Brow_L",box((.11,.022,.018)),BM["dark"],(-.08,1.275,-.226),(0,0,-16))
+addb("Brow_R",box((.11,.022,.018)),BM["dark"],(.08,1.275,-.226),(0,0,16))
+addb("Tooth_L",box((.035,.075,.03)),BM["steel"],(-.045,1.04,-.222),(0,0,8))
+addb("Tooth_R",box((.035,.075,.03)),BM["steel"],(.045,1.04,-.222),(0,0,-8))
+
+# Asymmetric bucket helmet and violet patch.
+addb("Helmet_Bucket",cyl(.265,.26),BM["bronze"],(0,1.38,0))
+addb("Helmet_Band",box((.56,.065,.37)),BM["dark"],(0,1.28,-.01))
+addb("Helmet_Patch",box((.17,.12,.028)),BM["violet"],(.105,1.43,-.265),(0,0,11))
+addb("Helmet_Rivet_L",sphere(.025),BM["steel"],(-.13,1.43,-.278))
+addb("Helmet_Rivet_R",sphere(.025),BM["steel"],(.20,1.40,-.278))
+
+# Toe-stab knife.
+addb("Knife_Grip",cyl(.038,.25),BM["dark"],(.42,.69,-.03),(0,0,-58))
+addb("Knife_Guard",box((.18,.035,.045)),BM["bronze"],(.47,.61,-.03),(0,0,-58))
+blade=trimesh.creation.cone(radius=.065,height=.30,sections=4)
+blade.apply_transform(rotation_matrix(math.radians(90),(1,0,0)))
+addb("Knife_Blade",blade,BM["steel"],(.54,.52,-.03),(0,0,-58))
+
+black_target=OUT / "black_pawn_refined_v1.glb"
+black_target.write_bytes(black_scene.export(file_type="glb"))
+print(f"ASSET_BUILD_PASS {black_target} bytes={black_target.stat().st_size} parts={len(black_scene.geometry)}")

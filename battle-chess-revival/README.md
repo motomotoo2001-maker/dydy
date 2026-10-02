@@ -102,3 +102,8 @@ The cathedral now gets three large emissive stained-glass windows on the visible
 ## Imported production asset pipeline — White Pawn
 
 Asset production has moved beyond runtime primitive-only characters. CI now builds a real GLB file at `assets/models/white_pawn_refined_v1.glb` before Godot imports the project. The White Pawn loads that imported mesh scene first and falls back to the procedural blockout only if the asset is unavailable. The GLB contains 39 named mesh parts with PBR material groups (ivory, gold, blue, leather, skin, bronze, dark details), readable facial features, quilted tunic detail, helmet/cheek guards, shield and compact spear. Separate named parts are intentional preparation for the later Skeleton3D rigging pass.
+
+
+## Imported production asset pipeline — Black Pawn
+
+The Black Pawn now also uses a real generated/imported GLB instead of the runtime-only primitive character during rendered gameplay. Its geometry is deliberately asymmetric and separate from White: wide goblin ears, long nose, bucket helmet with patch/rivets, ragged dark armor, crooked shield, oversized hands/boots and a dedicated toe-stab knife. Both Pawn GLBs keep named parts for the later rig/Skeleton3D pass.
