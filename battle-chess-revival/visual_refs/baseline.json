@@ -1,0 +1,7 @@
+{
+  "source_commit": "ead0e95ad354d408cfbe05d617f323434a16221a",
+  "gameplay": {"score": 0.718},
+  "battle": {"score": 0.658},
+  "regression_tolerance": 0.04,
+  "note": "Initial Visual QA baseline after the board/framing/facing pass. Raise only after a verified visual improvement."
+}

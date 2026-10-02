@@ -19,7 +19,7 @@ jobs:
       - name: Install runtime dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget unzip zip xvfb libgl1
+          sudo apt-get install -y wget unzip zip xvfb libgl1 python3-pil python3-numpy
 
       - name: Download Godot 4.7.2 stable
         run: |
@@ -62,6 +62,17 @@ jobs:
             --path battle-chess-revival \
             --script res://scripts/tests/render_capture.gd
 
+      - name: Visual QA against approved video reference
+        run: |
+          python3 battle-chess-revival/tools/visual_qa.py \
+            --gameplay battle-chess-revival/gameplay_reference.png \
+            --battle battle-chess-revival/battle_reference.png \
+            --profile battle-chess-revival/visual_refs/reference_profile.json \
+            --baseline battle-chess-revival/visual_refs/baseline.json \
+            --out battle-chess-revival/visual_report \
+            --regression-tolerance 0.04
+          cat battle-chess-revival/visual_report/report.md
+
       - name: Package Godot project
         run: |
           zip -qr BattleChessRevival-Godot-4.7.2.zip battle-chess-revival
@@ -80,4 +91,12 @@ jobs:
           path: |
             battle-chess-revival/gameplay_reference.png
             battle-chess-revival/battle_reference.png
+          if-no-files-found: error
+
+
+      - name: Upload Visual QA report
+        uses: actions/upload-artifact@v4
+        with:
+          name: BattleChessRevival-Visual-QA
+          path: battle-chess-revival/visual_report
           if-no-files-found: error
