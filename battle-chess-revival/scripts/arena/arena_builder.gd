@@ -120,10 +120,16 @@ func find_piece(p_side: StringName, p_type: StringName, occurrence: int = 0) -> 
 	return null
 
 func set_demo_focus(attacker: PieceView, victim: PieceView, focused: bool) -> void:
-	# Keep the army visible during captures so it reads like the approved
-	# cinematic reference: the remaining pieces become background spectators.
+	# During captures keep the victim army as background spectators, while
+	# hiding non-participating attacker-side pieces that would sit between
+	# the low battle camera and the action.
 	for piece in _pieces:
-		piece.visible = true
+		if not focused:
+			piece.visible = true
+		elif piece == attacker or piece == victim:
+			piece.visible = true
+		else:
+			piece.visible = piece.side == victim.side
 
 func set_battle_lighting(active: bool) -> void:
 	if generated == null:

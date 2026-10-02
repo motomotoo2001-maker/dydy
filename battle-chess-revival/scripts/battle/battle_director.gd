@@ -532,9 +532,9 @@ func _set_battle_camera(profile: StringName) -> void:
 		&"BattleLow":
 			arena.battle_camera.position = Vector3(0, 1.45, 5.0)
 		_:
-			arena.battle_camera.position = Vector3(3.65, 1.58, 4.25)
-	arena.battle_camera.fov = 48.0
-	arena.battle_camera.look_at(Vector3(0, 0.82, -0.15), Vector3.UP)
+			arena.battle_camera.position = Vector3(2.20, 1.90, 6.20)
+	arena.battle_camera.fov = 45.0
+	arena.battle_camera.look_at(Vector3(0, 0.86, -0.20), Vector3.UP)
 
 func _comic_text(text_value: String, p: Vector3, color: Color) -> void:
 	var label := Label3D.new()

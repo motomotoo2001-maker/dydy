@@ -87,3 +87,8 @@ Queens now have dedicated theatrical sorceress silhouettes. White uses an ivory/
 ## King production pass
 
 Kings now have dedicated personalities rather than generic columns. White is a broad comic old monarch with beard, oversized crown, robe, cape, scepter and cyan gems. Black is a red demon-lord with armor belly, fangs, horned crown, violet cape and emissive orange eyes. The red-button trapdoor remote remains an animation prop spawned by BattleDirector.
+
+
+## Battle camera occlusion fix
+
+The screenshot review caught an issue the numeric Visual QA did not: keeping both armies visible placed the low battle camera inside the near-side white formation. Capture focus now hides non-participating attacker-side pieces while keeping the victim army as background spectators, and the close camera was moved outside the board with a safer 3/4 composition.
