@@ -192,8 +192,10 @@ func _knight_double_kick(attacker: PieceView, victim: PieceView, data: CaptureAn
 	await _wait(0.10)
 
 func _bishop_ram(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
-	await _animate_part_prefix(attacker, "Trunk", Vector3(-22, 0, 0), Vector3.ZERO, 0.16)
-	await _animate_part_prefix(attacker, "Staff", Vector3(0, 0, -18), Vector3.ZERO, 0.16)
+	await _animate_part_prefix(attacker, "Trunk", Vector3(-24, 0, 0), Vector3.ZERO, 0.16)
+	await _animate_part_prefix(attacker, "V3_TrunkTip", Vector3(-28, 0, 0), Vector3(0, -0.02, -0.05), 0.16)
+	await _animate_part_prefix(attacker, "Staff", Vector3(0, 0, -22), Vector3.ZERO, 0.16)
+	await _animate_part_prefix(attacker, "V3_CapeLayer", Vector3(-12, 0, 0), Vector3(0, 0.03, 0.08), 0.16)
 	await _parallel(attacker.visual_root, {
 		"rotation_degrees:z": -42.0,
 		"scale": Vector3(1.0, 0.92, 1.0)
@@ -213,6 +215,7 @@ func _bishop_ram(attacker: PieceView, victim: PieceView, data: CaptureAnimationD
 
 	_camera_punch(0.20)
 	_impact_burst(victim.battle_target.global_position, Color("#ffcb75"), 1.35)
+	_stone_debris(victim.global_position, Color("#c9b38f"), 9)
 	_shockwave(victim.global_position, Color("#c99b62"), 0.85)
 	_flash(victim.battle_target.global_position, Color("#ffcb75"), 0.36)
 	_comic_text("WHOOSH!", victim.battle_target.global_position + Vector3(0, 0.8, 0), Color("#f0b65e"))
@@ -230,8 +233,10 @@ func _bishop_ram(attacker: PieceView, victim: PieceView, data: CaptureAnimationD
 	await _tween(attacker.visual_root, "rotation_degrees:y", 0.0, 0.10)
 
 func _rook_crush(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
-	await _animate_part_prefix(attacker, "Arm_", Vector3(0, 0, 26), Vector3.ZERO, 0.14)
-	await _animate_part_prefix(attacker, "Fist_", Vector3(0, 0, 32), Vector3.ZERO, 0.14)
+	await _animate_part_prefix(attacker, "Arm_", Vector3(0, 0, 28), Vector3.ZERO, 0.14)
+	await _animate_part_prefix(attacker, "Fist_", Vector3(0, 0, 36), Vector3.ZERO, 0.14)
+	await _animate_part_prefix(attacker, "V3_FistKnuckle", Vector3(0, 0, 40), Vector3.ZERO, 0.14)
+	await _animate_part_prefix(attacker, "V3_TabardPoint", Vector3(-10, 0, 0), Vector3(0, 0.03, 0.06), 0.14)
 	await _tween(attacker.visual_root, "scale", Vector3(1.20, 0.58, 1.20), 0.22)
 	await _parallel(attacker.visual_root, {
 		"scale": Vector3(0.90, 1.18, 0.90),
@@ -257,6 +262,7 @@ func _rook_crush(attacker: PieceView, victim: PieceView, data: CaptureAnimationD
 	_dust(victim.global_position)
 	_dust(victim.global_position + Vector3(0.35, 0, 0.15))
 	_dust(victim.global_position + Vector3(-0.35, 0, -0.15))
+	_stone_debris(victim.global_position, Color("#8d725f"), 12)
 
 	await _tween(victim.visual_root, "scale", Vector3(1.80, 0.04, 1.80), 0.08)
 	await _tween(attacker.visual_root, "position", Vector3(0, 0.25, 0), 0.10)
@@ -265,13 +271,16 @@ func _rook_crush(attacker: PieceView, victim: PieceView, data: CaptureAnimationD
 	await _wait(0.12)
 
 func _queen_transform(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
-	await _animate_part_prefix(attacker, "Staff", Vector3(0, 0, 28), Vector3.ZERO, 0.16)
-	await _tween(attacker.visual_root, "rotation_degrees:z", 12.0, 0.18)
+	await _animate_part_prefix(attacker, "Staff", Vector3(0, 0, 34), Vector3.ZERO, 0.16)
+	await _animate_part_prefix(attacker, "V3_HairCurl", Vector3(-8, 0, 0), Vector3(0, 0.03, 0.03), 0.16)
+	await _animate_part_prefix(attacker, "V3_Cape", Vector3(-14, 0, 0), Vector3(0, 0.04, 0.08), 0.16)
+	await _tween(attacker.visual_root, "rotation_degrees:z", 14.0, 0.18)
 	var orb := _orb(victim.global_position + Vector3(0, 1.45, 0), Color("#a854ff"), 0.12)
 	await _tween(orb, "scale", Vector3.ONE * 3.5, 0.42)
 	await _wait(0.18)
 
 	var smoke := _orb(victim.global_position + Vector3(0, 0.75, 0), Color("#7a3db4"), 0.45)
+	_magic_hearts(victim.global_position + Vector3(0, 0.85, 0), Color("#f35ac8"))
 	await _tween(smoke, "scale", Vector3.ONE * 3.0, 0.30)
 
 	_camera_punch(0.08)
@@ -289,8 +298,9 @@ func _queen_transform(attacker: PieceView, victim: PieceView, data: CaptureAnima
 	await _tween(attacker.visual_root, "rotation_degrees:z", 0.0, 0.18)
 
 func _king_trapdoor(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
-	await _animate_part_prefix(attacker, "Arm_", Vector3(0, 0, -18), Vector3.ZERO, 0.12)
-	await _animate_part_prefix(attacker, "Scepter", Vector3(0, 0, -14), Vector3.ZERO, 0.12)
+	await _animate_part_prefix(attacker, "Arm_", Vector3(0, 0, -22), Vector3.ZERO, 0.12)
+	await _animate_part_prefix(attacker, "Scepter", Vector3(0, 0, -18), Vector3.ZERO, 0.12)
+	await _animate_part_prefix(attacker, "V3_CoatPanel", Vector3(0, 0, -4), Vector3(0, 0.02, 0.02), 0.12)
 	var remote := _remote(attacker.global_position + Vector3(0.32, 0.92, 0))
 	await _tween(attacker.visual_root, "rotation_degrees:z", -8.0, 0.20)
 	await _wait(0.16)
@@ -326,6 +336,65 @@ func _king_trapdoor(attacker: PieceView, victim: PieceView, data: CaptureAnimati
 
 	await _tween(attacker.visual_root, "rotation_degrees:z", 6.0, 0.10)
 	await _tween(attacker.visual_root, "rotation_degrees:z", 0.0, 0.12)
+
+
+func _stone_debris(p: Vector3, color: Color, count: int = 8) -> void:
+	for i in range(count):
+		var mesh := BoxMesh.new()
+		var s := 0.05 + 0.018 * float(i % 4)
+		mesh.size = Vector3(s, s * 0.8, s * 1.15)
+		var piece := MeshInstance3D.new()
+		piece.mesh = mesh
+		piece.material_override = _fx_material(color.darkened(0.04 * float(i % 3)), 0.0)
+		add_child(piece)
+		piece.global_position = p + Vector3(0, 0.12, 0)
+		var angle := TAU * float(i) / float(maxi(count, 1))
+		var target := piece.position + Vector3(cos(angle) * (0.45 + 0.06 * i), 0.28 + 0.035 * float(i % 5), sin(angle) * (0.45 + 0.06 * i))
+		var tween := create_tween().set_parallel()
+		tween.tween_property(piece, "position", target, 0.28)
+		tween.tween_property(piece, "rotation_degrees", Vector3(120 + i * 17, 80 + i * 23, 160 + i * 11), 0.28)
+		await get_tree().create_timer(0.30).timeout
+		if is_instance_valid(piece):
+			piece.queue_free()
+
+func _magic_hearts(p: Vector3, color: Color) -> void:
+	for i in range(5):
+		var heart := Node3D.new()
+		heart.name = "MagicHeart_%02d" % i
+		add_child(heart)
+		heart.global_position = p
+		var mat := _fx_material(color.lightened(0.06 * float(i)), 3.6)
+
+		for side in [-1.0, 1.0]:
+			var lobe_mesh := SphereMesh.new()
+			lobe_mesh.radius = 0.065
+			lobe_mesh.height = 0.13
+			var lobe := MeshInstance3D.new()
+			lobe.mesh = lobe_mesh
+			lobe.material_override = mat
+			lobe.position = Vector3(0.045 * side, 0.045, 0)
+			heart.add_child(lobe)
+
+		var point_mesh := CylinderMesh.new()
+		point_mesh.top_radius = 0.0
+		point_mesh.bottom_radius = 0.075
+		point_mesh.height = 0.13
+		var point := MeshInstance3D.new()
+		point.mesh = point_mesh
+		point.material_override = mat
+		point.position = Vector3(0, -0.035, 0)
+		point.rotation_degrees.z = 180.0
+		heart.add_child(point)
+
+		var a := -0.75 + 0.38 * float(i)
+		var target := heart.position + Vector3(sin(a) * (0.55 + i * 0.08), 0.65 + i * 0.11, cos(a) * 0.18)
+		var tween := create_tween().set_parallel()
+		tween.tween_property(heart, "position", target, 0.42)
+		tween.tween_property(heart, "scale", Vector3.ONE * (1.0 + i * 0.10), 0.42)
+		tween.tween_property(heart, "rotation_degrees:z", -18.0 + i * 9.0, 0.42)
+		await get_tree().create_timer(0.46).timeout
+		if is_instance_valid(heart):
+			heart.queue_free()
 
 func _animate_part_prefix(
 	piece: PieceView,
