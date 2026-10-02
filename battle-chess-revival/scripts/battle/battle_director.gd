@@ -62,8 +62,12 @@ func _run_capture(id: StringName, attacker: PieceView, victim: PieceView, restor
 	attacker.set_battle_animation_active(true)
 	victim.set_battle_animation_active(true)
 
-	attacker.global_position = arena.battle_stage.get_node("AttackerAnchor").global_position
-	victim.global_position = arena.battle_stage.get_node("VictimAnchor").global_position
+	var attacker_anchor := arena.battle_stage.get_node("AttackerAnchor") as Marker3D
+	var victim_anchor := arena.battle_stage.get_node("VictimAnchor") as Marker3D
+	var stage_center := (attacker_anchor.global_position + victim_anchor.global_position) * 0.5
+	var separation := _capture_separation(id)
+	attacker.global_position = stage_center + Vector3(-separation * 0.5, 0, 0)
+	victim.global_position = stage_center + Vector3(separation * 0.5, 0, 0)
 	attacker.look_at(victim.global_position, Vector3.UP)
 	victim.look_at(attacker.global_position, Vector3.UP)
 
@@ -112,10 +116,10 @@ func _pawn_toe_stab(attacker: PieceView, victim: PieceView, data: CaptureAnimati
 	await _tween(attacker.visual_root, "position", Vector3(0, -0.10, 0), 0.18)
 	await _animate_part_prefix(attacker, "Spear", Vector3(0, 0, 30), Vector3.ZERO, 0.08)
 	await _animate_part_prefix(attacker, "Knife", Vector3(0, 0, -38), Vector3.ZERO, 0.08)
-	await _tween(attacker.visual_root, "position", Vector3(0.38, -0.04, 0), 0.11)
+	await _tween(attacker.visual_root, "position", Vector3(0, -0.04, -0.46), 0.11)
 
 	_camera_punch(0.10)
-	_impact_burst(victim.foot_target.global_position + Vector3(0, 0.05, 0), Color("#ffd35c"), 0.85)
+	_impact_burst(victim.foot_target.global_position + Vector3(0, 0.16, 0.10), Color("#ffd35c"), 0.95)
 	_flash(victim.foot_target.global_position, Color("#ffd35c"), 0.26)
 	_comic_text("BAM!", victim.battle_target.global_position + Vector3(0, 0.65, 0), Color("#ffd84f"))
 	capture_impact.emit(data.id)
@@ -381,13 +385,13 @@ func _impact_burst(p: Vector3, color: Color, size: float = 1.0) -> void:
 		var angle := TAU * float(i) / 6.0 + 0.22
 		var target := Vector3(cos(angle) * 0.85 * size, sin(angle) * 0.55 * size, 0)
 		var spark_tween := create_tween()
-		spark_tween.tween_property(spark, "position", target, _d(0.16))
+		spark_tween.tween_property(spark, "position", target, 0.20)
 
 	root.scale = Vector3.ONE * 0.35
 	var tween := create_tween()
 	tween.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tween.tween_property(root, "scale", Vector3.ONE * 1.15, _d(0.07))
-	tween.tween_property(root, "scale", Vector3.ONE * 0.10, _d(0.13))
+	tween.tween_property(root, "scale", Vector3.ONE * 1.15, 0.09)
+	tween.tween_property(root, "scale", Vector3.ONE * 0.10, 0.18)
 	tween.tween_callback(root.queue_free)
 
 func _shockwave(p: Vector3, color: Color, radius: float = 1.0) -> void:
@@ -406,7 +410,7 @@ func _shockwave(p: Vector3, color: Color, radius: float = 1.0) -> void:
 	ring.scale = Vector3.ONE * 0.25
 	var tween := create_tween()
 	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tween.tween_property(ring, "scale", Vector3.ONE * 3.3, _d(0.20))
+	tween.tween_property(ring, "scale", Vector3.ONE * 3.3, 0.24)
 	tween.tween_callback(ring.queue_free)
 
 func _tween(object: Object, property: NodePath, value: Variant, seconds: float) -> void:
@@ -669,6 +673,23 @@ func _spawn_crowned_frog(p: Vector3) -> Node3D:
 	crown.position = Vector3(0, 0.52, 0)
 	root.add_child(crown)
 	return root
+
+
+func _capture_separation(id: StringName) -> float:
+	match id:
+		&"pawn_toe_stab":
+			return 1.18
+		&"knight_double_kick":
+			return 1.48
+		&"bishop_ram":
+			return 2.05
+		&"rook_crush":
+			return 1.70
+		&"queen_transform":
+			return 1.80
+		&"king_trapdoor":
+			return 1.82
+	return 1.90
 
 func _set_battle_camera(profile: StringName) -> void:
 	match profile:
