@@ -72,3 +72,8 @@ Visual QA showed the Knight pass improved gameplay but hurt the battle score. Th
 ## Bishop production pass
 
 Both Bishops now have dedicated silhouettes. White is an original elephant-cleric with huge ears, compact trunk, tall mitre, robe and glowing ceremonial staff; Black is a horned necromancer/ram-priest with bone mask, violet glow and pronged staff. This keeps the approved ram-charge animation readable while moving the army away from generic cylinders.
+
+
+## Rook production pass
+
+Rooks are no longer plain blocks. White is now a carved stone castle-golem with articulated arms, fists, angry glowing eyes, crenellations and heraldry. Black is an obsidian/lava tower-golem with emissive cracks, ember eyes, heavy fists and dark rune plate. The jump-crush capture continues to use the same BattleDirector timing and squash/stretch root.

@@ -88,6 +88,12 @@ func _build_visual() -> void:
 	if piece_type == &"Bishop" and side == &"Black":
 		_build_black_bishop_production_blockout()
 		return
+	if piece_type == &"Rook" and side == &"White":
+		_build_white_rook_production_blockout()
+		return
+	if piece_type == &"Rook" and side == &"Black":
+		_build_black_rook_production_blockout()
+		return
 
 	var main_color := Color("#e9dfca") if side == &"White" else Color("#271d31")
 	var accent_color := Color("#c69b49") if side == &"White" else Color("#7647b8")
@@ -546,6 +552,96 @@ func _build_black_bishop_production_blockout() -> void:
 	_add_box_mat("StaffProng_L", Vector3(0.045, 0.28, 0.05), Vector3(0.36, 1.77, -0.02), bone, Vector3(0, 0, -28))
 	_add_box_mat("StaffProng_R", Vector3(0.045, 0.28, 0.05), Vector3(0.52, 1.77, -0.02), bone, Vector3(0, 0, 28))
 
+func _build_white_rook_production_blockout() -> void:
+	visual_root.name = "VisualRoot_WhiteRookProductionV1"
+	var stone := _material(Color("#b9b1a6")); stone.roughness = 0.78
+	var stone_light := _material(Color("#d6cec2")); stone_light.roughness = 0.72
+	var stone_dark := _material(Color("#817a73")); stone_dark.roughness = 0.82
+	var gold := _material(Color("#bd9141")); gold.roughness = 0.27; gold.metallic = 0.66
+	var blue := _material(Color("#42698c")); blue.roughness = 0.50
+	var eye := _material(Color("#6fd0df")); eye.roughness = 0.12; eye.emission_enabled = true; eye.emission = Color("#54b5ca"); eye.emission_energy_multiplier = 1.8
+	var dark := _material(Color("#2a2728")); dark.roughness = 0.52
+
+	_add_cylinder_mat("PedestalLower", 0.48, 0.09, Vector3(0, 0.045, 0), dark)
+	_add_cylinder_mat("PedestalRing", 0.44, 0.05, Vector3(0, 0.115, 0), gold)
+	_add_cylinder_mat("PedestalUpper", 0.40, 0.10, Vector3(0, 0.19, 0), stone_dark)
+
+	# Castle-golem body with heavy shoulders and articulated fists.
+	_add_box_mat("TowerCore", Vector3(0.62, 0.92, 0.62), Vector3(0, 0.72, 0), stone)
+	_add_box_mat("ChestPlate", Vector3(0.68, 0.28, 0.68), Vector3(0, 0.91, -0.03), stone_light)
+	_add_box_mat("BeltBand", Vector3(0.68, 0.10, 0.68), Vector3(0, 0.50, 0), gold)
+	_add_box_mat("Shoulder_L", Vector3(0.28, 0.25, 0.34), Vector3(-0.43, 0.93, 0), stone_dark, Vector3(0,0,-10))
+	_add_box_mat("Shoulder_R", Vector3(0.28, 0.25, 0.34), Vector3(0.43, 0.93, 0), stone_dark, Vector3(0,0,10))
+	_add_box_mat("Arm_L", Vector3(0.20, 0.48, 0.22), Vector3(-0.48, 0.68, 0), stone, Vector3(0,0,-8))
+	_add_box_mat("Arm_R", Vector3(0.20, 0.48, 0.22), Vector3(0.48, 0.68, 0), stone, Vector3(0,0,8))
+	_add_box_mat("Fist_L", Vector3(0.28, 0.24, 0.28), Vector3(-0.52, 0.43, -0.02), stone_dark)
+	_add_box_mat("Fist_R", Vector3(0.28, 0.24, 0.28), Vector3(0.52, 0.43, -0.02), stone_dark)
+
+	# Angry face carved into the tower.
+	_add_box_mat("Brow_L", Vector3(0.18, 0.07, 0.08), Vector3(-0.15, 1.04, -0.34), stone_dark, Vector3(0,0,-10))
+	_add_box_mat("Brow_R", Vector3(0.18, 0.07, 0.08), Vector3(0.15, 1.04, -0.34), stone_dark, Vector3(0,0,10))
+	_add_sphere_mat("Eye_L", 0.055, Vector3(-0.15, 0.98, -0.35), eye, Vector3(1.2,0.75,0.55))
+	_add_sphere_mat("Eye_R", 0.055, Vector3(0.15, 0.98, -0.35), eye, Vector3(1.2,0.75,0.55))
+	_add_box_mat("Mouth", Vector3(0.30, 0.06, 0.06), Vector3(0, 0.83, -0.35), dark)
+
+	# Crenellated castle top.
+	_add_box_mat("CrownBase", Vector3(0.78, 0.18, 0.78), Vector3(0, 1.26, 0), stone_light)
+	for x in [-0.28, 0.0, 0.28]:
+		_add_box_mat("CrenelFront", Vector3(0.18, 0.24, 0.20), Vector3(x, 1.45, -0.28), stone)
+		_add_box_mat("CrenelBack", Vector3(0.18, 0.24, 0.20), Vector3(x, 1.45, 0.28), stone)
+	for z in [-0.04, 0.18]:
+		_add_box_mat("CrenelSideL", Vector3(0.20, 0.24, 0.18), Vector3(-0.28, 1.45, z), stone)
+		_add_box_mat("CrenelSideR", Vector3(0.20, 0.24, 0.18), Vector3(0.28, 1.45, z), stone)
+
+	# Small blue heraldic plate.
+	_add_box_mat("Heraldry", Vector3(0.26, 0.30, 0.035), Vector3(0, 0.69, -0.33), blue)
+	_add_box_mat("HeraldryCrossV", Vector3(0.045, 0.24, 0.045), Vector3(0, 0.69, -0.36), gold)
+	_add_box_mat("HeraldryCrossH", Vector3(0.20, 0.045, 0.045), Vector3(0, 0.69, -0.36), gold)
+
+func _build_black_rook_production_blockout() -> void:
+	visual_root.name = "VisualRoot_BlackRookProductionV1"
+	var obsidian := _material(Color("#242127")); obsidian.roughness = 0.40; obsidian.metallic = 0.15
+	var obsidian_light := _material(Color("#3a343c")); obsidian_light.roughness = 0.46
+	var lava := _material(Color("#c45127")); lava.roughness = 0.18; lava.emission_enabled = true; lava.emission = Color("#e35c24"); lava.emission_energy_multiplier = 2.2
+	var ember := _material(Color("#f0a13a")); ember.roughness = 0.12; ember.emission_enabled = true; ember.emission = Color("#ff9d32"); ember.emission_energy_multiplier = 3.0
+	var steel := _material(Color("#5a4d52")); steel.roughness = 0.32; steel.metallic = 0.48
+	var violet := _material(Color("#5c3c74")); violet.roughness = 0.45
+	var dark := _material(Color("#121216")); dark.roughness = 0.50
+
+	_add_cylinder_mat("PedestalLower", 0.48, 0.09, Vector3(0, 0.045, 0), dark)
+	_add_cylinder_mat("PedestalRing", 0.44, 0.05, Vector3(0, 0.115, 0), lava)
+	_add_cylinder_mat("PedestalUpper", 0.40, 0.10, Vector3(0, 0.19, 0), obsidian)
+
+	_add_box_mat("TowerCore", Vector3(0.64, 0.94, 0.64), Vector3(0, 0.72, 0), obsidian)
+	_add_box_mat("ChestPlate", Vector3(0.70, 0.28, 0.70), Vector3(0, 0.91, -0.03), obsidian_light)
+	_add_box_mat("LavaCrackV", Vector3(0.055, 0.64, 0.035), Vector3(-0.10, 0.75, -0.335), lava, Vector3(0,0,12))
+	_add_box_mat("LavaCrackH", Vector3(0.34, 0.045, 0.035), Vector3(0.03, 0.72, -0.338), ember, Vector3(0,0,-16))
+
+	_add_box_mat("Shoulder_L", Vector3(0.30, 0.26, 0.36), Vector3(-0.44, 0.94, 0), steel, Vector3(0,0,-12))
+	_add_box_mat("Shoulder_R", Vector3(0.30, 0.26, 0.36), Vector3(0.44, 0.94, 0), steel, Vector3(0,0,12))
+	_add_box_mat("Arm_L", Vector3(0.20, 0.50, 0.22), Vector3(-0.49, 0.68, 0), obsidian_light, Vector3(0,0,-10))
+	_add_box_mat("Arm_R", Vector3(0.20, 0.50, 0.22), Vector3(0.49, 0.68, 0), obsidian_light, Vector3(0,0,10))
+	_add_box_mat("Fist_L", Vector3(0.30, 0.25, 0.30), Vector3(-0.54, 0.42, -0.02), obsidian)
+	_add_box_mat("Fist_R", Vector3(0.30, 0.25, 0.30), Vector3(0.54, 0.42, -0.02), obsidian)
+
+	_add_sphere_mat("Eye_L", 0.057, Vector3(-0.15, 0.99, -0.36), ember, Vector3(1.25,0.70,0.55))
+	_add_sphere_mat("Eye_R", 0.057, Vector3(0.15, 0.99, -0.36), ember, Vector3(1.25,0.70,0.55))
+	_add_box_mat("Brow_L", Vector3(0.19, 0.07, 0.08), Vector3(-0.15, 1.05, -0.35), obsidian, Vector3(0,0,-14))
+	_add_box_mat("Brow_R", Vector3(0.19, 0.07, 0.08), Vector3(0.15, 1.05, -0.35), obsidian, Vector3(0,0,14))
+	_add_box_mat("Mouth", Vector3(0.31, 0.065, 0.06), Vector3(0, 0.83, -0.36), lava)
+
+	_add_box_mat("CrownBase", Vector3(0.80, 0.18, 0.80), Vector3(0, 1.27, 0), obsidian_light)
+	for x in [-0.29, 0.0, 0.29]:
+		_add_box_mat("CrenelFront", Vector3(0.18, 0.25, 0.20), Vector3(x, 1.46, -0.29), obsidian)
+		_add_box_mat("CrenelBack", Vector3(0.18, 0.25, 0.20), Vector3(x, 1.46, 0.29), obsidian)
+	for z in [-0.05, 0.19]:
+		_add_box_mat("CrenelSideL", Vector3(0.20, 0.25, 0.18), Vector3(-0.29, 1.46, z), obsidian)
+		_add_box_mat("CrenelSideR", Vector3(0.20, 0.25, 0.18), Vector3(0.29, 1.46, z), obsidian)
+
+	_add_box_mat("RunePlate", Vector3(0.27, 0.31, 0.035), Vector3(0, 0.69, -0.34), violet)
+	_add_box_mat("RuneV", Vector3(0.045, 0.25, 0.045), Vector3(0, 0.69, -0.37), lava, Vector3(0,0,20))
+	_add_box_mat("RuneH", Vector3(0.20, 0.045, 0.045), Vector3(0, 0.69, -0.37), lava, Vector3(0,0,-20))
+
 func _build_anchors() -> void:
 	battle_target = _marker("BattleTarget", Vector3(0, 0.82, 0))
 	foot_target = _marker("FootTarget", Vector3(0, 0.22, 0))
@@ -565,7 +661,7 @@ func _piece_height(t: StringName) -> float:
 		&"Pawn": return 1.42
 		&"Knight": return 1.95
 		&"Bishop": return 2.05
-		&"Rook": return 1.50
+		&"Rook": return 1.75
 		&"Queen": return 1.82
 		&"King": return 1.90
 	return 1.20
