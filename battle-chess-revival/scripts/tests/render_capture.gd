@@ -87,7 +87,17 @@ func _run() -> void:
 		quit(1)
 		return
 
-	print("RENDER_CAPTURE_PASS gameplay=", image.get_width(), "x", image.get_height(), " captures=", CAPTURES.size(), " lineups=2")
+	_prepare_asset_review(arena, &"White", &"Pawn")
+	await process_frame
+	await RenderingServer.frame_post_draw
+	var pawn_review := get_root().get_texture().get_image()
+	var pawn_review_error := pawn_review.save_png("res://asset_review_white_pawn.png")
+	if pawn_review_error != OK:
+		push_error("RENDER_CAPTURE_FAIL: white pawn review save_png error %s" % pawn_review_error)
+		quit(1)
+		return
+
+	print("RENDER_CAPTURE_PASS gameplay=", image.get_width(), "x", image.get_height(), " captures=", CAPTURES.size(), " lineups=2 reviews=1")
 	root.queue_free()
 	await process_frame
 	quit(0)
@@ -112,3 +122,21 @@ func _prepare_asset_lineup(arena: ArenaBuilder, side: StringName) -> void:
 	arena.battle_camera.position = Vector3(0, 2.65, -8.8)
 	arena.battle_camera.fov = 42.0
 	arena.battle_camera.look_at(Vector3(0, 1.02, 0), Vector3.UP)
+
+
+func _prepare_asset_review(arena: ArenaBuilder, side: StringName, piece_type: StringName) -> void:
+	for piece in arena.get_all_pieces():
+		piece.visible = false
+
+	var piece := arena.find_piece(side, piece_type)
+	if piece:
+		piece.visible = true
+		piece.reset_visual()
+		piece.global_position = Vector3(0, 0.54, 0)
+		piece.rotation_degrees = Vector3.ZERO
+
+	arena.gameplay_camera.current = false
+	arena.battle_camera.current = true
+	arena.battle_camera.position = Vector3(2.8, 2.1, -4.6)
+	arena.battle_camera.fov = 34.0
+	arena.battle_camera.look_at(Vector3(0, 1.35, 0), Vector3.UP)

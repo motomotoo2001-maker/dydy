@@ -1,7 +1,7 @@
 class_name PieceView
 extends Node3D
 
-const WHITE_PAWN_ASSET_PATH := "res://assets/models/white_pawn_concept_v3.glb"
+const WHITE_PAWN_ASSET_PATH := "res://assets/models/white_pawn_production_v1.glb"
 const BLACK_PAWN_ASSET_PATH := "res://assets/models/black_pawn_concept_v3.glb"
 const WHITE_KNIGHT_ASSET_PATH := "res://assets/models/white_knight_concept_v3.glb"
 const BLACK_KNIGHT_ASSET_PATH := "res://assets/models/black_knight_concept_v3.glb"
@@ -139,7 +139,7 @@ func _apply_secondary_idle(wave: float, slow_wave: float) -> void:
 	match piece_type:
 		&"Pawn":
 			_idle_named(["Head"], Vector3(slow_wave * 1.2, 0, wave * 0.7))
-			_idle_named(["Helmet_Crest", "HelmetCrest", "Concept_Plume_0", "Concept_Plume_1", "Concept_Plume_2", "V3_Plume_0", "V3_Plume_1", "V3_Plume_2"], Vector3(0, slow_wave * 1.2, wave * 2.8))
+			_idle_named(["Helmet_Crest", "HelmetCrest", "Concept_Plume_0", "Concept_Plume_1", "Concept_Plume_2", "V3_Plume_0", "V3_Plume_1", "V3_Plume_2", "Production_Plume_0", "Production_Plume_1", "Production_Plume_2"], Vector3(0, slow_wave * 1.2, wave * 2.8))
 			_idle_named(["Spear_Shaft", "SpearShaft", "Knife_Grip", "KnifeGrip"], Vector3(0, 0, slow_wave * 1.6))
 		&"Knight":
 			_idle_named(["HorseHead"], Vector3(wave * 1.8, 0, slow_wave * 0.9))

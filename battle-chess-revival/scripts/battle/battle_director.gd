@@ -114,6 +114,7 @@ func _pawn_toe_stab(attacker: PieceView, victim: PieceView, data: CaptureAnimati
 	await _animate_part_prefix(attacker, "Spear", Vector3(0, 0, -24), Vector3.ZERO, 0.14)
 	await _animate_part_prefix(attacker, "Concept_Plume", Vector3(0, 0, -12), Vector3.ZERO, 0.14)
 	await _animate_part_prefix(attacker, "V3_Plume", Vector3(0, 0, -18), Vector3.ZERO, 0.14)
+	await _animate_part_prefix(attacker, "Production_Plume", Vector3(0, 0, -18), Vector3.ZERO, 0.14)
 	await _animate_part_prefix(attacker, "Shield", Vector3(0, -8, -12), Vector3.ZERO, 0.14)
 	await _animate_part_prefix(attacker, "Knife", Vector3(0, 0, 32), Vector3.ZERO, 0.14)
 	await _tween(attacker.visual_root, "position", Vector3(0, -0.10, 0), 0.18)

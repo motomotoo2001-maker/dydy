@@ -21,10 +21,19 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y wget unzip zip xvfb libgl1 python3-pil python3-numpy python3-pip
 
+      - name: Download Blender 5.2.2 LTS
+        run: |
+          wget -q https://download.blender.org/release/Blender5.2/blender-5.2.2-linux-x64.tar.xz -O blender.tar.xz
+          tar -xf blender.tar.xz
+          mv blender-5.2.2-linux-x64 blender-5.2.2
+          ./blender-5.2.2/blender --version
+
       - name: Build production mesh assets
         run: |
           python3 -m pip install --user --quiet trimesh
           python3 battle-chess-revival/tools/generate_mesh_assets.py
+          ./blender-5.2.2/blender --background --python battle-chess-revival/tools/blender/build_white_pawn_v1.py
+          test -s battle-chess-revival/assets/models/white_pawn_production_v1.glb
           test -s battle-chess-revival/assets/models/white_pawn_concept_v3.glb
           test -s battle-chess-revival/assets/models/black_pawn_concept_v3.glb
           test -s battle-chess-revival/assets/models/white_knight_concept_v3.glb
@@ -118,6 +127,7 @@ jobs:
             battle-chess-revival/battle_reference.png
             battle-chess-revival/capture_*.png
             battle-chess-revival/asset_lineup_*.png
+            battle-chess-revival/asset_review_*.png
             battle-chess-revival/capture_pawn.png
             battle-chess-revival/capture_knight.png
             battle-chess-revival/capture_bishop.png
