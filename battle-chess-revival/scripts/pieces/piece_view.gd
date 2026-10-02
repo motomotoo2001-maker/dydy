@@ -1,6 +1,8 @@
 class_name PieceView
 extends Node3D
 
+const WHITE_PAWN_ASSET_PATH := "res://assets/models/white_pawn_refined_v1.glb"
+
 var piece_type: StringName = &"Pawn"
 var side: StringName = &"White"
 var home_square: StringName = &"A1"
