@@ -19,7 +19,7 @@ jobs:
       - name: Install runtime dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget unzip zip
+          sudo apt-get install -y wget unzip zip xvfb libgl1
 
       - name: Download Godot 4.7.2 stable
         run: |
@@ -55,6 +55,13 @@ jobs:
             --path battle-chess-revival \
             --script res://scripts/tests/smoke_test.gd
 
+      - name: Render gameplay reference frame
+        run: |
+          xvfb-run -a ./Godot_v4.7.2-stable_linux.x86_64 \
+            --rendering-method gl_compatibility \
+            --path battle-chess-revival \
+            --script res://scripts/tests/render_capture.gd
+
       - name: Package Godot project
         run: |
           zip -qr BattleChessRevival-Godot-4.7.2.zip battle-chess-revival
@@ -64,4 +71,11 @@ jobs:
         with:
           name: BattleChessRevival-Godot-4.7.2
           path: BattleChessRevival-Godot-4.7.2.zip
+          if-no-files-found: error
+
+      - name: Upload gameplay render
+        uses: actions/upload-artifact@v4
+        with:
+          name: BattleChessRevival-Gameplay-Reference
+          path: battle-chess-revival/gameplay_reference.png
           if-no-files-found: error

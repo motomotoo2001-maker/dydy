@@ -131,13 +131,13 @@ func _build_environment() -> void:
 	world.name = "WorldEnvironment"
 	var env := Environment.new()
 	env.background_mode = Environment.BG_COLOR
-	env.background_color = Color("#171317")
+	env.background_color = Color("#251b19")
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color("#b9a48f")
-	env.ambient_light_energy = 0.34
+	env.ambient_light_color = Color("#e0c8aa")
+	env.ambient_light_energy = 0.52
 	env.ssao_enabled = true
 	env.glow_enabled = true
-	env.glow_intensity = 0.35
+	env.glow_intensity = 0.24
 	env.fog_enabled = true
 	env.fog_density = 0.002
 	if RenderingServer.get_current_rendering_method() == "forward_plus":
@@ -192,20 +192,26 @@ func _build_board() -> void:
 	sockets_root.name = "PieceSockets"
 	generated.add_child(sockets_root)
 
-	var cream := _mat(Color("#ddcfb3"), 0.24, 0.0)
-	var green := _mat(Color("#184838"), 0.22, 0.0)
-	var gold := _mat(Color("#b98632"), 0.20, 0.92)
-	var base := _mat(Color("#211916"), 0.46, 0.0)
+	var cream := _marble_material(Color("#e7dfd0"), Color("#b9aea0"), 0.26)
+	var wood := _wood_material(Color("#5a3524"), Color("#2e1b18"), 0.30)
+	var gold := _mat(Color("#c99b48"), 0.24, 0.84)
+	var base := _wood_material(Color("#4b2b1d"), Color("#241510"), 0.34)
 
-	_box(board_root, "Base", Vector3(10.9, 0.30, 10.9), Vector3(0, 0.15, 0), base)
-	_box(board_root, "GoldFrame", Vector3(10.45, 0.18, 10.45), Vector3(0, 0.31, 0), gold)
+	_box(board_root, "Base", Vector3(11.35, 0.34, 11.35), Vector3(0, 0.17, 0), base)
+	_box(board_root, "GoldTrim", Vector3(10.55, 0.18, 10.55), Vector3(0, 0.32, 0), gold)
+
+	var rail_mat := _wood_material(Color("#6a3d28"), Color("#341d15"), 0.28)
+	_box(board_root, "FrameNorth", Vector3(11.25, 0.34, 0.42), Vector3(0, 0.43, -5.42), rail_mat)
+	_box(board_root, "FrameSouth", Vector3(11.25, 0.34, 0.42), Vector3(0, 0.43, 5.42), rail_mat)
+	_box(board_root, "FrameWest", Vector3(0.42, 0.34, 10.45), Vector3(-5.42, 0.43, 0), rail_mat)
+	_box(board_root, "FrameEast", Vector3(0.42, 0.34, 10.45), Vector3(5.42, 0.43, 0), rail_mat)
 
 	for rank_idx in range(8):
 		for file_idx in range(8):
 			var x := (float(file_idx) - 3.5) * CELL_SIZE
 			var z := (3.5 - float(rank_idx)) * CELL_SIZE
 			var square := StringName("%s%d" % [String.chr(65 + file_idx), rank_idx + 1])
-			var material := cream if (file_idx + rank_idx) % 2 == 0 else green
+			var material := cream if (file_idx + rank_idx) % 2 == 0 else wood
 			_box(board_root, "Tile_%s" % String(square), Vector3(1.18, 0.08, 1.18),
 				Vector3(x, BOARD_Y, z), material)
 			var marker := Marker3D.new()
@@ -241,16 +247,16 @@ func _build_cameras() -> void:
 
 	gameplay_camera = Camera3D.new()
 	gameplay_camera.name = "GameplayCamera"
-	gameplay_camera.position = Vector3(0, 10.5, 12.5)
-	gameplay_camera.fov = 32.0
+	gameplay_camera.position = Vector3(0, 9.15, 11.65)
+	gameplay_camera.fov = 38.0
 	gameplay_camera.current = true
 	root.add_child(gameplay_camera)
-	gameplay_camera.look_at(Vector3(0, 0.65, 0), Vector3.UP)
+	gameplay_camera.look_at(Vector3(0, 0.72, -0.30), Vector3.UP)
 
 	battle_camera = Camera3D.new()
 	battle_camera.name = "BattleCamera"
-	battle_camera.position = Vector3(0, 2.55, 5.4)
-	battle_camera.fov = 38.0
+	battle_camera.position = Vector3(0, 2.20, 4.75)
+	battle_camera.fov = 42.0
 	battle_camera.current = false
 	root.add_child(battle_camera)
 	battle_camera.look_at(Vector3(0, 0.85, 0), Vector3.UP)
@@ -263,7 +269,7 @@ func _build_lighting() -> void:
 	var sun := DirectionalLight3D.new()
 	sun.name = "SunWarm"
 	sun.light_color = Color("#ffd4a0")
-	sun.light_energy = 1.45
+	sun.light_energy = 2.05
 	sun.shadow_enabled = true
 	sun.rotation_degrees = Vector3(-48, -38, 0)
 	root.add_child(sun)
@@ -272,7 +278,7 @@ func _build_lighting() -> void:
 	warm.name = "WarmFill"
 	warm.position = Vector3(-6.5, 6.8, -4.0)
 	warm.light_color = Color("#ffb76f")
-	warm.light_energy = 5.5
+	warm.light_energy = 4.4
 	warm.omni_range = 15.0
 	root.add_child(warm)
 
@@ -280,9 +286,17 @@ func _build_lighting() -> void:
 	cool.name = "CoolRim"
 	cool.position = Vector3(6.5, 5.0, -2.0)
 	cool.light_color = Color("#755cff")
-	cool.light_energy = 3.4
+	cool.light_energy = 2.4
 	cool.omni_range = 12.0
 	root.add_child(cool)
+
+	var window_key := OmniLight3D.new()
+	window_key.name = "WindowSunFill"
+	window_key.position = Vector3(-4.8, 7.8, -10.5)
+	window_key.light_color = Color("#f3c77c")
+	window_key.light_energy = 5.2
+	window_key.omni_range = 16.0
+	root.add_child(window_key)
 
 func _build_selection_root() -> void:
 	selection_root = Node3D.new()
@@ -453,3 +467,60 @@ func _build_candles(parent: Node3D, p: Vector3, holder: Material) -> void:
 	light.light_energy = 0.8
 	light.omni_range = 2.8
 	root.add_child(light)
+
+func _marble_material(base_color: Color, vein_color: Color, surface_roughness: float) -> ShaderMaterial:
+	var shader := Shader.new()
+	shader.code = """
+shader_type spatial;
+render_mode diffuse_burley, specular_schlick_ggx;
+uniform vec3 base_color;
+uniform vec3 vein_color;
+uniform float surface_roughness = 0.26;
+varying vec3 local_position;
+void vertex() {
+	local_position = VERTEX;
+}
+void fragment() {
+	float a = sin(local_position.x * 7.0 + local_position.z * 5.0 + sin(local_position.z * 3.5) * 1.4);
+	float b = sin(local_position.x * 15.0 - local_position.z * 8.0);
+	float v = abs(a * 0.78 + b * 0.22);
+	float vein = smoothstep(0.72, 0.98, v);
+	ALBEDO = mix(base_color, vein_color, vein * 0.36);
+	ROUGHNESS = surface_roughness;
+	METALLIC = 0.0;
+}
+"""
+	var material := ShaderMaterial.new()
+	material.shader = shader
+	material.set_shader_parameter("base_color", Vector3(base_color.r, base_color.g, base_color.b))
+	material.set_shader_parameter("vein_color", Vector3(vein_color.r, vein_color.g, vein_color.b))
+	material.set_shader_parameter("surface_roughness", surface_roughness)
+	return material
+
+func _wood_material(base_color: Color, grain_color: Color, surface_roughness: float) -> ShaderMaterial:
+	var shader := Shader.new()
+	shader.code = """
+shader_type spatial;
+render_mode diffuse_burley, specular_schlick_ggx;
+uniform vec3 base_color;
+uniform vec3 grain_color;
+uniform float surface_roughness = 0.30;
+varying vec3 local_position;
+void vertex() {
+	local_position = VERTEX;
+}
+void fragment() {
+	float wav = sin(local_position.x * 12.0 + sin(local_position.z * 4.0) * 2.2);
+	float fine = sin(local_position.x * 31.0 + local_position.z * 2.0);
+	float grain = smoothstep(0.10, 0.90, wav * 0.35 + fine * 0.15 + 0.50);
+	ALBEDO = mix(base_color, grain_color, grain * 0.34);
+	ROUGHNESS = surface_roughness;
+	METALLIC = 0.0;
+}
+"""
+	var material := ShaderMaterial.new()
+	material.shader = shader
+	material.set_shader_parameter("base_color", Vector3(base_color.r, base_color.g, base_color.b))
+	material.set_shader_parameter("grain_color", Vector3(grain_color.r, grain_color.g, grain_color.b))
+	material.set_shader_parameter("surface_roughness", surface_roughness)
+	return material

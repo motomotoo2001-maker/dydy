@@ -38,3 +38,10 @@ Left-click a white piece and then a highlighted destination. Black replies autom
 ## Polish controls
 
 R restarts the match. A toggles the black AI so local two-player testing is possible. Normal moves tween across the board; Knights use a short hop arc. Battle camera profiles vary by capture signature. Comic impact text is generated in 3D. Cathedral blockout includes arches, banners, statues and candle clusters. CI packages a downloadable source ZIP after all Godot tests pass.
+
+
+## Visual target pass v1
+
+The board now follows the approved video target: warm dark walnut squares, cream marble squares, a thick wooden frame with restrained gold trim, a brighter cathedral, warmer window light, and a closer 38-degree gameplay lens. White Pawns use the first production-style character blockout with a readable face, oversized helmet, ivory/blue/gold costume, shield, spear, boots, separated limbs, and dedicated battle anchors.
+
+CI also renders a real gameplay frame from Godot and uploads it as the BattleChessRevival-Gameplay-Reference artifact, so visual changes can be inspected instead of only syntax-tested.
