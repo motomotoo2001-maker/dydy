@@ -329,3 +329,169 @@ addbk("LanceTip",btip,BK["violet"],(.33,1.80,-.58),(42,0,0))
 bk_target=OUT/"black_knight_refined_v1.glb"
 bk_target.write_bytes(black_knight.export(file_type="glb"))
 print(f"ASSET_BUILD_PASS {bk_target} bytes={bk_target.stat().st_size} parts={len(black_knight.geometry)}")
+
+
+# ---------------------------------------------------------------------------
+# Remaining production GLBs. These are authored as named-part scenes so Godot
+# imports actual assets now and Skeleton3D can replace part transforms later.
+# ---------------------------------------------------------------------------
+def emit(sc,name,mesh,mat,pos=(0,0,0),rot=(0,0,0),scale=(1,1,1)):
+    mesh=mesh.copy(); mesh.apply_scale(scale)
+    t=np.eye(4)
+    for axis,deg in zip(((1,0,0),(0,1,0),(0,0,1)),rot):
+        if deg: t=rotation_matrix(math.radians(deg),axis) @ t
+    t[:3,3]=pos; mesh.apply_transform(t)
+    mesh.visual=trimesh.visual.TextureVisuals(material=mat)
+    sc.add_geometry(mesh,geom_name=name,node_name=name)
+
+def export_scene(sc, filename):
+    target=OUT/filename
+    target.write_bytes(sc.export(file_type="glb"))
+    print(f"ASSET_BUILD_PASS {target} bytes={target.stat().st_size} parts={len(sc.geometry)}")
+
+# ---- Bishops ---------------------------------------------------------------
+BIW={
+ "iv":pbr("BishopIvory","#e7ddd0",0,0.52),"ivs":pbr("BishopShadow","#c8bbad",0,0.58),
+ "gold":pbr("BishopGold","#c69a48",.68,.25),"blue":pbr("BishopBlue","#3f668a",0,.46),
+ "skin":pbr("ElephantSkin","#b9a68f",0,.62),"dark":pbr("BishopDark","#252126",0,.48),
+ "eye":pbr("BishopEye","#334559",0,.18),"wood":pbr("StaffWood","#5a3b2b",0,.70),
+ "cyan":pbr("BishopGem","#5fc5d4",0,.14)
+}
+sc=trimesh.Scene()
+emit(sc,"PedestalLower",cyl(.44,.08),BIW["dark"],(0,.04,0)); emit(sc,"PedestalRing",cyl(.40,.05),BIW["gold"],(0,.105,0)); emit(sc,"PedestalUpper",cyl(.36,.10),BIW["ivs"],(0,.18,0))
+emit(sc,"Robe",cyl(.30,.78),BIW["iv"],(0,.58,0)); emit(sc,"Torso",capsule(.22,.58),BIW["ivs"],(0,1.00,0)); emit(sc,"Sash",box((.09,.74,.35)),BIW["blue"],(0,.78,-.18),(0,0,6)); emit(sc,"Collar",box((.50,.10,.36)),BIW["gold"],(0,1.23,0))
+emit(sc,"Head",sphere(.235),BIW["skin"],(0,1.43,-.02),scale=(.96,1,.92))
+emit(sc,"EarL",sphere(.205),BIW["ivs"],(-.24,1.44,-.01),scale=(.64,1.18,.52)); emit(sc,"EarR",sphere(.205),BIW["ivs"],(.24,1.44,-.01),scale=(.64,1.18,.52))
+emit(sc,"Trunk",capsule(.067,.44),BIW["skin"],(0,1.25,-.25),(25,0,0))
+emit(sc,"EyeL",sphere(.029),BIW["eye"],(-.08,1.48,-.225),scale=(1,.8,.55)); emit(sc,"EyeR",sphere(.029),BIW["eye"],(.08,1.48,-.225),scale=(1,.8,.55))
+emit(sc,"MitreBase",box((.39,.20,.31)),BIW["ivs"],(0,1.66,0)); emit(sc,"MitreTall",box((.29,.48,.23)),BIW["iv"],(0,1.92,0),(0,0,8)); emit(sc,"MitreStripe",box((.058,.49,.028)),BIW["gold"],(0,1.92,-.135),(0,0,8))
+for side in (-1,1):
+    emit(sc,f"Arm_{side}",capsule(.076,.40),BIW["ivs"],(.29*side,1.08,0),(0,0,15*side)); emit(sc,f"Hand_{side}",sphere(.087),BIW["skin"],(.34*side,.90,-.02))
+emit(sc,"Staff",cyl(.03,1.42),BIW["wood"],(.42,1.10,-.02),(0,0,-4)); emit(sc,"StaffGem",sphere(.11),BIW["cyan"],(.46,1.82,-.02)); emit(sc,"StaffCross",box((.30,.045,.045)),BIW["gold"],(.46,1.72,-.02))
+export_scene(sc,"white_bishop_refined_v1.glb")
+
+BIB={
+ "char":pbr("NecroCharcoal","#26232c",.10,.52),"violet":pbr("NecroViolet","#654080",.05,.43),
+ "bone":pbr("NecroBone","#9d9688",0,.58),"leather":pbr("NecroLeather","#3c2b2b",0,.70),
+ "steel":pbr("NecroSteel","#56515b",.55,.30),"glow":pbr("NecroGlow","#b959ef",0,.14),
+ "red":pbr("NecroRed","#7d3444",0,.46),"dark":pbr("NecroDark","#141218",0,.5)
+}
+sc=trimesh.Scene()
+emit(sc,"PedestalLower",cyl(.44,.08),BIB["dark"],(0,.04,0)); emit(sc,"PedestalRing",cyl(.40,.05),BIB["violet"],(0,.105,0)); emit(sc,"PedestalUpper",cyl(.36,.10),BIB["steel"],(0,.18,0))
+emit(sc,"Robe",cyl(.31,.80),BIB["char"],(0,.59,0)); emit(sc,"Torso",capsule(.22,.58),BIB["leather"],(0,1.01,0)); emit(sc,"RobePanel",box((.16,.76,.35)),BIB["violet"],(0,.78,-.18),(0,0,-5))
+emit(sc,"Head",sphere(.225),BIB["bone"],(0,1.45,-.02),scale=(.91,1.05,.91)); emit(sc,"Snout",capsule(.07,.35),BIB["bone"],(0,1.31,-.24),(30,0,0))
+emit(sc,"EyeL",sphere(.032),BIB["glow"],(-.078,1.50,-.22),scale=(1,.8,.55)); emit(sc,"EyeR",sphere(.032),BIB["glow"],(.078,1.50,-.22),scale=(1,.8,.55))
+emit(sc,"HornL",cyl(.038,.43),BIB["bone"],(-.16,1.69,-.02),(0,0,-35)); emit(sc,"HornR",cyl(.038,.43),BIB["bone"],(.16,1.69,-.02),(0,0,35))
+emit(sc,"Mask",box((.37,.25,.26)),BIB["char"],(0,1.67,0)); emit(sc,"MaskRune",box((.055,.27,.03)),BIB["red"],(0,1.67,-.15))
+for side in (-1,1): emit(sc,f"Arm_{side}",capsule(.076,.42),BIB["leather"],(.29*side,1.07,0),(0,0,17*side))
+emit(sc,"Staff",cyl(.031,1.44),BIB["steel"],(.42,1.10,-.02),(0,0,-4)); emit(sc,"StaffOrb",sphere(.115),BIB["glow"],(.46,1.84,-.02))
+emit(sc,"ProngL",box((.045,.30,.05)),BIB["bone"],(.37,1.86,-.02),(0,0,-28)); emit(sc,"ProngR",box((.045,.30,.05)),BIB["bone"],(.55,1.86,-.02),(0,0,28))
+export_scene(sc,"black_bishop_refined_v1.glb")
+
+# ---- Rooks -----------------------------------------------------------------
+RW={
+ "stone":pbr("RookStone","#b9b1a6",0,.78),"light":pbr("RookStoneLight","#d6cec2",0,.72),
+ "shadow":pbr("RookStoneShadow","#817a73",0,.82),"gold":pbr("RookGold","#bd9141",.66,.27),
+ "blue":pbr("RookBlue","#42698c",0,.50),"eye":pbr("RookEye","#6fd0df",0,.14),"dark":pbr("RookDark","#2a2728",0,.52)
+}
+sc=trimesh.Scene()
+emit(sc,"PedestalLower",cyl(.48,.09),RW["dark"],(0,.045,0)); emit(sc,"PedestalRing",cyl(.44,.05),RW["gold"],(0,.115,0)); emit(sc,"PedestalUpper",cyl(.40,.10),RW["shadow"],(0,.19,0))
+emit(sc,"TowerCore",box((.64,.96,.64)),RW["stone"],(0,.76,0)); emit(sc,"Chest",box((.70,.29,.70)),RW["light"],(0,.98,-.03)); emit(sc,"Belt",box((.70,.10,.70)),RW["gold"],(0,.53,0))
+for side in (-1,1):
+    emit(sc,f"Shoulder_{side}",box((.30,.26,.36)),RW["shadow"],(.45*side,.99,0),(0,0,11*side)); emit(sc,f"Arm_{side}",box((.21,.50,.23)),RW["stone"],(.50*side,.72,0),(0,0,9*side)); emit(sc,f"Fist_{side}",box((.30,.26,.30)),RW["shadow"],(.55*side,.45,-.02))
+emit(sc,"EyeL",sphere(.058),RW["eye"],(-.15,1.05,-.36),scale=(1.25,.72,.55)); emit(sc,"EyeR",sphere(.058),RW["eye"],(.15,1.05,-.36),scale=(1.25,.72,.55)); emit(sc,"Mouth",box((.31,.065,.06)),RW["dark"],(0,.88,-.36))
+emit(sc,"CrownBase",box((.82,.18,.82)),RW["light"],(0,1.34,0))
+for x in (-.30,0,.30):
+    emit(sc,f"CrenelF{x}",box((.18,.25,.21)),RW["stone"],(x,1.54,-.30)); emit(sc,f"CrenelB{x}",box((.18,.25,.21)),RW["stone"],(x,1.54,.30))
+emit(sc,"Heraldry",box((.27,.31,.04)),RW["blue"],(0,.73,-.34)); emit(sc,"HeraldryV",box((.05,.25,.045)),RW["gold"],(0,.73,-.37)); emit(sc,"HeraldryH",box((.21,.05,.045)),RW["gold"],(0,.73,-.37))
+export_scene(sc,"white_rook_refined_v1.glb")
+
+RB={
+ "obs":pbr("Obsidian","#242127",.15,.40),"obsl":pbr("ObsidianEdge","#3a343c",.18,.46),
+ "lava":pbr("Lava","#e56a28",0,.18),"ember":pbr("Ember","#f0a13a",0,.12),
+ "steel":pbr("RookSteel","#5a4d52",.48,.32),"violet":pbr("RookViolet","#5c3c74",0,.45),"dark":pbr("RookBlack","#121216",0,.50)
+}
+sc=trimesh.Scene()
+emit(sc,"PedestalLower",cyl(.48,.09),RB["dark"],(0,.045,0)); emit(sc,"PedestalRing",cyl(.44,.05),RB["lava"],(0,.115,0)); emit(sc,"PedestalUpper",cyl(.40,.10),RB["obs"],(0,.19,0))
+emit(sc,"TowerCore",box((.65,.97,.65)),RB["obs"],(0,.76,0)); emit(sc,"Chest",box((.71,.29,.71)),RB["obsl"],(0,.98,-.03)); emit(sc,"CrackV",box((.06,.66,.04)),RB["lava"],(-.10,.78,-.34),(0,0,12)); emit(sc,"CrackH",box((.35,.05,.04)),RB["ember"],(.03,.75,-.342),(0,0,-16))
+for side in (-1,1):
+    emit(sc,f"Shoulder_{side}",box((.31,.27,.37)),RB["steel"],(.46*side,1.0,0),(0,0,12*side)); emit(sc,f"Arm_{side}",box((.21,.51,.23)),RB["obsl"],(.51*side,.72,0),(0,0,10*side)); emit(sc,f"Fist_{side}",box((.31,.27,.31)),RB["obs"],(.56*side,.44,-.02))
+emit(sc,"EyeL",sphere(.06),RB["ember"],(-.15,1.05,-.37),scale=(1.25,.70,.55)); emit(sc,"EyeR",sphere(.06),RB["ember"],(.15,1.05,-.37),scale=(1.25,.70,.55)); emit(sc,"Mouth",box((.32,.07,.06)),RB["lava"],(0,.88,-.37))
+emit(sc,"CrownBase",box((.83,.18,.83)),RB["obsl"],(0,1.35,0))
+for x in (-.30,0,.30):
+    emit(sc,f"CrenelF{x}",box((.18,.26,.21)),RB["obs"],(x,1.55,-.30)); emit(sc,f"CrenelB{x}",box((.18,.26,.21)),RB["obs"],(x,1.55,.30))
+emit(sc,"RunePlate",box((.28,.32,.04)),RB["violet"],(0,.73,-.35)); emit(sc,"RuneV",box((.05,.26,.045)),RB["lava"],(0,.73,-.38),(0,0,20))
+export_scene(sc,"black_rook_refined_v1.glb")
+
+# ---- Queens ----------------------------------------------------------------
+QW={
+ "iv":pbr("QueenIvory","#eee5d7",0,.48),"ivs":pbr("QueenShadow","#cbbdad",0,.56),
+ "gold":pbr("QueenGold","#c89c49",.72,.24),"blue":pbr("QueenBlue","#416b91",0,.44),
+ "skin":pbr("QueenSkin","#d8a07d",0,.55),"hair":pbr("QueenHair","#a4774f",0,.58),
+ "dark":pbr("QueenDark","#262228",0,.46),"cyan":pbr("QueenMagic","#70ddf2",0,.12)
+}
+sc=trimesh.Scene()
+emit(sc,"PedestalLower",cyl(.45,.08),QW["dark"],(0,.04,0)); emit(sc,"PedestalRing",cyl(.41,.05),QW["gold"],(0,.105,0)); emit(sc,"PedestalUpper",cyl(.37,.10),QW["ivs"],(0,.18,0))
+emit(sc,"Skirt",cyl(.35,.86),QW["iv"],(0,.61,0)); emit(sc,"SkirtBand",cyl(.36,.06),QW["gold"],(0,.31,0)); emit(sc,"Torso",capsule(.215,.60),QW["ivs"],(0,1.10,0)); emit(sc,"Corset",box((.27,.44,.06)),QW["blue"],(0,1.08,-.23))
+emit(sc,"Head",sphere(.195),QW["skin"],(0,1.57,-.01),scale=(.95,1.06,.92)); emit(sc,"Hair",sphere(.225),QW["hair"],(0,1.58,.11),scale=(1.06,1.15,.90))
+for i,x in enumerate((-.067,.067)): emit(sc,f"Eye_{i}",sphere(.026),QW["blue"],(x,1.61,-.195),scale=(1,.8,.55))
+emit(sc,"CrownBand",cyl(.205,.10),QW["gold"],(0,1.79,0))
+for x in (-.13,0,.13): emit(sc,f"CrownPoint{x}",box((.08,.31 if x==0 else .24,.08)),QW["gold"],(x,1.96 if x==0 else 1.91,0),(0,0,x*45))
+for side in (-1,1): emit(sc,f"Arm_{side}",capsule(.07,.44),QW["ivs"],(.29*side,1.14,0),(0,0,23*side)); emit(sc,f"Hand_{side}",sphere(.08),QW["skin"],(.35*side,.94,-.03))
+emit(sc,"Staff",cyl(.028,1.35),QW["gold"],(.44,1.14,-.03),(0,0,-3)); emit(sc,"MagicOrb",sphere(.135),QW["cyan"],(.47,1.84,-.03)); emit(sc,"OrbHaloV",box((.038,.36,.038)),QW["gold"],(.47,1.84,-.03)); emit(sc,"OrbHaloH",box((.36,.038,.038)),QW["gold"],(.47,1.84,-.03))
+export_scene(sc,"white_queen_refined_v1.glb")
+
+QB={
+ "char":pbr("DarkQueenCharcoal","#24212b",0,.50),"violet":pbr("DarkQueenViolet","#68407f",0,.42),
+ "vd":pbr("DarkQueenDeep","#402a50",0,.50),"steel":pbr("DarkQueenSteel","#5b5361",.52,.30),
+ "skin":pbr("DarkQueenSkin","#9b839c",0,.55),"hair":pbr("DarkQueenHair","#211a28",0,.52),
+ "magic":pbr("DarkQueenMagic","#d05bea",0,.12),"red":pbr("DarkQueenRed","#7c334d",0,.45),"dark":pbr("DarkQueenBlack","#111116",0,.48)
+}
+sc=trimesh.Scene()
+emit(sc,"PedestalLower",cyl(.45,.08),QB["dark"],(0,.04,0)); emit(sc,"PedestalRing",cyl(.41,.05),QB["magic"],(0,.105,0)); emit(sc,"PedestalUpper",cyl(.37,.10),QB["char"],(0,.18,0))
+emit(sc,"Skirt",cyl(.36,.87),QB["char"],(0,.62,0)); emit(sc,"SkirtPanel",box((.29,.74,.06)),QB["violet"],(0,.65,-.32),(0,0,-5)); emit(sc,"Torso",capsule(.215,.60),QB["vd"],(0,1.11,0)); emit(sc,"Chest",box((.39,.31,.065)),QB["steel"],(0,1.14,-.23))
+emit(sc,"Head",sphere(.195),QB["skin"],(0,1.58,-.01),scale=(.93,1.08,.90)); emit(sc,"Hair",sphere(.235),QB["hair"],(0,1.58,.12),scale=(1.08,1.22,.92))
+for i,x in enumerate((-.067,.067)): emit(sc,f"Eye_{i}",sphere(.027),QB["magic"],(x,1.62,-.195),scale=(1,.8,.55))
+emit(sc,"CrownBand",cyl(.205,.10),QB["steel"],(0,1.80,0)); emit(sc,"CrownHornL",cyl(.034,.36),QB["char"],(-.14,1.98,0),(0,0,-30)); emit(sc,"CrownHornR",cyl(.034,.36),QB["char"],(.14,1.98,0),(0,0,30)); emit(sc,"CrownGem",sphere(.058),QB["magic"],(0,1.86,-.20))
+for side in (-1,1): emit(sc,f"Arm_{side}",capsule(.07,.44),QB["vd"],(.29*side,1.14,0),(0,0,24*side))
+emit(sc,"Staff",cyl(.03,1.36),QB["steel"],(.44,1.14,-.03),(0,0,-4)); emit(sc,"MagicOrb",sphere(.14),QB["magic"],(.48,1.85,-.03)); emit(sc,"ProngL",box((.04,.36,.04)),QB["char"],(.37,1.85,-.03),(0,0,-30)); emit(sc,"ProngR",box((.04,.36,.04)),QB["char"],(.59,1.85,-.03),(0,0,30))
+export_scene(sc,"black_queen_refined_v1.glb")
+
+# ---- Kings -----------------------------------------------------------------
+KW={
+ "iv":pbr("KingIvory","#eee4d6",0,.50),"ivs":pbr("KingShadow","#c9baaa",0,.58),
+ "gold":pbr("KingGold","#c99b45",.74,.23),"blue":pbr("KingBlue","#3b6288",0,.45),
+ "red":pbr("KingRed","#8a3d43",0,.48),"skin":pbr("KingSkin","#d49b75",0,.56),
+ "beard":pbr("KingBeard","#e6dfd2",0,.68),"dark":pbr("KingDark","#2b2526",0,.50),
+ "eye":pbr("KingEye","#33465a",0,.18),"gem":pbr("KingGem","#58c5d8",0,.12)
+}
+sc=trimesh.Scene()
+emit(sc,"PedestalLower",cyl(.47,.08),KW["dark"],(0,.04,0)); emit(sc,"PedestalRing",cyl(.43,.05),KW["gold"],(0,.115,0)); emit(sc,"PedestalUpper",cyl(.39,.10),KW["ivs"],(0,.19,0))
+emit(sc,"Robe",cyl(.37,.82),KW["iv"],(0,.61,0)); emit(sc,"Belly",sphere(.31),KW["red"],(0,.98,-.02),scale=(1.08,.92,.92)); emit(sc,"Torso",capsule(.245,.58),KW["ivs"],(0,1.18,0)); emit(sc,"Sash",box((.12,.78,.36)),KW["blue"],(.06,.96,-.19),(0,0,-12)); emit(sc,"Belt",box((.66,.10,.35)),KW["gold"],(0,.82,0))
+emit(sc,"Head",sphere(.225),KW["skin"],(0,1.57,-.02)); emit(sc,"Nose",sphere(.062),KW["skin"],(0,1.54,-.24),scale=(.95,.78,1.25)); emit(sc,"Beard",sphere(.225),KW["beard"],(0,1.37,-.17),scale=(.96,1.20,.72))
+emit(sc,"MoustacheL",sphere(.078),KW["beard"],(-.07,1.50,-.24),scale=(1.35,.52,.65)); emit(sc,"MoustacheR",sphere(.078),KW["beard"],(.07,1.50,-.24),scale=(1.35,.52,.65))
+for i,x in enumerate((-.078,.078)): emit(sc,f"Eye_{i}",sphere(.027),KW["eye"],(x,1.62,-.23),scale=(1,.8,.55))
+emit(sc,"CrownBand",cyl(.235,.12),KW["gold"],(0,1.79,0))
+for x in (-.16,-.05,.05,.16): emit(sc,f"Crown{x}",box((.072,.32 if abs(x)<.1 else .25,.072)),KW["gold"],(x,1.98 if abs(x)<.1 else 1.93,0),(0,0,x*50))
+emit(sc,"CrownGem",sphere(.062),KW["gem"],(0,1.86,-.22))
+for side in (-1,1): emit(sc,f"Cape_{side}",box((.19,.72,.11)),KW["red"],(.28*side,1.13,.19),(0,0,-8*side)); emit(sc,f"Arm_{side}",capsule(.078,.44),KW["ivs"],(.33*side,1.17,0),(0,0,17*side))
+emit(sc,"Scepter",cyl(.028,1.00),KW["gold"],(-.44,1.17,-.02),(0,0,5)); emit(sc,"ScepterGem",sphere(.10),KW["gem"],(-.48,1.68,-.02))
+export_scene(sc,"white_king_refined_v1.glb")
+
+KB={
+ "char":pbr("DemonCharcoal","#242029",0,.50),"armor":pbr("DemonArmor","#514a55",.52,.31),
+ "red":pbr("DemonRed","#87363d",0,.43),"crimson":pbr("DemonCrimson","#b63c35",0,.40),
+ "skin":pbr("DemonSkin","#9a493e",0,.55),"horn":pbr("DemonHorn","#8d8173",0,.58),
+ "violet":pbr("DemonViolet","#694080",0,.42),"glow":pbr("DemonGlow","#e16a45",0,.12),
+ "dark":pbr("DemonBlack","#111116",0,.48)
+}
+sc=trimesh.Scene()
+emit(sc,"PedestalLower",cyl(.47,.08),KB["dark"],(0,.04,0)); emit(sc,"PedestalRing",cyl(.43,.05),KB["crimson"],(0,.115,0)); emit(sc,"PedestalUpper",cyl(.39,.10),KB["char"],(0,.19,0))
+emit(sc,"Robe",cyl(.38,.83),KB["char"],(0,.62,0)); emit(sc,"BellyArmor",sphere(.32),KB["armor"],(0,.98,-.02),scale=(1.10,.90,.90)); emit(sc,"Torso",capsule(.255,.60),KB["red"],(0,1.19,0)); emit(sc,"Chest",box((.50,.33,.07)),KB["armor"],(0,1.19,-.26))
+for side in (-1,1): emit(sc,f"Cape_{side}",box((.21,.78,.12)),KB["violet"],(.30*side,1.15,.20),(0,0,-10*side)); emit(sc,f"Arm_{side}",capsule(.08,.45),KB["red"],(.34*side,1.18,0),(0,0,18*side))
+emit(sc,"Head",sphere(.225),KB["skin"],(0,1.59,-.02)); emit(sc,"Nose",sphere(.058),KB["skin"],(0,1.56,-.235),scale=(.9,.75,1.2))
+for i,x in enumerate((-.08,.08)): emit(sc,f"Eye_{i}",sphere(.032),KB["glow"],(x,1.64,-.23),scale=(1,.8,.55))
+emit(sc,"FangL",box((.038,.13,.038)),KB["horn"],(-.06,1.45,-.23),(0,0,8)); emit(sc,"FangR",box((.038,.13,.038)),KB["horn"],(.06,1.45,-.23),(0,0,-8))
+emit(sc,"CrownBand",cyl(.235,.12),KB["armor"],(0,1.81,0)); emit(sc,"CrownHornL",cyl(.04,.47),KB["horn"],(-.18,2.01,0),(0,0,-34)); emit(sc,"CrownHornR",cyl(.04,.47),KB["horn"],(.18,2.01,0),(0,0,34)); emit(sc,"CrownCenter",box((.095,.36,.095)),KB["crimson"],(0,2.01,0)); emit(sc,"CrownGem",sphere(.062),KB["glow"],(0,1.88,-.22))
+emit(sc,"Scepter",cyl(.03,1.02),KB["armor"],(-.45,1.18,-.02),(0,0,5)); emit(sc,"ScepterCore",sphere(.105),KB["glow"],(-.49,1.70,-.02)); emit(sc,"ScepterRune",box((.19,.19,.04)),KB["violet"],(-.49,1.70,-.02),(0,0,45))
+export_scene(sc,"black_king_refined_v1.glb")

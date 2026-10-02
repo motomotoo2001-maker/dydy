@@ -112,3 +112,8 @@ The Black Pawn now also uses a real generated/imported GLB instead of the runtim
 ## Imported production asset pipeline — Knights
 
 Both Knights now have real imported GLB scenes in rendered gameplay. White keeps the approved noble animated-film silhouette: broad ivory horse, expressive muzzle/eyes, blue mane and saddle cloth, gold bridle, compact rider, shield and lance. Black is structurally different: lean nightmare horse, exposed bony knees, horns, violet mane, dark armored rider with horned helmet and angular lance tip. Each GLB preserves named horse/rider/prop parts for the future rigging pass.
+
+
+## Imported production asset milestone — full army
+
+Every piece family now has a real imported White/Black GLB in rendered gameplay: Pawn, Knight, Bishop, Rook, Queen and King. The procedural builders remain only as safe headless/fallback implementations. The imported scenes preserve deliberately different team silhouettes and named sub-parts for the upcoming Skeleton3D rig pass. This completes the first asset-first conversion milestone before any new animation/VFX polish.
