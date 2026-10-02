@@ -67,7 +67,7 @@ jobs:
             --rendering-method gl_compatibility \
             --path battle-chess-revival \
             --editor \
-            --quit-after 5
+            --quit-after 30
 
       - name: Run chess rules tests
         run: |
