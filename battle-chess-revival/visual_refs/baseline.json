@@ -1,7 +1,7 @@
 {
-  "source_commit": "4e1db31b7aba2a3344e90337163f2a74cbf2493d",
-  "gameplay": {"score": 0.7890},
-  "battle": {"score": 0.7250},
+  "source_commit": "c32dfda6b1593a5ff2671e0134b25385bdb3c7a5",
+  "gameplay": {"score": 0.7900},
+  "battle": {"score": 0.7290},
   "regression_tolerance": 0.04,
-  "note": "Verified baseline after all six piece families received dedicated production blockouts and battle-camera occlusion was fixed."
+  "note": "Verified production-blockout baseline after all six piece families, spectator battle staging, battle camera correction, stained-glass cathedral composition and Forward+ battle DOF."
 }
