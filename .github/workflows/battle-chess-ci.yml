@@ -76,6 +76,8 @@ jobs:
       - name: Upload gameplay render
         uses: actions/upload-artifact@v4
         with:
-          name: BattleChessRevival-Gameplay-Reference
-          path: battle-chess-revival/gameplay_reference.png
+          name: BattleChessRevival-Visual-References
+          path: |
+            battle-chess-revival/gameplay_reference.png
+            battle-chess-revival/battle_reference.png
           if-no-files-found: error

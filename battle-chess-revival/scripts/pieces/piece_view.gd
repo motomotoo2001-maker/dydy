@@ -28,6 +28,7 @@ func setup(
 	current_square = p_square
 	name = "%s_%s_%s" % [String(side), String(piece_type), String(home_square)]
 	position = world_position
+	rotation_degrees.y = 180.0 if side == &"Black" else 0.0
 	_build_visual()
 	_build_anchors()
 	_apply_rest_pose()
@@ -172,16 +173,16 @@ func _build_white_pawn_production_blockout() -> void:
 
 	# Head and expressive readable face.
 	_add_sphere_mat("Head", 0.235, Vector3(0, 1.14, 0.015), skin, Vector3(1.0, 0.98, 0.92))
-	_add_sphere_mat("Nose", 0.055, Vector3(0, 1.12, 0.225), skin, Vector3(0.85, 0.75, 1.2))
-	_add_sphere_mat("Eye_L", 0.027, Vector3(-0.075, 1.18, 0.222), eye)
-	_add_sphere_mat("Eye_R", 0.027, Vector3(0.075, 1.18, 0.222), eye)
-	_add_box_mat("Brow_L", Vector3(0.09, 0.018, 0.018), Vector3(-0.078, 1.235, 0.222), dark)
-	_add_box_mat("Brow_R", Vector3(0.09, 0.018, 0.018), Vector3(0.078, 1.235, 0.222), dark)
+	_add_sphere_mat("Nose", 0.055, Vector3(0, 1.12, -0.225), skin, Vector3(0.85, 0.75, 1.2))
+	_add_sphere_mat("Eye_L", 0.027, Vector3(-0.075, 1.18, -0.222), eye)
+	_add_sphere_mat("Eye_R", 0.027, Vector3(0.075, 1.18, -0.222), eye)
+	_add_box_mat("Brow_L", Vector3(0.09, 0.018, 0.018), Vector3(-0.078, 1.235, -0.222), dark)
+	_add_box_mat("Brow_R", Vector3(0.09, 0.018, 0.018), Vector3(0.078, 1.235, -0.222), dark)
 
 	# Oversized rounded helmet with gold rim and blue crest.
 	_add_sphere_mat("HelmetDome", 0.265, Vector3(0, 1.30, -0.005), ivory_dark, Vector3(1.06, 0.72, 1.04))
-	_add_box_mat("HelmetRim", Vector3(0.54, 0.06, 0.34), Vector3(0, 1.245, 0.02), gold)
-	_add_box_mat("HelmetNoseGuard", Vector3(0.055, 0.23, 0.045), Vector3(0, 1.14, 0.235), gold)
+	_add_box_mat("HelmetRim", Vector3(0.54, 0.06, 0.34), Vector3(0, 1.245, -0.02), gold)
+	_add_box_mat("HelmetNoseGuard", Vector3(0.055, 0.23, 0.045), Vector3(0, 1.14, -0.235), gold)
 	_add_box_mat("HelmetCrest", Vector3(0.10, 0.30, 0.16), Vector3(0, 1.50, -0.03), blue, Vector3(0, 0, -8))
 
 	# Short spear, deliberately compact so it does not collide with neighbors.

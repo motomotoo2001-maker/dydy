@@ -134,7 +134,7 @@ func _build_environment() -> void:
 	env.background_color = Color("#251b19")
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.ambient_light_color = Color("#e0c8aa")
-	env.ambient_light_energy = 0.52
+	env.ambient_light_energy = 0.45
 	env.ssao_enabled = true
 	env.glow_enabled = true
 	env.glow_intensity = 0.24
@@ -153,9 +153,9 @@ func _build_cathedral() -> void:
 	root.name = "Cathedral"
 	generated.add_child(root)
 
-	var stone := _mat(Color("#625b55"), 0.72, 0.0)
-	var floor_mat := _mat(Color("#302d2c"), 0.48, 0.0)
-	var red := _mat(Color("#5b1f26"), 0.62, 0.0)
+	var stone := _mat(Color("#8d8174"), 0.70, 0.0)
+	var floor_mat := _mat(Color("#5a5048"), 0.52, 0.0)
+	var red := _mat(Color("#7b3434"), 0.62, 0.0)
 	var gold := _mat(Color("#a9782f"), 0.26, 0.82)
 
 	_box(root, "Floor", Vector3(22, 0.2, 28), Vector3(0, -0.1, 0), floor_mat)
@@ -193,14 +193,14 @@ func _build_board() -> void:
 	generated.add_child(sockets_root)
 
 	var cream := _marble_material(Color("#e7dfd0"), Color("#b9aea0"), 0.26)
-	var wood := _wood_material(Color("#5a3524"), Color("#2e1b18"), 0.30)
+	var wood := _wood_material(Color("#493024"), Color("#271a15"), 0.32)
 	var gold := _mat(Color("#c99b48"), 0.24, 0.84)
-	var base := _wood_material(Color("#4b2b1d"), Color("#241510"), 0.34)
+	var base := _wood_material(Color("#3d281f"), Color("#211612"), 0.36)
 
 	_box(board_root, "Base", Vector3(11.35, 0.34, 11.35), Vector3(0, 0.17, 0), base)
 	_box(board_root, "GoldTrim", Vector3(10.55, 0.18, 10.55), Vector3(0, 0.32, 0), gold)
 
-	var rail_mat := _wood_material(Color("#6a3d28"), Color("#341d15"), 0.28)
+	var rail_mat := _wood_material(Color("#583526"), Color("#2e1d17"), 0.30)
 	_box(board_root, "FrameNorth", Vector3(11.25, 0.34, 0.42), Vector3(0, 0.43, -5.42), rail_mat)
 	_box(board_root, "FrameSouth", Vector3(11.25, 0.34, 0.42), Vector3(0, 0.43, 5.42), rail_mat)
 	_box(board_root, "FrameWest", Vector3(0.42, 0.34, 10.45), Vector3(-5.42, 0.43, 0), rail_mat)
@@ -247,11 +247,11 @@ func _build_cameras() -> void:
 
 	gameplay_camera = Camera3D.new()
 	gameplay_camera.name = "GameplayCamera"
-	gameplay_camera.position = Vector3(0, 9.15, 11.65)
+	gameplay_camera.position = Vector3(0, 9.8, 15.5)
 	gameplay_camera.fov = 38.0
 	gameplay_camera.current = true
 	root.add_child(gameplay_camera)
-	gameplay_camera.look_at(Vector3(0, 0.72, -0.30), Vector3.UP)
+	gameplay_camera.look_at(Vector3(0, 1.35, -1.55), Vector3.UP)
 
 	battle_camera = Camera3D.new()
 	battle_camera.name = "BattleCamera"
@@ -268,8 +268,8 @@ func _build_lighting() -> void:
 
 	var sun := DirectionalLight3D.new()
 	sun.name = "SunWarm"
-	sun.light_color = Color("#ffd4a0")
-	sun.light_energy = 2.05
+	sun.light_color = Color("#ffe7bd")
+	sun.light_energy = 1.55
 	sun.shadow_enabled = true
 	sun.rotation_degrees = Vector3(-48, -38, 0)
 	root.add_child(sun)
@@ -277,8 +277,8 @@ func _build_lighting() -> void:
 	var warm := OmniLight3D.new()
 	warm.name = "WarmFill"
 	warm.position = Vector3(-6.5, 6.8, -4.0)
-	warm.light_color = Color("#ffb76f")
-	warm.light_energy = 4.4
+	warm.light_color = Color("#f6c898")
+	warm.light_energy = 2.2
 	warm.omni_range = 15.0
 	root.add_child(warm)
 
@@ -286,15 +286,15 @@ func _build_lighting() -> void:
 	cool.name = "CoolRim"
 	cool.position = Vector3(6.5, 5.0, -2.0)
 	cool.light_color = Color("#755cff")
-	cool.light_energy = 2.4
+	cool.light_energy = 1.65
 	cool.omni_range = 12.0
 	root.add_child(cool)
 
 	var window_key := OmniLight3D.new()
 	window_key.name = "WindowSunFill"
 	window_key.position = Vector3(-4.8, 7.8, -10.5)
-	window_key.light_color = Color("#f3c77c")
-	window_key.light_energy = 5.2
+	window_key.light_color = Color("#ffe2ac")
+	window_key.light_energy = 2.6
 	window_key.omni_range = 16.0
 	root.add_child(window_key)
 

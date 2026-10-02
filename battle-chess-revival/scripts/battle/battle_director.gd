@@ -60,8 +60,8 @@ func _run_capture(id: StringName, attacker: PieceView, victim: PieceView, restor
 
 	attacker.global_position = arena.battle_stage.get_node("AttackerAnchor").global_position
 	victim.global_position = arena.battle_stage.get_node("VictimAnchor").global_position
-	attacker.rotation = Vector3.ZERO
-	victim.rotation = Vector3.ZERO
+	attacker.look_at(victim.global_position, Vector3.UP)
+	victim.look_at(attacker.global_position, Vector3.UP)
 
 	arena.gameplay_camera.current = false
 	_set_battle_camera(data.camera_profile)
