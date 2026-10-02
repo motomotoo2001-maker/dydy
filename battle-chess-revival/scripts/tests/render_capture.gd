@@ -39,7 +39,7 @@ func _run() -> void:
 		return
 
 	var director := root.get_node("BattleDirector") as BattleDirector
-	director.time_scale = 0.42
+	director.time_scale = 0.30
 
 	for index in range(CAPTURES.size()):
 		var id: StringName = CAPTURES[index][0]
