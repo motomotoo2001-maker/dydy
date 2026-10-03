@@ -31,6 +31,8 @@ func _run() -> void:
 	var promotion_overlay := controller.find_child("PromotionOverlay", true, false) as Control
 	var promotion_card := controller.find_child("PromotionCard", true, false) as Control
 	var settings_card := controller.find_child("SettingsCard", true, false) as Control
+	var history_panel := controller.find_child("MoveHistoryPanel", true, false) as Control
+	var history_label := controller.find_child("MoveHistoryLabel", true, false) as RichTextLabel
 	var slider := controller.find_child("MasterVolume", true, false) as HSlider
 	var ambience_slider := controller.find_child("AmbienceVolume", true, false) as HSlider
 	var sfx_slider := controller.find_child("SFXVolume", true, false) as HSlider
@@ -102,6 +104,10 @@ func _run() -> void:
 	controller.call("_on_game_mode_selected", 0)
 	if not controller.ai_enabled or ai_select.disabled:
 		_fail("AI mode did not restore AI controls")
+		return
+
+	if not history_label.text.contains("Ходов пока нет"):
+		_fail("empty move history state missing")
 		return
 
 	controller.call("_toggle_pause")
