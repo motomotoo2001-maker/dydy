@@ -19,7 +19,7 @@ func _run() -> void:
 	await process_frame
 
 	var controller := scene.get_node_or_null("ChessController") as ChessController
-	var arena := scene.get_node_or_null("Arena") as ArenaBuilder
+	var arena := scene.get_node_or_null("ArenaBuilder") as ArenaBuilder
 	if controller == null or arena == null:
 		_fail("controller/arena missing")
 		return
