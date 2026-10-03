@@ -34,6 +34,10 @@ def material(name, color, metallic=0.0, roughness=0.45):
 
 
 def finish(obj, mat=None, smooth=True):
+    # Keep Blender object and mesh-data names identical. Trimesh contract
+    # validation reads geometry names, while Godot animations read node names.
+    if getattr(obj, "data", None) is not None:
+        obj.data.name = obj.name
     if mat is not None:
         obj.data.materials.append(mat)
     if smooth and obj.type == "MESH":
@@ -117,6 +121,7 @@ def tube(name, points, radius, mat, resolution=3):
     bpy.ops.object.convert(target="MESH")
     obj = bpy.context.object
     obj.name = name
+    obj.data.name = name
     for p in obj.data.polygons:
         p.use_smooth = True
     return obj
