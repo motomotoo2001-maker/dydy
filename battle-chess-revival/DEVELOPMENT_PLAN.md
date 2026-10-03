@@ -1,79 +1,89 @@
 # Battle Chess Revival — Development Plan
 
-This file is the durable roadmap for continuing the project without losing the next steps.
-The rule is simple: keep one verified checkpoint behind us, one active milestone in progress,
-and at least two upcoming milestones already specified.
+This is the durable roadmap for continuing the project without losing the next steps.
+Keep one verified checkpoint behind us, one active milestone in progress, and at least two upcoming milestones already specified.
 
 Last updated: 2026-10-03.
 
 ## Verified checkpoint
 
-**Production V3 Animation Backup — commit `3b8d4b4`**
+**Board presentation + production pawn pipeline**
 
-- Playable chess rules + deterministic Black AI.
-- 64 board sockets / 32 pieces.
-- Six signature capture cinematics.
-- White/Black V3 GLB assets for Pawn, Knight, Bishop, Rook, Queen, King.
-- Imported named-part articulation, idle motion, VFX polish, render captures and Visual QA.
-- Google Drive backup: `BattleChessRevival_CONCEPT_V3_ANIMATION_BACKUP_2026-10-02_3b8d4b4.zip`.
+Verified commits:
+- `cd9c3ac` — Blender-built/rigged production pawns are generated in CI.
+- `19008238` — durable roadmap after selection/move/check/checkmate presentation work.
+- Godot 4.7.2 CI is green through the presentation milestone.
 
-## ACTIVE — Milestone A0: restore V3 binary assets to GitHub
+Verified features:
+- complete playable chess rules + deterministic Black AI;
+- 64 board sockets / 32 pieces;
+- six signature capture cinematics;
+- selected-piece pose, move anticipation/recovery, per-piece secondary motion;
+- check reaction and checkmate winner/loser presentation;
+- V3 external GLB pipeline for all six families on both sides;
+- Blender production pawn pass, with the authored White Pawn kept on `white_pawn_production_v1.glb`;
+- automated gameplay/battle/lineup renders and Visual QA.
 
-A recovery audit on 2026-10-03 found that `PieceView` references the external V3 GLBs,
-but the GLB binaries themselves are absent from the GitHub branch. This forces the game to
-fall back to procedural production blockouts even though the Drive checkpoint contains the models.
+Current QA direction from the latest render:
+- silhouette/detail density still needs a major authored-mesh upgrade;
+- framing/coarse composition remains farther from the target than palette/detail;
+- battle materials still need later palette tuning.
 
-Immediate deliverables:
+## ACTIVE — Milestone B: Production V4 final character pipeline
 
-- restore the 12 required V3 GLBs from the verified Drive backup into `assets/models/`;
-- change White Pawn from the stale `white_pawn_production_v1.glb` path to the existing
-  `white_pawn_concept_v3.glb` asset;
-- retain procedural blockouts as a safe fallback;
-- run Godot 4.7.2 import/parse, chess rules, smoke tests and Visual QA;
-- inspect gameplay/battle/lineup captures and correct scale/orientation/material issues before
-  freezing a new baseline;
-- create a new Drive checkpoint only after the render is verified.
+Goal: replace the generated V3/blockout-looking families with genuinely authored, organic, high-detail characters while preserving the current gameplay and capture contracts.
 
-Exit gate: all 12 GLBs are present in GitHub, non-headless gameplay uses them, tests pass,
-and generated reference captures visibly contain the external models.
+Production order:
+1. Knight pair.
+2. Bishop pair.
+3. Rook pair.
+4. Queen pair.
+5. King pair.
+6. Final Pawn polish after the other silhouettes are locked.
 
-## NEXT — Milestone A1: board-game presentation animation
-
-Goal: make the pieces feel alive outside capture cinematics before replacing V3 meshes with final authored V4 characters.
+### B1 — Knight pair (current task)
 
 Deliverables:
+- high-detail White Knight and Black Knight models with clearly different personalities;
+- readable silhouette at gameplay-camera distance;
+- production materials rather than flat blockout surfaces;
+- correct board footprint and scale;
+- stable forward axis/pivot;
+- named animation parts or Skeleton3D/bone mapping compatible with existing capture logic;
+- gameplay + battle + lineup render review;
+- retain V3 Knight fallback until the production pair passes CI and visual review.
 
-- selected-piece lift / scale pose;
-- move anticipation + recovery pose;
-- per-piece secondary motion during movement;
-- check reaction for the threatened King;
-- checkmate winner/loser poses;
-- headless smoke coverage for the presentation APIs;
-- CI verification on Godot 4.7.2 before making a new Drive checkpoint.
+Exit gate:
+- both production Knight assets instantiate in non-headless gameplay;
+- `CHESS_RULES_PASS` and `BATTLE_CHESS_SMOKE_PASS`;
+- Visual QA regression gate passes;
+- screenshots visibly show the production Knight pair rather than fallback V3 models.
 
-Exit gate: `CHESS_RULES_PASS`, `BATTLE_CHESS_SMOKE_PASS`, render/Visual-QA pass, no parser/runtime regression.
+## NEXT — Milestone B2/B3: Bishop and Rook production pairs
 
-## NEXT + 1 — Milestone B: Production V4 final character pipeline
+Bishop:
+- elephant/cleric silhouette, expressive trunk/head, staff, cloth layers;
+- ram-charge capture compatibility.
 
-Goal: replace V3 concept meshes / procedural fallbacks with genuinely authored organic meshes while preserving the current gameplay contract.
+Rook:
+- massive fortress/bruiser silhouette, articulated arms/fists;
+- jump-crush capture compatibility.
 
-Order: Knight → Bishop → Rook → Queen → King → final Pawn polish.
+Each family ships independently and keeps the previous verified asset as rollback.
 
-Each family must keep:
+## NEXT + 1 — Milestone B4/B5: Queen and King production pairs
 
-- correct chess-square footprint;
-- named animation anchors / parts or Skeleton3D bone mapping;
-- team-readable silhouette at gameplay-camera distance;
-- PBR material separation;
-- capture compatibility;
-- fallback V3 asset until the V4 import passes CI and screenshot review.
+Queen:
+- strong face/hair/cape/staff silhouette and readable magic focal point;
+- transformation capture compatibility.
 
-Do not replace all 12 assets at once. Ship one family at a time and keep the last verified family available for rollback.
+King:
+- expressive royal/demon-lord contrast, crown/scepter/cape detail;
+- trapdoor capture compatibility.
 
-## AFTER THAT — Milestone C: rig + authored clips
+## Milestone C: authored rig + animation clips
 
-For each final character family:
-
+For each final production family:
 1. Skeleton3D / skin binding.
 2. Idle.
 3. Selected.
@@ -82,9 +92,9 @@ For each final character family:
 6. Victory.
 7. Defeat/death.
 8. Signature capture clip(s).
-9. Animation event markers for VFX/audio/camera impact.
+9. Animation event markers for VFX/audio/camera impacts.
 
-The current named-part animation system remains as a fallback and timing reference until the authored clip is verified.
+The current named-part animation system remains as fallback/timing reference until each authored clip is verified.
 
 ## Milestone D: environment/material final pass
 
@@ -92,13 +102,13 @@ The current named-part animation system remains as a fallback and timing referen
 - higher-frequency marble/wood/gold material detail;
 - stained-glass light shaping;
 - shadow/contact tuning under every piece;
-- battle-camera exposure/DOF pass;
+- battle-camera exposure/DOF/framing pass;
 - final gameplay and capture composition against the approved reference.
 
 ## Milestone E: UX/audio/polish
 
 - title / mode / restart UI;
-- check/checkmate presentation;
+- check/checkmate presentation polish;
 - piece selection and move SFX;
 - unique signature-capture SFX;
 - ambient cathedral bed;
@@ -117,12 +127,17 @@ The current named-part animation system remains as a fallback and timing referen
 ## Checkpoint policy
 
 Every meaningful milestone follows this order:
-
 1. modify the working project;
-2. run local static/asset checks available in the environment;
+2. run local/static/asset checks available in the environment;
 3. commit to `battle-chess-revival`;
 4. wait for Godot 4.7.2 CI validation;
-5. inspect generated gameplay/battle/lineup captures when available;
+5. inspect generated gameplay/battle/lineup captures;
 6. only then create a new versioned ZIP;
 7. save the ZIP to the `Battle Chess Revival` Drive folder;
-8. update `Battle Chess Revival — PROJECT STATE` with the verified commit and the next milestone.
+8. update `Battle Chess Revival — PROJECT STATE` with the verified commit and next milestone.
+
+## Recovery policy
+
+- Source mesh generators and Blender scripts are first-class project source; generated GLBs may be rebuilt in CI.
+- Production build artifacts must contain the generated GLBs actually used by Godot.
+- Never replace a higher-quality production asset with a lower-fidelity concept asset merely because the concept binary exists in source backup.
