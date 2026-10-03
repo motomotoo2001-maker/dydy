@@ -25,6 +25,7 @@ var pause_overlay: Control
 var volume_slider: HSlider
 var ambience_slider: HSlider
 var sfx_slider: HSlider
+var ai_difficulty_select: OptionButton
 var hud_layer: CanvasLayer
 var intro_banner: PanelContainer
 var endgame_overlay: Control
@@ -142,9 +143,12 @@ func _execute_move(move: Dictionary, allow_ai_reply: bool) -> void:
 	input_locked = false
 	if allow_ai_reply and ai_enabled and state.turn == ChessState.BLACK and status in [&"ongoing", &"check"]:
 		input_locked = true
-		await get_tree().create_timer(0.35).timeout
+		_refresh_hud()
+		await get_tree().process_frame
+		await get_tree().create_timer(0.24).timeout
 		var reply := ai.choose_move(state)
 		input_locked = false
+		_refresh_hud()
 		if not reply.is_empty():
 			await _execute_move(reply, false)
 
@@ -417,8 +421,8 @@ func _build_pause_overlay() -> void:
 	var card := PanelContainer.new()
 	card.name = "SettingsCard"
 	card.set_anchors_preset(Control.PRESET_CENTER)
-	card.position = Vector2(-205, -220)
-	card.size = Vector2(410, 440)
+	card.position = Vector2(-205, -260)
+	card.size = Vector2(410, 520)
 	card.add_theme_stylebox_override("panel", _panel_style(Color(0.07, 0.055, 0.065, 0.98), Color("#b7833e"), 16, 2))
 	pause_overlay.add_child(card)
 
@@ -449,6 +453,21 @@ func _build_pause_overlay() -> void:
 
 	var separator := HSeparator.new()
 	column.add_child(separator)
+
+	var ai_title := Label.new()
+	ai_title.text = "Сложность AI"
+	ai_title.add_theme_font_size_override("font_size", 13)
+	column.add_child(ai_title)
+
+	ai_difficulty_select = OptionButton.new()
+	ai_difficulty_select.name = "AIDifficulty"
+	ai_difficulty_select.custom_minimum_size.y = 36
+	ai_difficulty_select.add_item("Лёгкий", ChessAI.Difficulty.EASY)
+	ai_difficulty_select.add_item("Обычный", ChessAI.Difficulty.NORMAL)
+	ai_difficulty_select.add_item("Сложный", ChessAI.Difficulty.HARD)
+	ai_difficulty_select.select(ai.difficulty)
+	ai_difficulty_select.item_selected.connect(_on_ai_difficulty_selected)
+	column.add_child(ai_difficulty_select)
 
 	volume_slider = _add_volume_slider(column, "Общая громкость", &"Master", "MasterVolume")
 	ambience_slider = _add_volume_slider(column, "Окружение", &"Ambience", "AmbienceVolume")
@@ -503,6 +522,13 @@ func _restart_from_pause() -> void:
 	if pause_overlay != null:
 		pause_overlay.visible = false
 	restart_game()
+
+
+func _on_ai_difficulty_selected(index: int) -> void:
+	if ai_difficulty_select == null:
+		return
+	ai.set_difficulty(ai_difficulty_select.get_item_id(index))
+	_refresh_hud()
 
 
 func _add_volume_slider(column: VBoxContainer, title_text: String, bus_name: StringName, node_name: String) -> HSlider:
@@ -576,7 +602,11 @@ func _refresh_hud() -> void:
 		help_label.text = "ЛКМ ход  •  Esc меню  •  R новая игра  •  A AI %s" % ("ON" if ai_enabled else "OFF")
 
 	if state_badge != null:
-		state_badge.text = "AI: %s   •   %s" % [("ON" if ai_enabled else "OFF"), _material_summary()]
+		state_badge.text = "AI: %s/%s   •   %s" % [
+			("ON" if ai_enabled else "OFF"),
+			ai.difficulty_label(),
+			_material_summary()
+		]
 
 	if alert_panel != null:
 		alert_panel.visible = status == &"check"
@@ -596,7 +626,10 @@ func _refresh_hud() -> void:
 		&"draw_insufficient":
 			status_label.text = "НИЧЬЯ  •  материал"
 		_:
-			status_label.text = "%s ходят" % side_text
+			if ai_enabled and state.turn == ChessState.BLACK and input_locked:
+				status_label.text = "Чёрные думают…  •  %s" % ai.difficulty_label()
+			else:
+				status_label.text = "%s ходят" % side_text
 
 
 func _material_summary() -> String:
