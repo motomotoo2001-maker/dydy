@@ -97,6 +97,9 @@ func is_in_check(side: StringName) -> bool:
 	var king_square := _find_king(side)
 	return king_square != &"" and is_square_attacked(king_square, _opposite(side))
 
+func get_king_square(side: StringName) -> StringName:
+	return _find_king(side)
+
 func is_square_attacked(square: StringName, by_side: StringName) -> bool:
 	var target := square_to_coord(square)
 	var pawn_source_dy := -1 if by_side == WHITE else 1
