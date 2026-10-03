@@ -39,6 +39,7 @@ func _run() -> void:
 	var mode_select := controller.find_child("GameMode", true, false) as OptionButton
 	var ai_select := controller.find_child("AIDifficulty", true, false) as OptionButton
 	var graphics_select := controller.find_child("GraphicsQuality", true, false) as OptionButton
+	var capture_select := controller.find_child("CaptureMode", true, false) as OptionButton
 	var resume := controller.find_child("ResumeButton", true, false) as Button
 	var undo := controller.find_child("UndoButton", true, false) as Button
 	var restart := controller.find_child("RestartButton", true, false) as Button
@@ -46,7 +47,7 @@ func _run() -> void:
 	if turn_panel == null or hint_panel == null or alert_panel == null:
 		_fail("production HUD controls missing")
 		return
-	if pause_overlay == null or promotion_overlay == null or promotion_card == null or settings_card == null or slider == null or ambience_slider == null or sfx_slider == null or mode_select == null or ai_select == null or resume == null or undo == null or restart == null:
+	if pause_overlay == null or promotion_overlay == null or promotion_card == null or settings_card == null or slider == null or ambience_slider == null or sfx_slider == null or mode_select == null or ai_select == null or graphics_select == null or capture_select == null or resume == null or undo == null or restart == null:
 		_fail("pause/promotion/settings/audio/mode/AI/undo controls missing")
 		return
 	if turn_panel.size.x > 380.0 or turn_panel.size.y > 90.0:
@@ -113,6 +114,27 @@ func _run() -> void:
 		return
 	if world == null or world.environment == null or not world.environment.ssao_enabled or not world.environment.glow_enabled:
 		_fail("high graphics preset did not restore approved effects")
+		return
+
+	capture_select.select(BattleDirector.CaptureMode.FAST)
+	controller.call("_on_capture_mode_selected", BattleDirector.CaptureMode.FAST)
+	if controller.capture_mode != BattleDirector.CaptureMode.FAST or controller.battle_director.capture_mode != BattleDirector.CaptureMode.FAST:
+		_fail("Fast capture mode selector not wired")
+		return
+	if absf(controller.battle_director.time_scale - 0.58) > 0.001:
+		_fail("Fast capture mode did not scale cinematic timing")
+		return
+
+	capture_select.select(BattleDirector.CaptureMode.OFF)
+	controller.call("_on_capture_mode_selected", BattleDirector.CaptureMode.OFF)
+	if controller.battle_director.capture_mode != BattleDirector.CaptureMode.OFF:
+		_fail("Off capture mode selector not wired")
+		return
+
+	capture_select.select(BattleDirector.CaptureMode.FULL)
+	controller.call("_on_capture_mode_selected", BattleDirector.CaptureMode.FULL)
+	if controller.battle_director.capture_mode != BattleDirector.CaptureMode.FULL or absf(controller.battle_director.time_scale - 1.0) > 0.001:
+		_fail("Full capture mode did not restore reference timing")
 		return
 
 	mode_select.select(1)
