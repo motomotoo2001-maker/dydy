@@ -188,21 +188,25 @@ Final checkpoint `0fa17ca` verified:
 Every family now has a verified production model + Skeleton3D + gameplay/capture clips:
 Pawn → Knight → Bishop → Rook → Queen → King.
 
-## ACTIVE — Milestone D1: Production cathedral architecture
+## VERIFIED — Milestone D1: Production cathedral architecture
+
+Final checkpoint `d683952` verified:
+- Blender-authored CathedralProductionV1 GLB integrated as the normal rendered environment;
+- procedural cathedral remains available as the headless/safe fallback;
+- production shell includes compound columns, arches, altar/dais, stained-glass bays, statues, banners, candle groups and visible vault/ridge structure;
+- dedicated Godot cathedral asset gate validates mesh density and key architecture nodes;
+- all character/runtime/chess/capture tests remain green with the external cathedral;
+- gameplay/battle renders and Visual QA pass;
+- Drive checkpoint: `BattleChessRevival_CATHEDRAL_D1_FINAL_2026-10-03_d683952.zip`.
+
+## ACTIVE — Milestone D2: material + stained-glass lighting pass
 
 Current task:
-- replace the blockout-only cathedral shell with a Blender-authored production GLB;
-- preserve board/battle staging and gameplay-camera clearance;
-- add layered columns, arches, altar architecture, side aisles and visible ceiling/vault structure;
-- keep the existing procedural cathedral as a safe fallback;
-- validate external cathedral import in Godot and inspect gameplay/battle renders before checkpoint.
-
-## NEXT — Milestone D2: material + stained-glass lighting pass
-
-- higher-frequency stone/marble/wood/gold surfaces;
-- stained-glass color shaping and warm/cool light separation;
-- reduce flat gray/brown wall reads;
-- improve board/piece contact contrast without crushing shadows.
+- apply richer runtime material overrides to the production cathedral: stone variation, metal/gold response, cloth and emissive stained glass;
+- add subtle red/gold/blue stained-glass light shaping around the board;
+- rebalance ambient/sun/fill levels to reduce the flat beige look;
+- preserve piece readability and avoid crushing black-side detail;
+- compare gameplay and battle renders before freezing D2.
 
 ## NEXT + 1 — Milestone D3: camera/contact/final composition
 
