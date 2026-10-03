@@ -65,6 +65,21 @@ func _run() -> void:
 	if arena.gameplay_camera.position.x < 5.0:
 		_fail("gameplay camera is no longer a 3/4 side view")
 		return
+	if arena.quality_preset != ArenaBuilder.QUALITY_HIGH:
+		_fail("release default graphics quality is not High")
+		return
+	var world := arena.generated.get_node_or_null("WorldEnvironment") as WorldEnvironment
+	if world == null or world.environment == null:
+		_fail("WorldEnvironment missing")
+		return
+	arena.apply_quality_preset(ArenaBuilder.QUALITY_LOW)
+	if world.environment.ssao_enabled or world.environment.glow_enabled:
+		_fail("Low quality preset did not disable expensive effects")
+		return
+	arena.apply_quality_preset(ArenaBuilder.QUALITY_HIGH)
+	if not world.environment.ssao_enabled or not world.environment.glow_enabled:
+		_fail("High quality preset did not restore approved effects")
+		return
 
 	var viewport_size := root.get_viewport().get_visible_rect().size
 	var half_board := 5.72
@@ -100,7 +115,7 @@ func _run() -> void:
 		_fail("cathedral material classification too low unique=%d" % unique_materials.size())
 		return
 
-	for node_name in ["TurnPanel", "HintPanel", "PauseOverlay", "EndgameOverlay", "RematchButton"]:
+	for node_name in ["TurnPanel", "HintPanel", "PauseOverlay", "EndgameOverlay", "RematchButton", "MoveHistoryPanel", "MoveHistoryLabel", "GameMode", "AIDifficulty", "GraphicsQuality", "PromotionOverlay", "PromoteQueen", "UndoButton"]:
 		if controller.find_child(node_name, true, false) == null:
 			_fail("required UX node missing: %s" % node_name)
 			return
