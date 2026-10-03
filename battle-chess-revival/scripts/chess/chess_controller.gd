@@ -1,6 +1,8 @@
 class_name ChessController
 extends Node
 
+const SETTINGS_PATH := "user://battle_chess_settings.cfg"
+
 signal piece_selected(piece_type: StringName)
 signal move_committed(piece_type: StringName, capture: bool)
 signal game_status_changed(status: StringName)
@@ -42,6 +44,7 @@ func setup(p_arena: ArenaBuilder, p_battle_director: BattleDirector) -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	arena = p_arena
 	battle_director = p_battle_director
+	_load_settings()
 	_build_hud()
 	_refresh_hud()
 	call_deferred("_maybe_play_intro")
@@ -74,6 +77,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			ai_enabled = not ai_enabled
 			_sync_game_mode_controls()
 			_refresh_hud()
+			_save_settings()
 			return
 	if ai_enabled and state.turn == ChessState.BLACK:
 		return
@@ -684,6 +688,7 @@ func _on_game_mode_selected(index: int) -> void:
 	ai_enabled = game_mode_select.get_item_id(index) == 1
 	_sync_game_mode_controls()
 	_refresh_hud()
+	_save_settings()
 
 
 func _sync_game_mode_controls() -> void:
@@ -698,6 +703,7 @@ func _on_ai_difficulty_selected(index: int) -> void:
 		return
 	ai.set_difficulty(ai_difficulty_select.get_item_id(index))
 	_refresh_hud()
+	_save_settings()
 
 
 func _add_volume_slider(column: VBoxContainer, title_text: String, bus_name: StringName, node_name: String) -> HSlider:
@@ -723,6 +729,39 @@ func _on_bus_volume_changed(value: float, bus_name: StringName) -> void:
 		return
 	AudioServer.set_bus_volume_db(bus, linear_to_db(maxf(value, 0.001)))
 	AudioServer.set_bus_mute(bus, value <= 0.001)
+	_save_settings()
+
+
+func _save_settings() -> void:
+	var config := ConfigFile.new()
+	config.set_value("gameplay", "ai_enabled", ai_enabled)
+	config.set_value("gameplay", "ai_difficulty", ai.difficulty)
+	config.set_value("audio", "master", _current_bus_volume_linear(&"Master"))
+	config.set_value("audio", "ambience", _current_bus_volume_linear(&"Ambience"))
+	config.set_value("audio", "sfx", _current_bus_volume_linear(&"SFX"))
+	var err := config.save(SETTINGS_PATH)
+	if err != OK:
+		push_warning("Could not save settings: %s" % error_string(err))
+
+
+func _load_settings() -> void:
+	var config := ConfigFile.new()
+	if config.load(SETTINGS_PATH) != OK:
+		return
+	ai_enabled = bool(config.get_value("gameplay", "ai_enabled", true))
+	ai.set_difficulty(int(config.get_value("gameplay", "ai_difficulty", ChessAI.Difficulty.NORMAL)))
+	_apply_saved_bus_volume(&"Master", float(config.get_value("audio", "master", _current_bus_volume_linear(&"Master"))))
+	_apply_saved_bus_volume(&"Ambience", float(config.get_value("audio", "ambience", _current_bus_volume_linear(&"Ambience"))))
+	_apply_saved_bus_volume(&"SFX", float(config.get_value("audio", "sfx", _current_bus_volume_linear(&"SFX"))))
+
+
+func _apply_saved_bus_volume(bus_name: StringName, value: float) -> void:
+	var bus := AudioServer.get_bus_index(bus_name)
+	if bus < 0:
+		return
+	var clamped := clampf(value, 0.0, 1.0)
+	AudioServer.set_bus_volume_db(bus, linear_to_db(maxf(clamped, 0.001)))
+	AudioServer.set_bus_mute(bus, clamped <= 0.001)
 
 
 func _current_bus_volume_linear(bus_name: StringName) -> float:
