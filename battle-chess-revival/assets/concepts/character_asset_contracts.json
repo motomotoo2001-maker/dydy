@@ -1,5 +1,5 @@
 {
-  "version": "production-all-families-v1+queen-silhouette-g6",
+  "version": "production-all-families-v1+queen-king-silhouette-g6",
   "source": "approved character sheets; all six families production-authored in Blender, with unified Pawn production naming and authored animation contract",
   "assets": {
     "white_pawn_production_v1.glb": {
@@ -202,7 +202,7 @@
     "white_king_production_v1.glb": {
       "family": "King",
       "side": "White",
-      "min_parts": 58,
+      "min_parts": 68,
       "required_parts": [
         "Head",
         "Beard",
@@ -216,13 +216,20 @@
         "Arm_R",
         "V3_CoatPanel",
         "Cape",
-        "FurCollar"
+        "FurCollar",
+        "CrownWing_L",
+        "CrownWing_R",
+        "ScepterHalo",
+        "CapeShoulder_L",
+        "CapeShoulder_R",
+        "RobeSilhouette_L",
+        "RobeSilhouette_R"
       ]
     },
     "black_king_production_v1.glb": {
       "family": "King",
       "side": "Black",
-      "min_parts": 62,
+      "min_parts": 72,
       "required_parts": [
         "Head",
         "Beard",
@@ -239,7 +246,14 @@
         "FurCollar",
         "CrownHorn_L",
         "CrownHorn_R",
-        "ChestSkull"
+        "ChestSkull",
+        "CrownWing_L",
+        "CrownWing_R",
+        "ScepterHalo",
+        "CapeShoulder_L",
+        "CapeShoulder_R",
+        "RobeSilhouette_L",
+        "RobeSilhouette_R"
       ]
     },
     "black_pawn_production_v1.glb": {
