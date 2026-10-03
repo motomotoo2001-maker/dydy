@@ -176,7 +176,17 @@ jobs:
           if-no-files-found: error
       - name: Install Windows export templates
         run: |
-          wget -q https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_export_templates.tpz -O export_templates.tpz
+          TEMPLATE_URL="https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_export_templates.tpz"
+          rm -f export_templates.tpz
+          for attempt in 1 2 3 4 5; do
+            echo "Export template download attempt $attempt/5"
+            if curl -fL --retry 2 --retry-delay 2 --retry-all-errors "$TEMPLATE_URL" -o export_templates.tpz && test -s export_templates.tpz; then
+              break
+            fi
+            rm -f export_templates.tpz
+            sleep $((attempt * 3))
+          done
+          test -s export_templates.tpz
           rm -rf /tmp/godot_export_templates
           mkdir -p /tmp/godot_export_templates
           unzip -q export_templates.tpz -d /tmp/godot_export_templates
