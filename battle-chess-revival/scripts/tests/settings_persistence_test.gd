@@ -35,6 +35,8 @@ func _run() -> void:
 	controller.ai.set_difficulty(ChessAI.Difficulty.HARD)
 	controller.graphics_quality = ArenaBuilder.QUALITY_MEDIUM
 	controller.arena.apply_quality_preset(ArenaBuilder.QUALITY_MEDIUM)
+	controller.capture_mode = BattleDirector.CaptureMode.FAST
+	controller.battle_director.set_capture_mode(BattleDirector.CaptureMode.FAST)
 
 	var master := AudioServer.get_bus_index("Master")
 	var ambience := AudioServer.get_bus_index("Ambience")
@@ -77,6 +79,12 @@ func _run() -> void:
 	if restored.graphics_quality != ArenaBuilder.QUALITY_MEDIUM or restored.arena.quality_preset != ArenaBuilder.QUALITY_MEDIUM:
 		_fail("graphics quality did not persist")
 		return
+	if restored.capture_mode != BattleDirector.CaptureMode.FAST or restored.battle_director.capture_mode != BattleDirector.CaptureMode.FAST:
+		_fail("capture mode did not persist")
+		return
+	if absf(restored.battle_director.time_scale - 0.58) > 0.001:
+		_fail("restored Fast capture mode did not restore time scale")
+		return
 	if absf(db_to_linear(AudioServer.get_bus_volume_db(master)) - 0.44) > 0.03:
 		_fail("master volume did not persist")
 		return
@@ -87,7 +95,7 @@ func _run() -> void:
 		_fail("SFX volume did not persist")
 		return
 
-	print("SETTINGS_PERSISTENCE_PASS mode=local difficulty=", restored.ai.difficulty_label(), " quality=", restored.arena.quality_label())
+	print("SETTINGS_PERSISTENCE_PASS mode=local difficulty=", restored.ai.difficulty_label(), " quality=", restored.arena.quality_label(), " captures=", restored.battle_director.capture_mode_label())
 	second.queue_free()
 	await process_frame
 	_cleanup()
