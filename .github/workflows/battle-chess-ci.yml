@@ -82,6 +82,8 @@ jobs:
           ./Godot_v4.7.2-stable_linux.x86_64 --version
       - name: Import and parse project
         run: ./Godot_v4.7.2-stable_linux.x86_64 --headless --rendering-method gl_compatibility --path battle-chess-revival --editor --quit-after 30
+      - name: Validate production UI and pause flow
+        run: xvfb-run -a ./Godot_v4.7.2-stable_linux.x86_64 --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/ui_smoke_test.gd
       - name: Validate production cathedral asset
         run: ./Godot_v4.7.2-stable_linux.x86_64 --headless --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/cathedral_asset_test.gd
       - name: Validate authored Knight rig assets
