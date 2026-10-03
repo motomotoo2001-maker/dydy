@@ -303,7 +303,42 @@ func _run() -> void:
 	if white_rook != null:
 		white_rook.set_battle_animation_active(false)
 
-	print("RENDER_CAPTURE_PASS gameplay=", image.get_width(), "x", image.get_height(), " captures=", CAPTURES.size(), " lineups=2 reviews=17")
+	# Authored Queen state diagnostics.
+	_prepare_asset_review(arena, &"Black", &"Queen")
+	var black_queen_diag := arena.find_piece(&"Black", &"Queen")
+	if black_queen_diag != null:
+		black_queen_diag.set_battle_animation_active(true)
+		black_queen_diag.play_authored_animation(&"Hit", 1.0, 0.0)
+		await create_timer(maxf(black_queen_diag.authored_animation_length(&"Hit") * 0.36, 0.12)).timeout
+	await process_frame
+	await RenderingServer.frame_post_draw
+	var queen_hit_review := get_root().get_texture().get_image()
+	var queen_hit_error := queen_hit_review.save_png("res://asset_review_black_queen_hit.png")
+	if queen_hit_error != OK:
+		push_error("RENDER_CAPTURE_FAIL: Queen Hit review save_png error %s" % queen_hit_error)
+		quit(1)
+		return
+	if black_queen_diag != null:
+		black_queen_diag.set_battle_animation_active(false)
+
+	_prepare_asset_review(arena, &"White", &"Queen")
+	var white_queen_diag := arena.find_piece(&"White", &"Queen")
+	if white_queen_diag != null:
+		white_queen_diag.set_battle_animation_active(true)
+		white_queen_diag.play_authored_animation(&"TransformSpell", 1.0, 0.0)
+		await create_timer(maxf(white_queen_diag.authored_animation_length(&"TransformSpell") * 0.50, 0.20)).timeout
+	await process_frame
+	await RenderingServer.frame_post_draw
+	var queen_spell_review := get_root().get_texture().get_image()
+	var queen_spell_error := queen_spell_review.save_png("res://asset_review_white_queen_transformspell.png")
+	if queen_spell_error != OK:
+		push_error("RENDER_CAPTURE_FAIL: Queen TransformSpell review save_png error %s" % queen_spell_error)
+		quit(1)
+		return
+	if white_queen_diag != null:
+		white_queen_diag.set_battle_animation_active(false)
+
+	print("RENDER_CAPTURE_PASS gameplay=", image.get_width(), "x", image.get_height(), " captures=", CAPTURES.size(), " lineups=2 reviews=19")
 	root.queue_free()
 	await process_frame
 	quit(0)

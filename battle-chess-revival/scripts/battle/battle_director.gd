@@ -432,6 +432,51 @@ func _rook_crush_fallback(attacker: PieceView, victim: PieceView, data: CaptureA
 	await _wait(0.12)
 
 func _queen_transform(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
+	if attacker.has_authored_animation(&"TransformSpell"):
+		await _queen_transform_authored(attacker, victim, data)
+		return
+	await _queen_transform_fallback(attacker, victim, data)
+
+func _queen_transform_authored(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
+	# AnimationPlayer owns Queen body/head/hair/cape/staff/orb choreography.
+	# This director keeps target magic, replacement spawning and impact VFX deterministic.
+	var playback_speed := 1.08
+	var clip_length := attacker.authored_animation_length(&"TransformSpell") / playback_speed
+	if clip_length <= 0.0:
+		clip_length = 1.55
+	attacker.play_authored_animation(&"TransformSpell", playback_speed, 0.05)
+
+	# Wind-up: staff sweeps back and the authored orb grows.
+	await _wait(clip_length * 0.18)
+	var orb := _orb(victim.global_position + Vector3(0, 1.45, 0), Color("#a854ff"), 0.12)
+	await _tween(orb, "scale", Vector3.ONE * 3.5, minf(0.36, clip_length * 0.24))
+	await _wait(maxf(clip_length * 0.08, 0.08))
+
+	# Cast/contact pose is around frame 22/44.
+	var smoke := _orb(victim.global_position + Vector3(0, 0.75, 0), Color("#7a3db4"), 0.45)
+	_magic_hearts(victim.global_position + Vector3(0, 0.85, 0), Color("#f35ac8"))
+	await _tween(smoke, "scale", Vector3.ONE * 3.0, 0.24)
+
+	_camera_punch(0.10)
+	_impact_burst(victim.battle_target.global_position, Color("#b862ff"), 1.10)
+	_flash(victim.battle_target.global_position, Color("#e0a8ff"), 0.24)
+	_comic_text("POOF!", victim.battle_target.global_position + Vector3(0, 0.8, 0), Color("#c979ff"))
+	victim.play_hit_pose()
+	capture_impact.emit(data.id)
+	await _wait(0.10)
+
+	victim.visible = false
+	var replacement := _spawn_magic_result(victim.piece_type, victim.global_position)
+	await _tween(smoke, "scale", Vector3.ONE * 0.15, 0.28)
+	smoke.queue_free()
+	orb.queue_free()
+
+	await _play_magic_aftermath(replacement, victim.piece_type)
+	var remaining := maxf(clip_length * 0.28 - 0.35, 0.04)
+	await _wait(remaining)
+	attacker.stop_authored_animation()
+
+func _queen_transform_fallback(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
 	await _animate_part_prefix(attacker, "Staff", Vector3(0, 0, 34), Vector3.ZERO, 0.16)
 	await _animate_part_prefix(attacker, "V3_HairCurl", Vector3(-8, 0, 0), Vector3(0, 0.03, 0.03), 0.16)
 	await _animate_part_prefix(attacker, "V3_Cape", Vector3(-14, 0, 0), Vector3(0, 0.04, 0.08), 0.16)
@@ -456,7 +501,6 @@ func _queen_transform(attacker: PieceView, victim: PieceView, data: CaptureAnima
 	orb.queue_free()
 
 	await _play_magic_aftermath(replacement, victim.piece_type)
-
 	await _tween(attacker.visual_root, "rotation_degrees:z", 0.0, 0.18)
 
 func _king_trapdoor(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
