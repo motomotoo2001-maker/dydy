@@ -148,21 +148,39 @@ Final checkpoint `b4335b8` verified:
 
 The named-part Rook crush remains as fallback when the authored clip is unavailable.
 
-## ACTIVE — Milestone C4: Queen authored rig/animation
+## VERIFIED — Milestone C4: Queen authored rig/animation
+
+Final checkpoint `bafb22f` verified:
+- White/Black Queen rigged GLBs import as Skeleton3D + AnimationPlayer;
+- nine-bone hierarchy covers body/head/hair/cape/arms/staff/orb;
+- authored Idle, Selected, Move, Hit, Victory, Defeat and TransformSpell clips are available on both sides;
+- PieceView drives Queen presentation clips through the shared authored-animation runtime;
+- BattleDirector uses TransformSpell for Queen body motion while smoke/hearts/POOF/replacement spawning stay deterministic;
+- dedicated Queen Hit/TransformSpell diagnostics and battle capture were visually inspected;
+- chess rules, capture smoke, gameplay renders and Visual QA are green;
+- Drive checkpoint: `BattleChessRevival_QUEEN_AUTHORED_C4_FINAL_2026-10-03_bafb22f.zip`.
+
+## ACTIVE — Milestone C5: King authored rig/animation
 
 Current task:
-- create White/Black Queen rigged candidates beside production GLBs;
-- Skeleton3D mapping for body/head/hair/cape/arms/staff/orb;
-- authored Idle, Selected, Move, Hit, Victory, Defeat and TransformSpell clips;
-- validate candidate before switching PieceView;
-- keep BattleDirector's smoke/hearts/replacement spawning deterministic while the Queen body uses authored TransformSpell;
-- add Queen Hit/TransformSpell diagnostics;
-- preserve named-part transformation fallback until visual verification.
+- create White/Black King rigged candidates beside production GLBs;
+- Skeleton3D mapping for root/body/head/beard/arms/scepter/coat-cape;
+- authored Idle, Selected, Move, Hit, Victory, Defeat and TrapdoorCommand clips;
+- validate candidates before switching PieceView;
+- keep remote control, trapdoor geometry, victim fall and VFX deterministic in BattleDirector;
+- add King Hit/TrapdoorCommand diagnostic renders;
+- preserve named-part trapdoor pose as fallback until visual verification.
 
-## NEXT + 1 — Milestone C5/C6: King and Pawn authored animation
+## NEXT — Milestone C6: Pawn final authored-animation unification
 
-King: royal body/scepter/coat rig + trapdoor command clip.
-Pawn: final unified authored animation pass after all major silhouettes are locked.
+- normalize White/Black pawn asset naming and animation contract;
+- authored Idle / Selected / Move / Hit / Victory / Defeat;
+- keep/refine ToeStab signature animation;
+- final full-army authored-animation lineup and capture review.
+
+## AFTER C6 — Milestone D
+
+Environment/material final pass, followed by UX/audio polish and release-candidate optimization.
 
 Knight B1 verified at `26e07749`: production White/Black Knight GLBs are generated in Blender, contracts pass (72/78 parts), gameplay/capture tests pass, close front review renders verified, and Visual QA regression gate passes.
 
