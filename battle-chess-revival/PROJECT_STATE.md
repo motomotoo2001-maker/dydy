@@ -1,8 +1,8 @@
 # Battle Chess Revival — Project State
 
-Last verified release candidate: **G5 cinematic checkpoint**
+Last verified release candidate: **G6 silhouette + secondary-motion checkpoint**
 Verified branch: `battle-chess-revival`
-Latest verified post-public checkpoint: `e991c34`
+Latest verified post-public checkpoint: `6a0fbdc`
 Stable release rollback: `cd20018` (RC2)
 Engine: **Godot 4.7.2 stable**
 Target release: **Windows x86_64**
@@ -93,8 +93,18 @@ G1 additionally includes strategic AI difficulty levels, move history/Undo, thre
   - `BattleChessRevival_G1_Detail_Windows_2026-10-03_5f64732.zip`
   - `BattleChessRevival_G1_Detail_Source_2026-10-03_5f64732.zip`
 
+## Verified G6 artifacts
+
+Windows:
+`BattleChessRevival_G6_Silhouette_Windows_2026-10-04_6a0fbdc.zip`
+
+Source:
+`BattleChessRevival_G6_Silhouette_Source_2026-10-04_6a0fbdc.zip`
+
+G6 adds verified per-family secondary motion and silhouette V2 upgrades for Queen, King, Rook, Knight and Bishop. Pawn remains on the prior production model because its board read was already strong.
+
 ## Next milestone
 
-**G6 — character secondary motion + silhouette fidelity**
+**G7 — gameplay pacing + combat presentation**
 
-Layer richer per-family secondary motion over authored Skeleton3D clips, then add targeted silhouette/detail improvements without changing gameplay or capture contracts.
+Add persistent Full/Fast/Off capture modes, then improve Hard AI and targeted board feedback while preserving the G6 visual/animation baseline.
