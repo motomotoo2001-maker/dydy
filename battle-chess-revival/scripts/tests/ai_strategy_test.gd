@@ -24,7 +24,10 @@ func _run() -> void:
 		_fail("hard depth is not 3")
 		return
 
-	# Deterministic legal move from the initial position.
+	# Deterministic legal move from the initial position. Normal difficulty is
+	# used here so CI validates determinism without turning the opening test into
+	# a performance benchmark.
+	ai.set_difficulty(ChessAI.Difficulty.NORMAL)
 	var initial := ChessState.new()
 	initial.turn = ChessState.BLACK
 	var first := ai.choose_move(initial)
