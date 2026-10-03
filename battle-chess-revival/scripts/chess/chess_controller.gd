@@ -10,6 +10,8 @@ var arena: ArenaBuilder
 var battle_director: BattleDirector
 var state := ChessState.new()
 var ai := ChessAI.new()
+var state_history: Array[ChessState] = []
+var move_log: Array[String] = []
 var selected_square: StringName = &""
 var selected_moves: Array[Dictionary] = []
 var input_locked := false
@@ -19,6 +21,7 @@ var status_label: Label
 var help_label: Label
 var side_chip: Label
 var state_badge: Label
+var last_move_label: Label
 var alert_panel: PanelContainer
 var alert_label: Label
 var pause_overlay: Control
@@ -48,6 +51,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 
 	if get_tree().paused:
+		return
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_U and arena != null and not input_locked and not battle_director.busy:
+		undo_last_turn()
 		return
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_R and game_over and not battle_director.busy:
 		restart_game()
@@ -112,6 +118,9 @@ func _execute_move(move: Dictionary, allow_ai_reply: bool) -> void:
 
 	var castle_kind: StringName = move.get("castle", &"")
 	var original_type := attacker.piece_type
+	state_history.append(state.clone())
+	if state_history.size() > 256:
+		state_history.pop_front()
 	if victim != null:
 		await battle_director.play_board_capture(attacker, victim)
 		arena.remove_piece(victim)
@@ -129,8 +138,11 @@ func _execute_move(move: Dictionary, allow_ai_reply: bool) -> void:
 		attacker.change_type(resulting_piece["type"])
 
 	move_committed.emit(original_type, victim != null)
-	_refresh_hud()
 	var status := state.get_game_status()
+	move_log.append(_format_move_notation(move, original_type, victim != null, status))
+	if move_log.size() > 256:
+		move_log.pop_front()
+	_refresh_hud()
 	game_status_changed.emit(status)
 	if status == &"check":
 		await arena.play_check_reaction(state.turn)
@@ -236,6 +248,12 @@ func _build_hud() -> void:
 	state_badge.add_theme_font_size_override("font_size", 11)
 	state_badge.add_theme_color_override("font_color", Color("#c8b69d"))
 	text_column.add_child(state_badge)
+
+	last_move_label = Label.new()
+	last_move_label.name = "LastMove"
+	last_move_label.add_theme_font_size_override("font_size", 10)
+	last_move_label.add_theme_color_override("font_color", Color("#9f8f7b"))
+	text_column.add_child(last_move_label)
 
 	# Help is detached from the turn card so the board stays visible.
 	var hint_panel := PanelContainer.new()
@@ -421,8 +439,8 @@ func _build_pause_overlay() -> void:
 	var card := PanelContainer.new()
 	card.name = "SettingsCard"
 	card.set_anchors_preset(Control.PRESET_CENTER)
-	card.position = Vector2(-205, -260)
-	card.size = Vector2(410, 520)
+	card.position = Vector2(-205, -280)
+	card.size = Vector2(410, 560)
 	card.add_theme_stylebox_override("panel", _panel_style(Color(0.07, 0.055, 0.065, 0.98), Color("#b7833e"), 16, 2))
 	pause_overlay.add_child(card)
 
@@ -480,6 +498,13 @@ func _build_pause_overlay() -> void:
 	resume.pressed.connect(_toggle_pause)
 	column.add_child(resume)
 
+	var undo := Button.new()
+	undo.name = "UndoButton"
+	undo.text = "ОТМЕНИТЬ ХОД"
+	undo.custom_minimum_size.y = 40
+	undo.pressed.connect(_undo_from_pause)
+	column.add_child(undo)
+
 	var restart := Button.new()
 	restart.name = "RestartButton"
 	restart.text = "НОВАЯ ИГРА"
@@ -488,7 +513,7 @@ func _build_pause_overlay() -> void:
 	column.add_child(restart)
 
 	var tip := Label.new()
-	tip.text = "Esc — закрыть  •  R — новая игра  •  A — AI"
+	tip.text = "Esc закрыть  •  U отмена  •  R новая игра  •  A AI"
 	tip.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	tip.add_theme_font_size_override("font_size", 11)
 	tip.add_theme_color_override("font_color", Color("#9e8b77"))
@@ -522,6 +547,13 @@ func _restart_from_pause() -> void:
 	if pause_overlay != null:
 		pause_overlay.visible = false
 	restart_game()
+
+
+func _undo_from_pause() -> void:
+	get_tree().paused = false
+	if pause_overlay != null:
+		pause_overlay.visible = false
+	undo_last_turn()
 
 
 func _on_ai_difficulty_selected(index: int) -> void:
@@ -570,6 +602,8 @@ func restart_game() -> void:
 		return
 	game_over = false
 	input_locked = false
+	state_history.clear()
+	move_log.clear()
 	if endgame_overlay != null:
 		endgame_overlay.visible = false
 	state.reset()
@@ -608,6 +642,9 @@ func _refresh_hud() -> void:
 			_material_summary()
 		]
 
+	if last_move_label != null:
+		last_move_label.text = "Последний: %s" % (move_log[-1] if not move_log.is_empty() else "—")
+
 	if alert_panel != null:
 		alert_panel.visible = status == &"check"
 		if alert_label != null:
@@ -630,6 +667,55 @@ func _refresh_hud() -> void:
 				status_label.text = "Чёрные думают…  •  %s" % ai.difficulty_label()
 			else:
 				status_label.text = "%s ходят" % side_text
+
+
+func undo_last_turn() -> void:
+	if arena == null or battle_director == null or battle_director.busy or input_locked or state_history.is_empty():
+		return
+	var steps := 2 if ai_enabled and state_history.size() >= 2 else 1
+	var restored: ChessState = null
+	for _i in range(steps):
+		if state_history.is_empty():
+			break
+		restored = state_history.pop_back()
+		if not move_log.is_empty():
+			move_log.pop_back()
+	if restored == null:
+		return
+	state = restored
+	game_over = false
+	if endgame_overlay != null:
+		endgame_overlay.visible = false
+	arena.sync_pieces_from_state(state)
+	_clear_selection()
+	_refresh_hud()
+	game_status_changed.emit(state.get_game_status())
+
+
+func _format_move_notation(move: Dictionary, piece_type: StringName, capture: bool, status: StringName) -> String:
+	if move.has("castle"):
+		return ("O-O" if move.get("castle", &"") == &"king" else "O-O-O") + ("#" if status == &"checkmate" else ("+" if status == &"check" else ""))
+	var symbols := {
+		&"Pawn": "",
+		&"Knight": "N",
+		&"Bishop": "B",
+		&"Rook": "R",
+		&"Queen": "Q",
+		&"King": "K",
+	}
+	var text := "%s%s%s%s" % [
+		symbols.get(piece_type, ""),
+		String(move.get("from", &"")),
+		("×" if capture else "–"),
+		String(move.get("to", &""))
+	]
+	if move.has("promotion"):
+		text += "=Q"
+	if status == &"checkmate":
+		text += "#"
+	elif status == &"check":
+		text += "+"
+	return text
 
 
 func _material_summary() -> String:
