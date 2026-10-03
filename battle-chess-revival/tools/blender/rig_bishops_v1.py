@@ -147,9 +147,12 @@ def main():
         ("trunk",8,(0,.02,.03),(-22,0,0),(1,1,1)),
         ("staff",8,(0,0,0),(0,0,-24*s),(1,1,1)),
         ("cape",8,(0,.04,.03),(-12,0,5*s),(1,1,1)),
-        ("body",18,(0,.06,.02),(-18,0,0),(.96,1.08,.96)),
-        ("head",18,(0,.02,0),(-12,0,0),(1,1,1)),
-        ("trunk",18,(0,-.04,-.05),(-34,0,0),(1,1,1)),
+        # Keep the robe visually seated on the chess pedestal at peak impact:
+        # a milder body pitch plus a small downward compensation prevents the
+        # rigid bone-parented robe from appearing to float above the base.
+        ("body",18,(0,.045,-.075),(-12,0,0),(.98,1.05,.98)),
+        ("head",18,(0,.015,-.01),(-10,0,0),(1,1,1)),
+        ("trunk",18,(0,-.035,-.04),(-30,0,0),(1,1,1)),
         ("arm.r",18,(0,0,0),(0,0,-14*s),(1,1,1)),
         ("staff",18,(0,0,0),(0,0,-34*s),(1,1,1)),
         ("cape",18,(0,.10,.05),(-20,0,10*s),(1,1,1)),
