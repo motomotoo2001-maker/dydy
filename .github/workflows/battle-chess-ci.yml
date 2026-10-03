@@ -133,6 +133,7 @@ jobs:
           path: BattleChessRevival-Godot-4.7.2.zip
           if-no-files-found: error
       - name: Upload gameplay render
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: BattleChessRevival-Visual-References
@@ -151,6 +152,7 @@ jobs:
             battle-chess-revival/capture_contact_sheet.png
           if-no-files-found: error
       - name: Upload Visual QA report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: BattleChessRevival-Visual-QA
