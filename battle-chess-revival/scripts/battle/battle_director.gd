@@ -1063,17 +1063,27 @@ func _capture_separation(id: StringName) -> float:
 	return 1.90
 
 func _set_battle_camera(profile: StringName) -> void:
+	# G2 capture framing: keep the action in the middle third of the frame and
+	# avoid wasting the lower half on empty board tiles.
+	var focus := Vector3(0, 1.02, 0.10)
 	match profile:
 		&"BattleSide":
-			arena.battle_camera.position = Vector3(4.4, 2.0, 2.5)
+			arena.battle_camera.position = Vector3(3.65, 2.10, 3.55)
+			arena.battle_camera.fov = 39.0
+			focus = Vector3(0.0, 1.02, 0.05)
 		&"BattleWide":
-			arena.battle_camera.position = Vector3(0, 3.2, 6.2)
+			arena.battle_camera.position = Vector3(0.15, 2.80, 5.05)
+			arena.battle_camera.fov = 41.0
+			focus = Vector3(0.0, 1.00, 0.00)
 		&"BattleLow":
-			arena.battle_camera.position = Vector3(0, 1.45, 5.0)
+			arena.battle_camera.position = Vector3(0.30, 1.62, 4.20)
+			arena.battle_camera.fov = 38.5
+			focus = Vector3(0.0, 0.98, 0.08)
 		_:
-			arena.battle_camera.position = Vector3(2.20, 1.90, 6.20)
-	arena.battle_camera.fov = 45.0
-	arena.battle_camera.look_at(Vector3(0, 0.86, -0.20), Vector3.UP)
+			arena.battle_camera.position = Vector3(2.35, 2.16, 4.65)
+			arena.battle_camera.fov = 39.5
+			focus = Vector3(0.0, 1.03, 0.08)
+	arena.battle_camera.look_at(focus, Vector3.UP)
 	_camera_rest_position = arena.battle_camera.position
 	_camera_rest_rotation = arena.battle_camera.rotation_degrees
 
