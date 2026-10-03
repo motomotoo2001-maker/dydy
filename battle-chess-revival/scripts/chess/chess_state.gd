@@ -297,7 +297,7 @@ func _castle_moves(square: StringName, piece: Dictionary) -> Array[Dictionary]:
 
 func _can_castle(rook_square: StringName, empty_squares: Array, safe_squares: Array, enemy: StringName) -> bool:
 	var rook := get_piece(rook_square)
-	if rook.is_empty() or rook["type"] != &"Rook":
+	if rook.is_empty() or rook["type"] != &"Rook" or rook.get("side", &"") == enemy:
 		return false
 	for square in empty_squares:
 		if board.has(square):
@@ -446,12 +446,34 @@ func _position_key() -> String:
 
 
 func _insufficient_material() -> bool:
-	var non_kings: Array = []
-	for p in board.values():
-		if p["type"] != &"King":
-			non_kings.append(p)
-	if non_kings.is_empty():
+	var minors: Array[Dictionary] = []
+	for square in board.keys():
+		var p: Dictionary = board[square]
+		var type: StringName = p.get("type", &"")
+		if type == &"King":
+			continue
+		if type in [&"Pawn", &"Rook", &"Queen"]:
+			return false
+		minors.append({"type": type, "square": square})
+
+	if minors.is_empty():
 		return true
-	if non_kings.size() == 1 and non_kings[0]["type"] in [&"Bishop", &"Knight"]:
+	if minors.size() == 1 and minors[0]["type"] in [&"Bishop", &"Knight"]:
 		return true
-	return false
+
+	# Any number of bishops confined to the same square colour cannot create a
+	# mating net without pawns/rooks/queens/knights.
+	var all_bishops := true
+	var bishop_color := -1
+	for item in minors:
+		if item["type"] != &"Bishop":
+			all_bishops = false
+			break
+		var coord := square_to_coord(item["square"])
+		var color := (coord.x + coord.y) & 1
+		if bishop_color < 0:
+			bishop_color = color
+		elif bishop_color != color:
+			return false
+	return all_bishops
+
