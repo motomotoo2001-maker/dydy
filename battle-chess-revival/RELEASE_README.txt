@@ -1,29 +1,44 @@
-BATTLE CHESS REVIVAL — RELEASE CANDIDATE
+BATTLE CHESS REVIVAL — PUBLIC BUILD CANDIDATE
 
 HOW TO PLAY
 -----------
 Left Mouse Button : select a piece / move to a highlighted square
-Esc               : pause and settings
-R                 : new match
-A                 : toggle Black AI
+Esc               : pause, settings and move history
+U                 : undo (1 ply in local mode, full player+AI turn vs AI)
+R                 : new match / rematch
+A                 : toggle AI/local mode
 
-White moves first. With AI enabled, you play White.
+White moves first. In AI mode you play White.
+
+PAUSE / SETTINGS
+----------------
+You can change:
+- Game mode: Against AI / Local 2 Players
+- AI difficulty: Easy / Normal / Hard
+- Graphics quality: Low / Medium / High
+- Master / Ambience / SFX volume
+
+These settings persist between launches.
 
 CAMERA
 ------
-The normal game uses a full-board 3/4 side view.
+Gameplay uses a full-board 3/4 side view.
 Captures switch to a separate cinematic battle camera.
-
-AUDIO
------
-Open Settings with Esc to change Master, Ambience and SFX volume.
 
 GAMEPLAY
 --------
-Standard chess legality is implemented, including:
-check/checkmate, stalemate, castling, en passant,
-automatic Queen promotion, 50-move draw and
-insufficient-material draw.
+Standard chess legality includes:
+- check and checkmate
+- stalemate
+- castling
+- en passant
+- pawn promotion choice: Queen / Rook / Bishop / Knight
+- threefold repetition draw
+- 50-move draw
+- insufficient-material draw
+
+The board also shows the last move and check danger.
+The pause menu contains the full numbered move history.
 
 SIGNATURE CAPTURES
 ------------------
