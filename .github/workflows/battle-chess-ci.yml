@@ -149,7 +149,15 @@ jobs:
           python3 battle-chess-revival/tools/visual_qa.py --gameplay battle-chess-revival/gameplay_reference.png --battle battle-chess-revival/battle_reference.png --profile battle-chess-revival/visual_refs/reference_profile.json --baseline battle-chess-revival/visual_refs/baseline.json --out battle-chess-revival/visual_report --regression-tolerance 0.04
           cat battle-chess-revival/visual_report/report.md
       - name: Package Godot project
-        run: zip -qr BattleChessRevival-Godot-4.7.2.zip battle-chess-revival
+        run: |
+          zip -qr BattleChessRevival-Godot-4.7.2.zip battle-chess-revival \
+            -x 'battle-chess-revival/gameplay_reference.png' \
+               'battle-chess-revival/battle_reference.png' \
+               'battle-chess-revival/capture_*.png' \
+               'battle-chess-revival/asset_lineup_*.png' \
+               'battle-chess-revival/asset_review_*.png' \
+               'battle-chess-revival/capture_contact_sheet.png' \
+               'battle-chess-revival/visual_report/*'
       - name: Upload project artifact
         uses: actions/upload-artifact@v4
         with:
@@ -178,7 +186,8 @@ jobs:
           if size < 10_000_000 or size > 250_000_000:
               raise SystemExit("unexpected Windows executable size")
           PY
-          (cd battle-chess-revival/build/windows && zip -q ../../../BattleChessRevival-Windows-x86_64.zip BattleChessRevival.exe)
+          cp battle-chess-revival/RELEASE_README.txt battle-chess-revival/build/windows/README.txt
+          (cd battle-chess-revival/build/windows && zip -q ../../../BattleChessRevival-Windows-x86_64.zip BattleChessRevival.exe README.txt)
       - name: Upload Windows release candidate
         uses: actions/upload-artifact@v4
         with:
