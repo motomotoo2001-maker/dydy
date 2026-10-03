@@ -310,16 +310,28 @@ Current best G1 rollback:
 - `BattleChessRevival_G1_Detail_Windows_2026-10-03_5f64732.zip`
 - `BattleChessRevival_G1_Detail_Source_2026-10-03_5f64732.zip`
 
-## ACTIVE — Milestone G2: final public build polish
+## VERIFIED — Milestone G2: final public build polish
+
+Verified checkpoint `4f5ca10`:
+- premium board inlays/coordinates, last-move highlights and check-danger feedback are integrated;
+- AI/local game mode selector, strategic AI difficulty levels and interactive underpromotion are verified;
+- move history/Undo, threefold repetition and expanded insufficient-material/castling validation remain green;
+- battle presentation adds signature aura, warmer/neutral capture lighting, shared anticipation/recovery beats and lens-kick impact feedback;
+- game mode, AI difficulty and Master/Ambience/SFX settings persist through restart via ConfigFile;
+- pause menu includes a full numbered move-history panel;
+- complete UI/audio/rules/rig/capture/render/Visual-QA/Windows-export pipeline is green;
+- Drive backups:
+  - `BattleChessRevival_G2_Windows_2026-10-03_4f5ca10.zip`
+  - `BattleChessRevival_G2_Source_2026-10-03_4f5ca10.zip`.
+
+## ACTIVE — Milestone G3: final public release freeze
 
 Current task:
-- improve board/material/prop detail without changing the locked 3/4 gameplay camera;
-- improve battle-scene material palette while preserving capture readability;
-- reduce remaining flat surfaces through small props/trim instead of large blocking geometry;
-- keep the new 79.0% gameplay visual baseline green;
-- preserve RC2 as the stable rollback if any G2 experiment regresses.
-
-## NEXT — Milestone G3: final public release freeze
+- graphics-quality/performance preset without changing the locked High-quality reference look;
+- draw-call/material/asset-size review;
+- final release README/control/settings refresh;
+- final missing-reference and exported-package validation;
+- freeze final public Windows/source artifacts only after the full visual and gameplay gate stays green.
 
 - draw-call/material/asset-size review;
 - final missing-reference validation;
