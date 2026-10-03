@@ -137,7 +137,27 @@ func _run() -> void:
 		quit(1)
 		return
 
-	print("RENDER_CAPTURE_PASS gameplay=", image.get_width(), "x", image.get_height(), " captures=", CAPTURES.size(), " lineups=2 reviews=5")
+	_prepare_asset_review(arena, &"White", &"Rook")
+	await process_frame
+	await RenderingServer.frame_post_draw
+	var white_rook_review := get_root().get_texture().get_image()
+	var white_rook_review_error := white_rook_review.save_png("res://asset_review_white_rook.png")
+	if white_rook_review_error != OK:
+		push_error("RENDER_CAPTURE_FAIL: white rook review save_png error %s" % white_rook_review_error)
+		quit(1)
+		return
+
+	_prepare_asset_review(arena, &"Black", &"Rook")
+	await process_frame
+	await RenderingServer.frame_post_draw
+	var black_rook_review := get_root().get_texture().get_image()
+	var black_rook_review_error := black_rook_review.save_png("res://asset_review_black_rook.png")
+	if black_rook_review_error != OK:
+		push_error("RENDER_CAPTURE_FAIL: black rook review save_png error %s" % black_rook_review_error)
+		quit(1)
+		return
+
+	print("RENDER_CAPTURE_PASS gameplay=", image.get_width(), "x", image.get_height(), " captures=", CAPTURES.size(), " lineups=2 reviews=7")
 	root.queue_free()
 	await process_frame
 	quit(0)

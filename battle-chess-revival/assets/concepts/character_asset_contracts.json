@@ -1,6 +1,6 @@
 {
-  "version": "production-pawns-v2+production-knights-v1+production-bishops-v1+concept-v3",
-  "source": "approved character sheets; Pawn, Knight and Bishop production families authored in Blender 5.2.2; remaining army concept-v3",
+  "version": "production-pawns-v2+production-knights-v1+production-bishops-v1+production-rooks-v1+concept-v3",
+  "source": "approved character sheets; Pawn, Knight, Bishop and Rook production families authored in Blender 5.2.2; Queen/King remain concept-v3",
   "assets": {
     "white_pawn_production_v1.glb": {
       "family": "Pawn",
@@ -35,38 +35,6 @@
         "EyeWL",
         "Ear_L",
         "ShieldSlash"
-      ]
-    },
-    "white_rook_concept_v3.glb": {
-      "family": "Rook",
-      "side": "White",
-      "min_parts": 33,
-      "required_parts": [
-        "TowerCore",
-        "CrownBase",
-        "EyeL",
-        "Concept_Tabard",
-        "Concept_ShoulderGold_L",
-        "Concept_Brow_L",
-        "V3_EyeWhite_L",
-        "V3_FistKnuckleA_-1",
-        "V3_CrownGoldBand"
-      ]
-    },
-    "black_rook_concept_v3.glb": {
-      "family": "Rook",
-      "side": "Black",
-      "min_parts": 33,
-      "required_parts": [
-        "TowerCore",
-        "CrownBase",
-        "EyeL",
-        "Concept_Tabard",
-        "Concept_LavaCrack_-0.18_0.74",
-        "Concept_ShoulderSpike_L",
-        "V3_EyeWhite_L",
-        "V3_FistKnuckleA_-1",
-        "V3_CrownBronzeBand"
       ]
     },
     "white_queen_concept_v3.glb": {
@@ -220,6 +188,47 @@
         "ChestGem",
         "StaffHalo",
         "StaffOuterHalo"
+      ]
+    },
+    "white_rook_production_v1.glb": {
+      "family": "Rook",
+      "side": "White",
+      "min_parts": 60,
+      "required_parts": [
+        "TowerCore",
+        "CrownBase",
+        "Arm_L_Upper",
+        "Arm_R_Upper",
+        "Fist_L",
+        "Fist_R",
+        "V3_FistKnuckle_L_0",
+        "V3_FistKnuckle_R_0",
+        "V3_TabardPoint",
+        "Tabard",
+        "EyeL",
+        "EyeR",
+        "CrownGoldBand"
+      ]
+    },
+    "black_rook_production_v1.glb": {
+      "family": "Rook",
+      "side": "Black",
+      "min_parts": 64,
+      "required_parts": [
+        "TowerCore",
+        "CrownBase",
+        "Arm_L_Upper",
+        "Arm_R_Upper",
+        "Fist_L",
+        "Fist_R",
+        "V3_FistKnuckle_L_0",
+        "V3_FistKnuckle_R_0",
+        "V3_TabardPoint",
+        "Tabard",
+        "EyeL",
+        "EyeR",
+        "ShoulderSpike_L",
+        "ShoulderSpike_R"
       ]
     }
   }
