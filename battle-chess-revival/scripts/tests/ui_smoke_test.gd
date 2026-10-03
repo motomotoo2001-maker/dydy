@@ -30,14 +30,16 @@ func _run() -> void:
 	var pause_overlay := controller.find_child("PauseOverlay", true, false) as Control
 	var settings_card := controller.find_child("SettingsCard", true, false) as Control
 	var slider := controller.find_child("MasterVolume", true, false) as HSlider
+	var ambience_slider := controller.find_child("AmbienceVolume", true, false) as HSlider
+	var sfx_slider := controller.find_child("SFXVolume", true, false) as HSlider
 	var resume := controller.find_child("ResumeButton", true, false) as Button
 	var restart := controller.find_child("RestartButton", true, false) as Button
 
 	if turn_panel == null or hint_panel == null or alert_panel == null:
 		_fail("production HUD controls missing")
 		return
-	if pause_overlay == null or settings_card == null or slider == null or resume == null or restart == null:
-		_fail("pause/settings controls missing")
+	if pause_overlay == null or settings_card == null or slider == null or ambience_slider == null or sfx_slider == null or resume == null or restart == null:
+		_fail("pause/settings/audio controls missing")
 		return
 	if turn_panel.size.x > 380.0 or turn_panel.size.y > 90.0:
 		_fail("turn panel is too large and blocks gameplay")
@@ -55,6 +57,8 @@ func _run() -> void:
 		return
 
 	slider.value = 0.42
+	ambience_slider.value = 0.37
+	sfx_slider.value = 0.61
 	var master := AudioServer.get_bus_index("Master")
 	if master < 0:
 		_fail("Master audio bus missing")
@@ -62,6 +66,17 @@ func _run() -> void:
 	var linear := db_to_linear(AudioServer.get_bus_volume_db(master))
 	if absf(linear - 0.42) > 0.03:
 		_fail("master volume slider not wired")
+		return
+	var ambience_bus := AudioServer.get_bus_index("Ambience")
+	var sfx_bus := AudioServer.get_bus_index("SFX")
+	if ambience_bus < 0 or sfx_bus < 0:
+		_fail("audio buses missing")
+		return
+	if absf(db_to_linear(AudioServer.get_bus_volume_db(ambience_bus)) - 0.37) > 0.03:
+		_fail("ambience volume slider not wired")
+		return
+	if absf(db_to_linear(AudioServer.get_bus_volume_db(sfx_bus)) - 0.61) > 0.03:
+		_fail("sfx volume slider not wired")
 		return
 
 	controller.call("_toggle_pause")
