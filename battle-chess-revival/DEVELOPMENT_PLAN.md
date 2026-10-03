@@ -160,18 +160,18 @@ Final checkpoint `bafb22f` verified:
 - chess rules, capture smoke, gameplay renders and Visual QA are green;
 - Drive checkpoint: `BattleChessRevival_QUEEN_AUTHORED_C4_FINAL_2026-10-03_bafb22f.zip`.
 
-## ACTIVE — Milestone C5: King authored rig/animation
+## VERIFIED — Milestone C5: King authored rig/animation
 
-Current task:
-- create White/Black King rigged candidates beside production GLBs;
-- Skeleton3D mapping for root/body/head/beard/arms/scepter/coat-cape;
-- authored Idle, Selected, Move, Hit, Victory, Defeat and TrapdoorCommand clips;
-- validate candidates before switching PieceView;
-- keep remote control, trapdoor geometry, victim fall and VFX deterministic in BattleDirector;
-- add King Hit/TrapdoorCommand diagnostic renders;
-- preserve named-part trapdoor pose as fallback until visual verification.
+Final checkpoint `2d909c2` verified:
+- White/Black King rigged GLBs import as Skeleton3D + AnimationPlayer;
+- authored Idle, Selected, Move, Hit, Victory, Defeat and TrapdoorCommand clips are available on both sides;
+- PieceView drives King presentation clips through the shared authored-animation runtime;
+- BattleDirector uses TrapdoorCommand for King body motion while remote/trapdoor/victim fall/VFX remain deterministic;
+- dedicated King Hit/TrapdoorCommand diagnostics and battle capture were visually inspected;
+- chess rules, capture smoke, gameplay renders and Visual QA are green;
+- Drive checkpoint: `BattleChessRevival_KING_AUTHORED_C5_FINAL_2026-10-03_2d909c2.zip`.
 
-## NEXT — Milestone C6: Pawn final authored-animation unification
+## ACTIVE — Milestone C6: Pawn final authored-animation unification
 
 - normalize White/Black pawn asset naming and animation contract;
 - authored Idle / Selected / Move / Hit / Victory / Defeat;
