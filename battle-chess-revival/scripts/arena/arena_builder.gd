@@ -165,14 +165,30 @@ func set_battle_lighting(active: bool) -> void:
 	var warm := lighting.get_node_or_null("WarmFill") as OmniLight3D
 	var cool := lighting.get_node_or_null("CoolRim") as OmniLight3D
 	var window := lighting.get_node_or_null("WindowSunFill") as OmniLight3D
+	var stained_red := lighting.get_node_or_null("StainedRed") as OmniLight3D
+	var stained_gold := lighting.get_node_or_null("StainedGold") as OmniLight3D
+	var stained_blue := lighting.get_node_or_null("StainedBlue") as OmniLight3D
+	var neutral := lighting.get_node_or_null("BattleNeutralFill") as OmniLight3D
 	if sun:
-		sun.light_energy = 0.50 if active else 0.96
+		sun.light_energy = 0.62 if active else 0.96
+		sun.light_color = Color("#fff0dc") if active else Color("#ffe0ad")
 	if warm:
-		warm.light_energy = 0.28 if active else 1.05
+		warm.light_energy = 0.16 if active else 1.05
+		warm.light_color = Color("#e6c7aa") if active else Color("#ffc789")
 	if cool:
-		cool.light_energy = 0.82 if active else 0.94
+		cool.light_energy = 0.88 if active else 0.94
+		cool.light_color = Color("#a9b1d0") if active else Color("#7f6fd2")
 	if window:
-		window.light_energy = 0.30 if active else 1.32
+		window.light_energy = 0.42 if active else 1.32
+		window.light_color = Color("#f1e8dd") if active else Color("#ffd895")
+	if stained_red:
+		stained_red.light_energy = 0.12 if active else 0.52
+	if stained_gold:
+		stained_gold.light_energy = 0.12 if active else 0.54
+	if stained_blue:
+		stained_blue.light_energy = 0.16 if active else 0.36
+	if neutral:
+		neutral.light_energy = 0.58 if active else 0.0
 
 func _build_environment() -> void:
 	var world := WorldEnvironment.new()
@@ -423,6 +439,17 @@ func _build_lighting() -> void:
 	stained_blue.light_energy = 0.36
 	stained_blue.omni_range = 9.0
 	root.add_child(stained_blue)
+
+	# G2 cinematic-only neutral fill: raises battle readability while keeping the
+	# normal gameplay cathedral mood untouched. Enabled by set_battle_lighting().
+	var battle_neutral := OmniLight3D.new()
+	battle_neutral.name = "BattleNeutralFill"
+	battle_neutral.position = Vector3(0.0, 4.8, 5.8)
+	battle_neutral.light_color = Color("#f4eee6")
+	battle_neutral.light_energy = 0.0
+	battle_neutral.omni_range = 13.5
+	battle_neutral.shadow_enabled = false
+	root.add_child(battle_neutral)
 
 func _build_selection_root() -> void:
 	selection_root = Node3D.new()
