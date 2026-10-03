@@ -223,6 +223,20 @@ Final checkpoint `e7c9382` verified:
 
 Production characters, authored animations, cathedral architecture, materials, stained-glass lighting and final camera/contact composition are now under one verified baseline.
 
+### User-directed gameplay camera revision
+
+Verified at `7f7db76`:
+- gameplay camera moved to a 3/4 side angle from the open front-right cathedral entrance;
+- complete board frame remains visible in the 1280×720 gameplay render;
+- White and Black armies continue facing each other correctly;
+- production UI, all authored rig/runtime tests, chess rules, capture smoke and Visual QA pass;
+- CI now retains visual artifacts even when a future Visual QA comparison fails;
+- Drive checkpoint: `BattleChessRevival_SIDE_CAMERA_E1_CHECKPOINT_2026-10-03_7f7db76.zip`.
+
+Fixed camera rule:
+- gameplay = full-board 3/4 side angle;
+- battle/capture = separate cinematic camera.
+
 ## ACTIVE — Milestone E1: UX / HUD / settings
 
 Current task:
