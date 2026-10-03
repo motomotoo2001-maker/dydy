@@ -135,22 +135,29 @@ Final checkpoint `985377d` verified:
 
 The old named-part Bishop ram remains only as fallback when the authored clip is unavailable.
 
-## ACTIVE — Milestone C3: Rook authored rig/animation
+## VERIFIED — Milestone C3: Rook authored rig/animation
+
+Final checkpoint `b4335b8` verified:
+- White/Black Rook rigged GLBs import as Skeleton3D + AnimationPlayer;
+- authored Idle, Selected, Move, Hit, Victory, Defeat and JumpCrush clips are available on both sides;
+- PieceView drives Rook presentation clips through the generalized authored-animation runtime;
+- BattleDirector uses authored JumpCrush while retaining deterministic jump/drop, shadow, impact VFX and victim squash;
+- dedicated Rook Hit/JumpCrush diagnostics and the battle capture were visually inspected;
+- chess rules, capture smoke, gameplay renders and Visual QA are green;
+- Drive checkpoint: `BattleChessRevival_ROOK_AUTHORED_C3_FINAL_2026-10-03_b4335b8.zip`.
+
+The named-part Rook crush remains as fallback when the authored clip is unavailable.
+
+## ACTIVE — Milestone C4: Queen authored rig/animation
 
 Current task:
-- generate White/Black Rook rigged candidates beside the verified production GLBs;
-- Skeleton3D mapping for root/body/crown/arms/fists;
-- authored Idle, Selected, Move, Hit, Victory, Defeat and JumpCrush clips;
-- validate both candidates in Godot before switching PieceView;
-- wire JumpCrush into BattleDirector while preserving deterministic impact/VFX timing;
-- add dedicated Rook Hit/JumpCrush rendered diagnostics;
-- preserve named-part jump-crush as fallback until visual verification.
-
-## NEXT — Milestone C4: Queen authored rig/animation
-
-- hair/cape/staff/orb skeleton hierarchy;
-- Idle / Selected / Move / Hit / Victory / Defeat;
-- authored Transform spell capture with existing VFX/result spawning retained.
+- create White/Black Queen rigged candidates beside production GLBs;
+- Skeleton3D mapping for body/head/hair/cape/arms/staff/orb;
+- authored Idle, Selected, Move, Hit, Victory, Defeat and TransformSpell clips;
+- validate candidate before switching PieceView;
+- keep BattleDirector's smoke/hearts/replacement spawning deterministic while the Queen body uses authored TransformSpell;
+- add Queen Hit/TransformSpell diagnostics;
+- preserve named-part transformation fallback until visual verification.
 
 ## NEXT + 1 — Milestone C5/C6: King and Pawn authored animation
 
