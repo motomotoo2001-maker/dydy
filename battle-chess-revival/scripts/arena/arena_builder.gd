@@ -18,6 +18,7 @@ var _sockets: Dictionary = {}
 var _piece_by_square: Dictionary = {}
 var selection_root: Node3D
 var _selected_piece: PieceView
+var _cathedral_material_cache: Dictionary = {}
 
 func build() -> void:
 	if generated != null and is_instance_valid(generated):
@@ -223,6 +224,7 @@ func _build_external_cathedral() -> bool:
 		return false
 	instance.name = "CathedralProductionV1"
 	generated.add_child(instance)
+	_prepare_cathedral_material_cache()
 	_apply_cathedral_material_overrides(instance)
 	return true
 
@@ -470,35 +472,50 @@ func _spawn_piece(p_side: StringName, p_type: StringName, square: StringName) ->
 	_pieces.append(piece)
 	_piece_by_square[square] = piece
 
+func _prepare_cathedral_material_cache() -> void:
+	_cathedral_material_cache.clear()
+	_cathedral_material_cache[&"glass_red"] = _cathedral_glass_material(Color("#d85f74"))
+	_cathedral_material_cache[&"glass_gold"] = _cathedral_glass_material(Color("#e5b663"))
+	_cathedral_material_cache[&"glass_blue"] = _cathedral_glass_material(Color("#6688ca"))
+	_cathedral_material_cache[&"gold"] = _cathedral_gold_material()
+	_cathedral_material_cache[&"cloth_red"] = _cathedral_cloth_material(Color("#6e2027"))
+	_cathedral_material_cache[&"cloth_blue"] = _cathedral_cloth_material(Color("#263b62"))
+	_cathedral_material_cache[&"flame"] = _cathedral_glass_material(Color("#ff9a3d"), 4.5)
+	_cathedral_material_cache[&"wax"] = _mat(Color("#dfceb0"), 0.74, 0.0)
+	_cathedral_material_cache[&"floor"] = _cathedral_stone_material(Color("#302a2b"), Color("#554846"), 0.58)
+	_cathedral_material_cache[&"stone_dark"] = _cathedral_stone_material(Color("#383031"), Color("#5d5050"), 0.66)
+	_cathedral_material_cache[&"stone"] = _cathedral_stone_material(Color("#766b60"), Color("#a19282"), 0.60)
+
+
 func _apply_cathedral_material_overrides(node: Node) -> void:
 	if node is MeshInstance3D:
 		var mesh_instance := node as MeshInstance3D
 		var n := String(mesh_instance.name)
+		var key: StringName = &"stone"
 		if n.contains("Glass"):
-			var glass_color := Color("#d85f74")
+			key = &"glass_red"
 			if n.contains("_1") or n.contains("Gold"):
-				glass_color = Color("#e5b663")
+				key = &"glass_gold"
 			elif n.contains("_2") or n.contains("Blue"):
-				glass_color = Color("#6688ca")
-			mesh_instance.material_override = _cathedral_glass_material(glass_color)
+				key = &"glass_blue"
 		elif n.contains("Gold") or n.contains("Trim") or n.contains("Frame") or n.contains("Cap") or n.contains("Halo") or n.contains("Bar") or n.contains("Band"):
-			mesh_instance.material_override = _cathedral_gold_material()
+			key = &"gold"
 		elif n.contains("BannerWhite") or n.contains("Red"):
-			mesh_instance.material_override = _cathedral_cloth_material(Color("#6e2027"))
+			key = &"cloth_red"
 		elif n.contains("BannerBlack") or n.contains("Blue"):
-			mesh_instance.material_override = _cathedral_cloth_material(Color("#263b62"))
+			key = &"cloth_blue"
 		elif n.contains("Flame"):
-			mesh_instance.material_override = _cathedral_glass_material(Color("#ff9a3d"), 4.5)
+			key = &"flame"
 		elif n.contains("Candle"):
-			mesh_instance.material_override = _mat(Color("#dfceb0"), 0.74, 0.0)
+			key = &"wax"
 		elif n.contains("Floor"):
-			mesh_instance.material_override = _cathedral_stone_material(Color("#302a2b"), Color("#554846"), 0.58)
+			key = &"floor"
 		elif n.contains("StoneDark") or n.contains("Inset"):
-			mesh_instance.material_override = _cathedral_stone_material(Color("#383031"), Color("#5d5050"), 0.66)
-		else:
-			mesh_instance.material_override = _cathedral_stone_material(Color("#766b60"), Color("#a19282"), 0.60)
+			key = &"stone_dark"
+		mesh_instance.material_override = _cathedral_material_cache.get(key)
 	for child in node.get_children():
 		_apply_cathedral_material_overrides(child)
+
 
 func _cathedral_stone_material(base_color: Color, detail_color: Color, surface_roughness: float) -> ShaderMaterial:
 	var shader := Shader.new()
