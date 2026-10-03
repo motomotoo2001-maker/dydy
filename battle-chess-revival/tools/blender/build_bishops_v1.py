@@ -286,7 +286,7 @@ def build_bishop(side, output):
         export_animations=False,
         export_cameras=False,
         export_lights=False,
-        export_apply=True,
+        # Match the proven production Pawn export axis convention. Applying the\n        # glTF transform here flips the static Bishop front/back in Godot.\n        export_apply=False,
     )
     print("BISHOP_PRODUCTION_EXPORT_PASS", side, out, "parts=", len(objects))
 
