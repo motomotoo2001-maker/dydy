@@ -133,6 +133,10 @@ def build(side,output):
     for i,(x,y) in enumerate(battlements):
         objs.append(box(f"CrownMerlon_{i}",(x,y,1.68),(.085,.085,.17),P["stone"],bevel=.025))
     objs.append(torus("CrownGoldBand",(0,0,1.48),.34,.025,P["gold"],rot=(0,0,0)))
+    # G6 silhouette V2: outer crown towers read as a fortress at gameplay distance.
+    for sign,label in [(-1,"L"),(1,"R")]:
+        objs.append(box(f"CrownOuterMerlon_{label}",(.43*sign,0,1.67),(.075,.12,.22),P["stone2"],rot=(0,0,math.radians(4*sign)),bevel=.03))
+        objs.append(cone(f"CrownOuterSpike_{label}",(.43*sign,0,1.92),.055,.006,.24,P["gold"],verts=28))
 
     # Massive shoulders.
     for sign,label in [(-1,"L"),(1,"R")]:
@@ -149,6 +153,9 @@ def build(side,output):
                 (.55*sign+dx,-.275,.57+dz),(.060,.045,.055),P["steel"],28,14
             ))
         objs.append(box(f"FistBand_{label}",(.55*sign,-.06,.62),(.17,.14,.045),P["gold"],bevel=.018))
+        objs.append(box(f"Fist_{label}_OuterPlate",(.60*sign,-.12,.53),(.085,.16,.15),P["steel"],rot=(0,math.radians(8*sign),0),bevel=.045))
+        objs.append(cone(f"Fist_{label}_ImpactStud",(.55*sign,-.31,.54),.055,.012,.16,P["gold"],rot=(math.radians(90),0,0),verts=24))
+        objs.append(box(f"Shoulder_{label}_Mantle",(.49*sign,.02,1.31),(.16,.17,.08),P["gold"],rot=(0,0,math.radians(8*sign)),bevel=.05))
 
     # Front fortress details.
     for i,x in enumerate((-.24,-.12,.12,.24)):
@@ -177,6 +184,7 @@ def build(side,output):
     for sign,label in [(-1,"L"),(1,"R")]:
         objs.append(box(f"SideBand_{label}",(.355*sign,0,.92),(.035,.30,.42),P["gold"],bevel=.015))
         objs.append(box(f"SideInset_{label}",(.395*sign,0,.91),(.025,.22,.28),P["blue"],bevel=.018))
+        objs.append(box(f"TowerButtress_{label}",(.39*sign,.12,.86),(.075,.15,.48),P["stone2"],bevel=.035))
 
     for o in objs: o.parent=root
 
