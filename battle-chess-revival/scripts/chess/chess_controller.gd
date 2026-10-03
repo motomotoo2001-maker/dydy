@@ -547,8 +547,8 @@ func _build_pause_overlay() -> void:
 	var card := PanelContainer.new()
 	card.name = "SettingsCard"
 	card.set_anchors_preset(Control.PRESET_CENTER)
-	card.position = Vector2(-205, -280)
-	card.size = Vector2(410, 560)
+	card.position = Vector2(-205, -310)
+	card.size = Vector2(410, 620)
 	card.add_theme_stylebox_override("panel", _panel_style(Color(0.07, 0.055, 0.065, 0.98), Color("#b7833e"), 16, 2))
 	pause_overlay.add_child(card)
 
