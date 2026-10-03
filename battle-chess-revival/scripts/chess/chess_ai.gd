@@ -184,10 +184,7 @@ func _move_order_score(state: ChessState, move: Dictionary) -> float:
 		score += 180.0
 
 	var preview := state.preview_move(move)
-	var status := preview.get_game_status()
-	if status == &"checkmate":
-		score += MATE_SCORE
-	elif status == &"check":
+	if preview.is_in_check(preview.turn):
 		score += 320.0
 
 	var c := state.square_to_coord(move["to"])
