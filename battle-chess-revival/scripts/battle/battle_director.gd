@@ -173,6 +173,9 @@ func _knight_double_kick_authored(attacker: PieceView, victim: PieceView, data: 
 	_comic_text("KICK!", victim.battle_target.global_position + Vector3(0, 0.7, 0), Color("#ffb953"))
 	victim.play_hit_pose()
 	capture_impact.emit(data.id)
+	# Brief hit-stop keeps both characters readable at contact and gives the
+	# camera/VFX one beat before the victim is launched.
+	await _wait(0.14)
 
 	await _parallel(victim.visual_root, {
 		"scale": Vector3(1.58, 0.64, 0.96),
