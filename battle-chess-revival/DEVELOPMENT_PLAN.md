@@ -296,16 +296,30 @@ RC2 verified at `cd20018`:
 
 RC2 is the current verified release candidate.
 
-## ACTIVE — Milestone G1: post-RC gameplay/visual refinement
+## VERIFIED — Milestone G1: post-RC gameplay/visual refinement
 
-Next development direction:
-- only make changes that visibly improve the game beyond RC2;
-- preserve the fixed 3/4 full-board gameplay camera;
-- preserve all authored character animation/capture contracts;
-- add optional quality/performance settings only if they do not complicate the current release flow;
-- keep RC2 as the rollback checkpoint.
+Verified visual progression:
+- `4d9a2fb`: foreground-occlusion camera cleanup + approved G1 rebaseline;
+- `eeef0fb`: warmer cathedral bounce/window light, gameplay similarity 76.9% → 78.6%;
+- `5f64732`: authored cathedral detail pass, gameplay similarity 78.6% → 79.0%, edge/detail density 74.1% → 77.5%;
+- complete board remains visible from the locked 3/4 gameplay camera;
+- all authored rigs, captures, audio, UI, Visual QA and Windows export remain green;
+- Drive checkpoints saved for camera, warm-light and detail variants.
 
-## NEXT — Milestone G2: final public build polish
+Current best G1 rollback:
+- `BattleChessRevival_G1_Detail_Windows_2026-10-03_5f64732.zip`
+- `BattleChessRevival_G1_Detail_Source_2026-10-03_5f64732.zip`
+
+## ACTIVE — Milestone G2: final public build polish
+
+Current task:
+- improve board/material/prop detail without changing the locked 3/4 gameplay camera;
+- improve battle-scene material palette while preserving capture readability;
+- reduce remaining flat surfaces through small props/trim instead of large blocking geometry;
+- keep the new 79.0% gameplay visual baseline green;
+- preserve RC2 as the stable rollback if any G2 experiment regresses.
+
+## NEXT — Milestone G3: final public release freeze
 
 - draw-call/material/asset-size review;
 - final missing-reference validation;

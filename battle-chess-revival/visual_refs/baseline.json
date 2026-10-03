@@ -1,7 +1,7 @@
 {
-  "source_commit": "73d0eec7b3cf39790410ed23d6b9735e276e7e66",
-  "gameplay": {"score": 0.7694},
+  "source_commit": "5f6473285bf5db2834992637b723ae9e33b9799e",
+  "gameplay": {"score": 0.7903},
   "battle": {"score": 0.7590},
   "regression_tolerance": 0.04,
-  "note": "User-approved post-RC G1 baseline: full-board 3/4 gameplay camera from the open cathedral entrance with reduced foreground occlusion; battle camera and battle visual baseline unchanged."
+  "note": "Verified post-RC G1 baseline: approved full-board 3/4 gameplay camera, warmer cathedral lighting, added wall courses, column fluting, stained-glass tracery, floor inlays and altar relief; battle camera baseline unchanged."
 }

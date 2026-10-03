@@ -2,7 +2,8 @@
 
 Last verified release candidate: **RC2**
 Verified branch: `battle-chess-revival`
-Verified commit before this state file: `cd20018`
+Latest verified post-RC visual checkpoint: `5f64732`
+Stable release rollback: `cd20018` (RC2)
 Engine: **Godot 4.7.2 stable**
 Target release: **Windows x86_64**
 
@@ -43,8 +44,17 @@ Both RC2 ZIPs are backed up in the Battle Chess Revival Google Drive folder.
 4. Production GLB/Skeleton3D assets remain the normal path; fallback animation/geometry stays only as safety.
 5. RC2 is the rollback checkpoint for any post-RC work.
 
+## Post-RC verified visual improvements
+
+- Camera cleanup: foreground architecture no longer blocks the board.
+- Warm-light pass: gameplay visual similarity improved from 76.9% to 78.6%.
+- Cathedral authored-detail pass: gameplay similarity improved to 79.0%; edge/detail density improved to 77.5%.
+- Latest G1 Drive backups:
+  - `BattleChessRevival_G1_Detail_Windows_2026-10-03_5f64732.zip`
+  - `BattleChessRevival_G1_Detail_Source_2026-10-03_5f64732.zip`
+
 ## Next milestone
 
-**G1 — post-RC gameplay/visual refinement**
+**G2 — final public build polish**
 
-Only make changes that clearly improve the RC2 experience while keeping CI, Visual QA and Windows export green.
+Focus on board/material/prop detail and battle palette while preserving the locked camera, production assets, authored animations and RC2 rollback.
