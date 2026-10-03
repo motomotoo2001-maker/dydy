@@ -287,9 +287,27 @@ func show_selection(square: StringName, moves: Array[Dictionary]) -> void:
 	if _selected_piece != null:
 		_selected_piece.set_selected(true)
 	_add_square_overlay(square, Color(0.95, 0.78, 0.18, 0.42))
+
+	# G8 readability: destinations use compact semantic markers instead of
+	# filling entire cells. Promotion variants share one destination marker.
+	var by_destination: Dictionary = {}
 	for move in moves:
-		var color := Color(0.95, 0.25, 0.25, 0.48) if move.get("capture", false) else Color(0.25, 0.82, 0.48, 0.38)
-		_add_square_overlay(move["to"], color)
+		var destination: StringName = move.get("to", &"")
+		if destination == &"":
+			continue
+		if not by_destination.has(destination):
+			by_destination[destination] = move
+			continue
+		# Prefer the semantically strongest marker when multiple legal moves
+		# target the same square (promotion choice is the common case).
+		var existing: Dictionary = by_destination[destination]
+		if move.has("promotion") and not existing.has("promotion"):
+			by_destination[destination] = move
+		elif move.get("capture", false) and not existing.get("capture", false):
+			by_destination[destination] = move
+
+	for destination in by_destination.keys():
+		_add_move_marker(destination, by_destination[destination])
 
 func get_socket(square: StringName) -> Marker3D:
 	return _sockets.get(square) as Marker3D
@@ -796,6 +814,86 @@ func show_last_move(from_square: StringName, to_square: StringName) -> void:
 
 func _add_square_overlay(square: StringName, color: Color) -> void:
 	_add_overlay_to(selection_root, square, color, 0.055, 0.90)
+
+
+func _add_move_marker(square: StringName, move: Dictionary) -> void:
+	if selection_root == null:
+		return
+	var marker := get_socket(square)
+	if marker == null:
+		return
+
+	if move.has("promotion"):
+		_add_ring_marker(square, Color(0.80, 0.36, 1.0, 0.78), 0.25, 0.42)
+		_add_diamond_marker(square, Color(1.0, 0.78, 0.26, 0.88), 0.16)
+		return
+	if move.has("castle"):
+		_add_diamond_marker(square, Color(1.0, 0.76, 0.22, 0.86), 0.23)
+		return
+	if move.get("capture", false):
+		_add_ring_marker(square, Color(1.0, 0.26, 0.22, 0.82), 0.27, 0.45)
+		return
+	_add_disc_marker(square, Color(0.28, 0.95, 0.55, 0.72), 0.15)
+
+
+func _selection_material(color: Color, emission: float = 1.35) -> StandardMaterial3D:
+	var material := StandardMaterial3D.new()
+	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.albedo_color = color
+	material.emission_enabled = true
+	material.emission = Color(color.r, color.g, color.b, 1.0)
+	material.emission_energy_multiplier = emission
+	return material
+
+
+func _add_disc_marker(square: StringName, color: Color, radius_factor: float) -> void:
+	var marker := get_socket(square)
+	if marker == null:
+		return
+	var mesh := CylinderMesh.new()
+	mesh.top_radius = CELL_SIZE * radius_factor
+	mesh.bottom_radius = CELL_SIZE * radius_factor
+	mesh.height = 0.018
+	mesh.radial_segments = 36
+	var node := MeshInstance3D.new()
+	node.name = "MoveMarkerDisc_%s" % String(square)
+	node.mesh = mesh
+	node.material_override = _selection_material(color)
+	selection_root.add_child(node)
+	node.global_position = marker.global_position + Vector3(0, 0.072, 0)
+
+
+func _add_ring_marker(square: StringName, color: Color, inner_factor: float, outer_factor: float) -> void:
+	var marker := get_socket(square)
+	if marker == null:
+		return
+	var mesh := TorusMesh.new()
+	mesh.inner_radius = CELL_SIZE * inner_factor
+	mesh.outer_radius = CELL_SIZE * outer_factor
+	mesh.rings = 32
+	mesh.ring_segments = 12
+	var node := MeshInstance3D.new()
+	node.name = "MoveMarkerRing_%s" % String(square)
+	node.mesh = mesh
+	node.material_override = _selection_material(color, 1.55)
+	selection_root.add_child(node)
+	node.global_position = marker.global_position + Vector3(0, 0.082, 0)
+
+
+func _add_diamond_marker(square: StringName, color: Color, size_factor: float) -> void:
+	var marker := get_socket(square)
+	if marker == null:
+		return
+	var mesh := BoxMesh.new()
+	mesh.size = Vector3(CELL_SIZE * size_factor, 0.022, CELL_SIZE * size_factor)
+	var node := MeshInstance3D.new()
+	node.name = "MoveMarkerDiamond_%s" % String(square)
+	node.mesh = mesh
+	node.material_override = _selection_material(color, 1.50)
+	selection_root.add_child(node)
+	node.global_position = marker.global_position + Vector3(0, 0.078, 0)
+	node.rotation_degrees.y = 45.0
 
 
 func _add_overlay_to(parent: Node3D, square: StringName, color: Color, y_offset: float, size_factor: float) -> void:
