@@ -34,6 +34,7 @@ func _run() -> void:
 	var slider := controller.find_child("MasterVolume", true, false) as HSlider
 	var ambience_slider := controller.find_child("AmbienceVolume", true, false) as HSlider
 	var sfx_slider := controller.find_child("SFXVolume", true, false) as HSlider
+	var mode_select := controller.find_child("GameMode", true, false) as OptionButton
 	var ai_select := controller.find_child("AIDifficulty", true, false) as OptionButton
 	var resume := controller.find_child("ResumeButton", true, false) as Button
 	var undo := controller.find_child("UndoButton", true, false) as Button
@@ -42,8 +43,8 @@ func _run() -> void:
 	if turn_panel == null or hint_panel == null or alert_panel == null:
 		_fail("production HUD controls missing")
 		return
-	if pause_overlay == null or promotion_overlay == null or promotion_card == null or settings_card == null or slider == null or ambience_slider == null or sfx_slider == null or ai_select == null or resume == null or undo == null or restart == null:
-		_fail("pause/promotion/settings/audio/AI/undo controls missing")
+	if pause_overlay == null or promotion_overlay == null or promotion_card == null or settings_card == null or slider == null or ambience_slider == null or sfx_slider == null or mode_select == null or ai_select == null or resume == null or undo == null or restart == null:
+		_fail("pause/promotion/settings/audio/mode/AI/undo controls missing")
 		return
 	if turn_panel.size.x > 380.0 or turn_panel.size.y > 90.0:
 		_fail("turn panel is too large and blocks gameplay")
@@ -90,6 +91,17 @@ func _run() -> void:
 	controller.call("_on_ai_difficulty_selected", ChessAI.Difficulty.HARD)
 	if controller.ai.difficulty != ChessAI.Difficulty.HARD:
 		_fail("AI difficulty selector not wired")
+		return
+
+	mode_select.select(1)
+	controller.call("_on_game_mode_selected", 1)
+	if controller.ai_enabled or not ai_select.disabled:
+		_fail("local mode did not disable AI controls")
+		return
+	mode_select.select(0)
+	controller.call("_on_game_mode_selected", 0)
+	if not controller.ai_enabled or ai_select.disabled:
+		_fail("AI mode did not restore AI controls")
 		return
 
 	controller.call("_toggle_pause")
