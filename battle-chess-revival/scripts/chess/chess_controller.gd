@@ -19,6 +19,7 @@ var selected_moves: Array[Dictionary] = []
 var input_locked := false
 var game_over := false
 var ai_enabled := true
+var graphics_quality := ArenaBuilder.QUALITY_HIGH
 var status_label: Label
 var help_label: Label
 var side_chip: Label
@@ -33,6 +34,7 @@ var ambience_slider: HSlider
 var sfx_slider: HSlider
 var game_mode_select: OptionButton
 var ai_difficulty_select: OptionButton
+var graphics_quality_select: OptionButton
 var hud_layer: CanvasLayer
 var intro_banner: PanelContainer
 var endgame_overlay: Control
@@ -46,6 +48,7 @@ func setup(p_arena: ArenaBuilder, p_battle_director: BattleDirector) -> void:
 	arena = p_arena
 	battle_director = p_battle_director
 	_load_settings()
+	arena.apply_quality_preset(graphics_quality)
 	_build_hud()
 	_refresh_hud()
 	call_deferred("_maybe_play_intro")
@@ -552,8 +555,8 @@ func _build_pause_overlay() -> void:
 	var card := PanelContainer.new()
 	card.name = "SettingsCard"
 	card.set_anchors_preset(Control.PRESET_CENTER)
-	card.position = Vector2(-205, -310)
-	card.size = Vector2(410, 620)
+	card.position = Vector2(-205, -345)
+	card.size = Vector2(410, 690)
 	card.add_theme_stylebox_override("panel", _panel_style(Color(0.07, 0.055, 0.065, 0.98), Color("#b7833e"), 16, 2))
 	pause_overlay.add_child(card)
 
@@ -613,6 +616,21 @@ func _build_pause_overlay() -> void:
 	ai_difficulty_select.item_selected.connect(_on_ai_difficulty_selected)
 	column.add_child(ai_difficulty_select)
 	_sync_game_mode_controls()
+
+	var graphics_title := Label.new()
+	graphics_title.text = "Качество графики"
+	graphics_title.add_theme_font_size_override("font_size", 13)
+	column.add_child(graphics_title)
+
+	graphics_quality_select = OptionButton.new()
+	graphics_quality_select.name = "GraphicsQuality"
+	graphics_quality_select.custom_minimum_size.y = 36
+	graphics_quality_select.add_item("Низкое", ArenaBuilder.QUALITY_LOW)
+	graphics_quality_select.add_item("Среднее", ArenaBuilder.QUALITY_MEDIUM)
+	graphics_quality_select.add_item("Высокое", ArenaBuilder.QUALITY_HIGH)
+	graphics_quality_select.select(graphics_quality)
+	graphics_quality_select.item_selected.connect(_on_graphics_quality_selected)
+	column.add_child(graphics_quality_select)
 
 	volume_slider = _add_volume_slider(column, "Общая громкость", &"Master", "MasterVolume")
 	ambience_slider = _add_volume_slider(column, "Окружение", &"Ambience", "AmbienceVolume")
@@ -751,6 +769,15 @@ func _on_ai_difficulty_selected(index: int) -> void:
 	_save_settings()
 
 
+func _on_graphics_quality_selected(index: int) -> void:
+	if graphics_quality_select == null:
+		return
+	graphics_quality = graphics_quality_select.get_item_id(index)
+	if arena != null:
+		arena.apply_quality_preset(graphics_quality)
+	_save_settings()
+
+
 func _add_volume_slider(column: VBoxContainer, title_text: String, bus_name: StringName, node_name: String) -> HSlider:
 	var title := Label.new()
 	title.text = title_text
@@ -781,6 +808,7 @@ func _save_settings() -> void:
 	var config := ConfigFile.new()
 	config.set_value("gameplay", "ai_enabled", ai_enabled)
 	config.set_value("gameplay", "ai_difficulty", ai.difficulty)
+	config.set_value("graphics", "quality", graphics_quality)
 	config.set_value("audio", "master", _current_bus_volume_linear(&"Master"))
 	config.set_value("audio", "ambience", _current_bus_volume_linear(&"Ambience"))
 	config.set_value("audio", "sfx", _current_bus_volume_linear(&"SFX"))
@@ -795,6 +823,7 @@ func _load_settings() -> void:
 		return
 	ai_enabled = bool(config.get_value("gameplay", "ai_enabled", true))
 	ai.set_difficulty(int(config.get_value("gameplay", "ai_difficulty", ChessAI.Difficulty.NORMAL)))
+	graphics_quality = clampi(int(config.get_value("graphics", "quality", ArenaBuilder.QUALITY_HIGH)), ArenaBuilder.QUALITY_LOW, ArenaBuilder.QUALITY_HIGH)
 	_apply_saved_bus_volume(&"Master", float(config.get_value("audio", "master", _current_bus_volume_linear(&"Master"))))
 	_apply_saved_bus_volume(&"Ambience", float(config.get_value("audio", "ambience", _current_bus_volume_linear(&"Ambience"))))
 	_apply_saved_bus_volume(&"SFX", float(config.get_value("audio", "sfx", _current_bus_volume_linear(&"SFX"))))
