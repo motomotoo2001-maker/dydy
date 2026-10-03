@@ -135,6 +135,7 @@ func _pawn_toe_stab_authored(attacker: PieceView, victim: PieceView, data: Captu
 	_flash(victim.foot_target.global_position, Color("#ffd35c"), 0.28)
 	_comic_text("BAM!", victim.battle_target.global_position + Vector3(0, 0.65, 0), Color("#ffd84f"))
 	victim.play_hit_pose()
+	_capture_impact_layer(data.id, victim)
 	capture_impact.emit(data.id)
 	await _wait(0.10)
 
@@ -173,6 +174,7 @@ func _pawn_toe_stab_fallback(attacker: PieceView, victim: PieceView, data: Captu
 	_flash(victim.foot_target.global_position, Color("#ffd35c"), 0.26)
 	_comic_text("BAM!", victim.battle_target.global_position + Vector3(0, 0.65, 0), Color("#ffd84f"))
 	victim.play_hit_pose()
+	_capture_impact_layer(data.id, victim)
 	capture_impact.emit(data.id)
 	await _parallel(victim.visual_root, {
 		"scale": Vector3(1.18, 0.82, 1.18),
@@ -215,6 +217,7 @@ func _knight_double_kick_authored(attacker: PieceView, victim: PieceView, data: 
 	_flash(victim.battle_target.global_position, Color("#fff0c2"), 0.30)
 	_comic_text("KICK!", victim.battle_target.global_position + Vector3(0, 0.7, 0), Color("#ffb953"))
 	victim.play_hit_pose()
+	_capture_impact_layer(data.id, victim)
 	capture_impact.emit(data.id)
 	# Brief hit-stop keeps both characters readable at contact and gives the
 	# camera/VFX one beat before the victim is launched.
@@ -263,6 +266,7 @@ func _knight_double_kick_fallback(attacker: PieceView, victim: PieceView, data: 
 	_flash(victim.battle_target.global_position, Color("#fff0c2"), 0.28)
 	_comic_text("KICK!", victim.battle_target.global_position + Vector3(0, 0.7, 0), Color("#ffb953"))
 	victim.play_hit_pose()
+	_capture_impact_layer(data.id, victim)
 	capture_impact.emit(data.id)
 	await _animate_part_prefix(attacker, "Leg_", Vector3(-52, 0, 0), Vector3.ZERO, 0.065)
 	await _animate_part_prefix(attacker, "Hoof_", Vector3(-40, 0, 0), Vector3.ZERO, 0.065)
@@ -318,6 +322,7 @@ func _bishop_ram_authored(attacker: PieceView, victim: PieceView, data: CaptureA
 	_flash(victim.battle_target.global_position, Color("#ffcb75"), 0.38)
 	_comic_text("WHOOSH!", victim.battle_target.global_position + Vector3(0, 0.8, 0), Color("#f0b65e"))
 	victim.play_hit_pose()
+	_capture_impact_layer(data.id, victim)
 	capture_impact.emit(data.id)
 	_skid_mark(attacker.global_position - Vector3(1.2, 0.36, 0))
 	# Short hit-stop keeps both silhouettes readable at the authored contact pose.
@@ -367,6 +372,7 @@ func _bishop_ram_fallback(attacker: PieceView, victim: PieceView, data: CaptureA
 	_flash(victim.battle_target.global_position, Color("#ffcb75"), 0.36)
 	_comic_text("WHOOSH!", victim.battle_target.global_position + Vector3(0, 0.8, 0), Color("#f0b65e"))
 	victim.play_hit_pose()
+	_capture_impact_layer(data.id, victim)
 	capture_impact.emit(data.id)
 	_skid_mark(attacker.global_position - Vector3(1.2, 0.36, 0))
 
@@ -418,6 +424,7 @@ func _rook_crush_authored(attacker: PieceView, victim: PieceView, data: CaptureA
 	_flash(victim.battle_target.global_position, Color("#f1d1a2"), 0.44)
 	_comic_text("SPLOTCH!", victim.battle_target.global_position + Vector3(0, 0.8, 0), Color("#f3d8a6"))
 	victim.play_hit_pose()
+	_capture_impact_layer(data.id, victim)
 	capture_impact.emit(data.id)
 	_dust(victim.global_position)
 	_dust(victim.global_position + Vector3(0.35, 0, 0.15))
@@ -462,6 +469,7 @@ func _rook_crush_fallback(attacker: PieceView, victim: PieceView, data: CaptureA
 	_flash(victim.battle_target.global_position, Color("#f1d1a2"), 0.42)
 	_comic_text("SPLOTCH!", victim.battle_target.global_position + Vector3(0, 0.8, 0), Color("#f3d8a6"))
 	victim.play_hit_pose()
+	_capture_impact_layer(data.id, victim)
 	capture_impact.emit(data.id)
 	_dust(victim.global_position)
 	_dust(victim.global_position + Vector3(0.35, 0, 0.15))
@@ -505,6 +513,7 @@ func _queen_transform_authored(attacker: PieceView, victim: PieceView, data: Cap
 	_flash(victim.battle_target.global_position, Color("#e0a8ff"), 0.24)
 	_comic_text("POOF!", victim.battle_target.global_position + Vector3(0, 0.8, 0), Color("#c979ff"))
 	victim.play_hit_pose()
+	_capture_impact_layer(data.id, victim)
 	capture_impact.emit(data.id)
 	await _wait(0.10)
 
@@ -536,6 +545,7 @@ func _queen_transform_fallback(attacker: PieceView, victim: PieceView, data: Cap
 	_impact_burst(victim.battle_target.global_position, Color("#b862ff"), 1.05)
 	_comic_text("POOF!", victim.battle_target.global_position + Vector3(0, 0.8, 0), Color("#c979ff"))
 	victim.play_hit_pose()
+	_capture_impact_layer(data.id, victim)
 	capture_impact.emit(data.id)
 	victim.visible = false
 	var replacement := _spawn_magic_result(victim.piece_type, victim.global_position)
@@ -575,6 +585,7 @@ func _king_trapdoor_authored(attacker: PieceView, victim: PieceView, data: Captu
 	_shockwave(victim.global_position, Color("#7b5a48"), 0.65)
 	_comic_text("CLACK!", victim.battle_target.global_position + Vector3(0, 0.55, 0), Color("#d6a578"))
 	victim.play_hit_pose()
+	_capture_impact_layer(data.id, victim)
 	capture_impact.emit(data.id)
 	await _parallel(victim.visual_root, {"position": Vector3(0, -5.0, 0), "scale": Vector3(0.72, 0.72, 0.72)}, 0.38)
 	_flash(victim.global_position - Vector3(0, 1.6, 0), Color("#d5b07a"), 0.20)
@@ -610,6 +621,7 @@ func _king_trapdoor_fallback(attacker: PieceView, victim: PieceView, data: Captu
 	_shockwave(victim.global_position, Color("#7b5a48"), 0.65)
 	_comic_text("CLACK!", victim.battle_target.global_position + Vector3(0, 0.55, 0), Color("#d6a578"))
 	victim.play_hit_pose()
+	_capture_impact_layer(data.id, victim)
 	capture_impact.emit(data.id)
 	await _parallel(victim.visual_root, {
 		"position": Vector3(0, -5.0, 0),
@@ -708,6 +720,61 @@ func _animate_part_prefix(
 		if position_offset != Vector3.ZERO:
 			tween.tween_property(part, "position", rest_position + position_offset, _d(seconds))
 	await tween.finished
+
+
+func _capture_impact_layer(id: StringName, victim: PieceView) -> void:
+	if victim == null:
+		return
+	var color := Color("#ffd06a")
+	var radius := 0.92
+	match id:
+		&"pawn_toe_stab":
+			color = Color("#ffd35c")
+			radius = 0.72
+		&"knight_double_kick":
+			color = Color("#ffad58")
+			radius = 1.02
+		&"bishop_ram":
+			color = Color("#e7c08c")
+			radius = 1.08
+		&"rook_crush":
+			color = Color("#ff7a4a")
+			radius = 1.22
+		&"queen_transform":
+			color = Color("#d979ff")
+			radius = 1.08
+		&"king_trapdoor":
+			color = Color("#e5b74f")
+			radius = 1.12
+
+	var ground := victim.global_position
+	ground.y = ArenaBuilder.BOARD_Y + 0.055
+	_shockwave(ground, color, radius)
+	_spawn_impact_sparks(ground + Vector3(0, 0.12, 0), color, radius)
+
+
+func _spawn_impact_sparks(p: Vector3, color: Color, strength: float) -> void:
+	for i in range(8):
+		var mesh := BoxMesh.new()
+		mesh.size = Vector3(0.035, 0.18, 0.035) * maxf(strength, 0.65)
+		var spark := MeshInstance3D.new()
+		spark.name = "ImpactSpark_%02d" % i
+		spark.mesh = mesh
+		spark.material_override = _fx_material(color.lightened(0.18), 3.8)
+		add_child(spark)
+		spark.global_position = p
+		var angle := TAU * float(i) / 8.0 + 0.18
+		var distance := 0.42 + 0.06 * float(i % 3)
+		var target := p + Vector3(
+			cos(angle) * distance * strength,
+			0.32 + 0.08 * float(i % 2),
+			sin(angle) * distance * strength
+		)
+		var tween := create_tween().set_parallel()
+		tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		tween.tween_property(spark, "global_position", target, _d(0.16))
+		tween.tween_property(spark, "scale", Vector3(0.15, 0.15, 0.15), _d(0.18))
+		tween.chain().tween_callback(spark.queue_free)
 
 
 func _camera_punch(strength: float = 0.12) -> void:
