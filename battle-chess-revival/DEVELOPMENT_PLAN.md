@@ -89,12 +89,49 @@ Verified at `42a2312`:
 - close White/Black Queen reviews inspected;
 - Godot 4.7.2 import, chess rules, battle smoke and Visual QA all green.
 
-## ACTIVE — Milestone B5: King production pair
+## VERIFIED — Milestone B5: King production pair
 
-- expressive royal White King and dark-lord Black King;
-- preserve Head / Crown / Scepter / Arm_* / V3_CoatPanel animation targets;
-- keep trapdoor capture compatibility;
-- final production-character lineup review after King is verified.
+Verified at `78fca9a`:
+- White King production V1: 62 named parts;
+- Black King production V1: 63 named parts;
+- Head / Beard / Moustache / CrownBand / Scepter / Arm_* / V3_CoatPanel hooks preserved;
+- trapdoor capture render verified;
+- close White/Black King reviews inspected;
+- Godot 4.7.2 import, chess rules, battle smoke and Visual QA all green.
+
+### Production V1 army milestone complete
+
+All six families now use production asset pipelines:
+Pawn → Knight → Bishop → Rook → Queen → King.
+
+A complete verified source ZIP was saved to Google Drive as
+`BattleChessRevival_ALL_PRODUCTION_FAMILIES_V1_FINAL_2026-10-03_78fca9a.zip`.
+
+## ACTIVE — Milestone C1: Skeleton3D + authored Knight animation
+
+Start with Knight because it has the most demanding body hierarchy.
+
+Deliverables:
+- production Skeleton3D and skin/bone ownership for rider + horse motion groups;
+- authored Idle, Selected and Move clips;
+- authored Hit, Victory and Defeat clips;
+- authored double-hind-kick signature capture clip;
+- animation event timing hooks for camera/VFX impact;
+- preserve current named-part transform animation as fallback until the authored clip is verified;
+- gameplay/battle render review + full CI gate.
+
+## NEXT — Milestone C2: Bishop authored rig/animation
+
+- Skeleton3D mapping for head/trunk/staff/cape;
+- authored Idle / Move / Hit / Victory / Defeat;
+- authored ram-charge signature capture.
+
+## NEXT + 1 — Milestone C3/C4: Rook and Queen authored rigs
+
+Rook: articulated arms/fists + jump-crush.
+Queen: hair/cape/staff + transformation spell.
+
+Then King and Pawn final authored-animation passes.
 
 Knight B1 verified at `26e07749`: production White/Black Knight GLBs are generated in Blender, contracts pass (72/78 parts), gameplay/capture tests pass, close front review renders verified, and Visual QA regression gate passes.
 
