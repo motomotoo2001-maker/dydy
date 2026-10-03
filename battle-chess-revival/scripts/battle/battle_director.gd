@@ -241,6 +241,61 @@ func _knight_double_kick_fallback(attacker: PieceView, victim: PieceView, data: 
 	await _wait(0.10)
 
 func _bishop_ram(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
+	if attacker.has_authored_animation(&"RamCharge"):
+		await _bishop_ram_authored(attacker, victim, data)
+		return
+	await _bishop_ram_fallback(attacker, victim, data)
+
+func _bishop_ram_authored(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
+	# Bone animation owns the Bishop body/head/trunk/staff/cape pose while this
+	# director keeps world-space charge travel, impact timing and victim physics.
+	var playback_speed := 1.10
+	var clip_length := attacker.authored_animation_length(&"RamCharge") / playback_speed
+	if clip_length <= 0.0:
+		clip_length = 1.55
+	attacker.play_authored_animation(&"RamCharge", playback_speed, 0.05)
+
+	# Wind-up: body folds forward, trunk extends and the staff rolls back.
+	for i in range(3):
+		_dust(attacker.global_position + Vector3(0, 0.08, 0))
+		await _wait(clip_length * 0.055)
+
+	var charge_target := victim.global_position + Vector3(0.52, 0, 0)
+	var charge := create_tween().set_parallel()
+	charge.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	charge.tween_property(attacker, "global_position", charge_target, _d(clip_length * 0.24))
+	charge.tween_property(attacker.visual_root, "scale", Vector3(1.08, 0.92, 1.04), _d(clip_length * 0.24))
+	await charge.finished
+
+	# Frame ~18/40 is the authored trunk/body impact pose.
+	_camera_punch(0.22)
+	_impact_burst(victim.battle_target.global_position, Color("#ffcb75"), 1.40)
+	_stone_debris(victim.global_position, Color("#c9b38f"), 10)
+	_shockwave(victim.global_position, Color("#c99b62"), 0.90)
+	_flash(victim.battle_target.global_position, Color("#ffcb75"), 0.38)
+	_comic_text("WHOOSH!", victim.battle_target.global_position + Vector3(0, 0.8, 0), Color("#f0b65e"))
+	victim.play_hit_pose()
+	capture_impact.emit(data.id)
+	_skid_mark(attacker.global_position - Vector3(1.2, 0.36, 0))
+	# Short hit-stop keeps both silhouettes readable at the authored contact pose.
+	await _wait(0.12)
+
+	var blast := create_tween().set_parallel()
+	blast.tween_property(victim.visual_root, "position", Vector3(4.0, 1.0, 0), _d(0.32))
+	blast.tween_property(victim.visual_root, "scale", Vector3(0.35, 0.35, 0.35), _d(0.32))
+	blast.tween_property(victim.visual_root, "rotation_degrees:z", -420.0, _d(0.32))
+	await blast.finished
+
+	var remaining := maxf(clip_length * 0.42 - 0.44, 0.04)
+	await _wait(remaining)
+	attacker.stop_authored_animation()
+	var settle := create_tween().set_parallel()
+	settle.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	settle.tween_property(attacker.visual_root, "scale", Vector3.ONE, _d(0.16))
+	settle.tween_property(attacker.visual_root, "rotation_degrees", Vector3.ZERO, _d(0.16))
+	await settle.finished
+
+func _bishop_ram_fallback(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
 	await _animate_part_prefix(attacker, "Trunk", Vector3(-24, 0, 0), Vector3.ZERO, 0.16)
 	await _animate_part_prefix(attacker, "V3_TrunkTip", Vector3(-28, 0, 0), Vector3(0, -0.02, -0.05), 0.16)
 	await _animate_part_prefix(attacker, "Staff", Vector3(0, 0, -22), Vector3.ZERO, 0.16)
