@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: [ "battle-chess-revival" ]
+    branches: [ "battle-chess-revival", "battle-chess-g7" ]
     paths:
       - "battle-chess-revival/**"
       - ".github/workflows/battle-chess-ci.yml"
@@ -106,6 +106,8 @@ jobs:
         run: xvfb-run -a ./Godot_v4.7.2-stable_linux.x86_64 --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/settings_persistence_test.gd
       - name: Validate production audio routing
         run: xvfb-run -a ./Godot_v4.7.2-stable_linux.x86_64 --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/audio_smoke_test.gd
+      - name: Validate cinematic capture modes
+        run: xvfb-run -a ./Godot_v4.7.2-stable_linux.x86_64 --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/capture_mode_test.gd
       - name: Validate final presentation and rematch flow
         run: xvfb-run -a ./Godot_v4.7.2-stable_linux.x86_64 --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/presentation_smoke_test.gd
       - name: Validate release candidate audit
