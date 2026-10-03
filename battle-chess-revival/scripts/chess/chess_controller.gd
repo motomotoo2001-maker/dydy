@@ -149,7 +149,7 @@ func _execute_move(move: Dictionary, allow_ai_reply: bool) -> void:
 	elif status == &"checkmate":
 		var winner_side := ChessState.BLACK if state.turn == ChessState.WHITE else ChessState.WHITE
 		await arena.play_checkmate_presentation(winner_side, state.turn)
-	if status in [&"checkmate", &"stalemate", &"draw_50_move", &"draw_insufficient"]:
+	if status in [&"checkmate", &"stalemate", &"draw_50_move", &"draw_repetition", &"draw_insufficient"]:
 		game_over = true
 		_show_endgame(status)
 	input_locked = false
@@ -407,6 +407,7 @@ func _show_endgame(status: StringName) -> void:
 		match status:
 			&"stalemate": endgame_subtitle.text = "ПАТ"
 			&"draw_50_move": endgame_subtitle.text = "ПРАВИЛО 50 ХОДОВ"
+			&"draw_repetition": endgame_subtitle.text = "ТРОЕКРАТНОЕ ПОВТОРЕНИЕ"
 			&"draw_insufficient": endgame_subtitle.text = "НЕДОСТАТОЧНО МАТЕРИАЛА"
 			_: endgame_subtitle.text = "ПАРТИЯ ЗАВЕРШЕНА"
 	endgame_overlay.visible = true
@@ -660,6 +661,8 @@ func _refresh_hud() -> void:
 			status_label.text = "ПАТ  •  ничья"
 		&"draw_50_move":
 			status_label.text = "НИЧЬЯ  •  50 ходов"
+		&"draw_repetition":
+			status_label.text = "НИЧЬЯ  •  повторение"
 		&"draw_insufficient":
 			status_label.text = "НИЧЬЯ  •  материал"
 		_:
