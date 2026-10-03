@@ -1188,9 +1188,10 @@ func _spawn_crowned_frog(p: Vector3) -> Node3D:
 
 
 func _capture_intro_beat(attacker: PieceView, victim: PieceView, id: StringName) -> void:
-	# Shared cinematic anticipation before every authored signature. The beat
-	# fully returns both visual roots to rest before the family clip starts, so
-	# authored animation contracts and deterministic impact timing stay intact.
+	# G5 shared cinematic anticipation. Camera starts wider/farther than the
+	# authored combat framing and pushes into the locked rest pose while the
+	# attacker/victim load their anticipation. Signature clip timing begins
+	# only after this beat, so all deterministic impact markers remain intact.
 	if attacker == null or victim == null or arena == null or arena.battle_camera == null:
 		return
 	var attacker_root := attacker.visual_root
@@ -1201,22 +1202,35 @@ func _capture_intro_beat(attacker: PieceView, victim: PieceView, id: StringName)
 	var attacker_scale := attacker_root.scale
 	var victim_scale := victim_root.scale
 	var lean := 2.4
+	var entry_distance := 0.72
+	var entry_fov := 4.2
+	var entry_pitch := -1.15
 	if id == &"rook_crush" or id == &"bishop_ram":
 		lean = 3.4
+		entry_distance = 0.92
+		entry_fov = 5.0
 	elif id == &"queen_transform" or id == &"king_trapdoor":
 		lean = 1.8
+		entry_distance = 0.82
+		entry_fov = 4.6
 
-	arena.battle_camera.position = _camera_rest_position + Vector3(0.14, 0.055, 0.30)
+	var camera := arena.battle_camera
+	camera.position = _camera_rest_position + Vector3(0.20, 0.11, entry_distance)
+	camera.rotation_degrees = _camera_rest_rotation + Vector3(entry_pitch, 0.65, -0.35)
+	camera.fov = minf(_camera_rest_fov + entry_fov, 50.0)
+
 	var settle := create_tween().set_parallel()
 	settle.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	settle.tween_property(arena.battle_camera, "position", _camera_rest_position, _d(0.16))
-	settle.tween_property(attacker_root, "position:y", 0.045, _d(0.10))
-	settle.tween_property(attacker_root, "scale", attacker_scale * 1.025, _d(0.10))
-	settle.tween_property(victim_root, "position:y", -0.018, _d(0.10))
-	settle.tween_property(victim_root, "rotation_degrees:z", lean, _d(0.10))
-	settle.tween_property(victim_root, "scale", victim_scale * 0.985, _d(0.10))
+	settle.tween_property(camera, "position", _camera_rest_position, _d(0.22))
+	settle.tween_property(camera, "rotation_degrees", _camera_rest_rotation, _d(0.22))
+	settle.tween_property(camera, "fov", _camera_rest_fov, _d(0.22))
+	settle.tween_property(attacker_root, "position:y", 0.045, _d(0.12))
+	settle.tween_property(attacker_root, "scale", attacker_scale * 1.025, _d(0.12))
+	settle.tween_property(victim_root, "position:y", -0.018, _d(0.12))
+	settle.tween_property(victim_root, "rotation_degrees:z", lean, _d(0.12))
+	settle.tween_property(victim_root, "scale", victim_scale * 0.985, _d(0.12))
 	await settle.finished
-	await _wait(0.035)
+	await _wait(0.030)
 
 	var release := create_tween().set_parallel()
 	release.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
@@ -1229,23 +1243,31 @@ func _capture_intro_beat(attacker: PieceView, victim: PieceView, id: StringName)
 
 
 func _capture_recovery_beat(id: StringName) -> void:
-	# Let the impact breathe for a few frames before returning to gameplay.
-	# Heavy signatures get a slightly longer camera pullback.
+	# G5 controlled exit: let impact breathe, then ease the lens backward before
+	# the gameplay camera takes over. This is intentionally after all authored
+	# impact events, so it cannot shift gameplay/capture synchronization.
 	if arena == null or arena.battle_camera == null:
 		return
 	var hold := 0.085
-	var pullback := 0.18
+	var pullback := 0.30
+	var fov_release := 1.65
 	if id == &"rook_crush" or id == &"king_trapdoor":
 		hold = 0.12
-		pullback = 0.24
+		pullback = 0.38
+		fov_release = 2.10
+	elif id == &"queen_transform":
+		pullback = 0.34
+		fov_release = 1.90
 	await _wait(hold)
 	var camera := arena.battle_camera
-	var target_position := camera.position + Vector3(0.0, 0.055, pullback)
-	var target_fov := minf(camera.fov + 1.15, 48.0)
+	var target_position := camera.position + Vector3(0.0, 0.075, pullback)
+	var target_rotation := camera.rotation_degrees + Vector3(0.55, -0.35, 0.18)
+	var target_fov := minf(camera.fov + fov_release, 49.0)
 	var tween := create_tween().set_parallel()
 	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tween.tween_property(camera, "position", target_position, _d(0.12))
-	tween.tween_property(camera, "fov", target_fov, _d(0.12))
+	tween.tween_property(camera, "position", target_position, _d(0.15))
+	tween.tween_property(camera, "rotation_degrees", target_rotation, _d(0.15))
+	tween.tween_property(camera, "fov", target_fov, _d(0.15))
 	await tween.finished
 
 
