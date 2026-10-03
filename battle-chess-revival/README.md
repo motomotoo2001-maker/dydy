@@ -139,3 +139,10 @@ The approved character sheets are now the direct production target. All 12 impor
 ## Concept v3 fidelity pass
 
 The latest six approved character sheets are now treated as the visual source of truth. A third GLB generation pass builds on concept-v2 and adds face readability and costume silhouette details across all twelve characters: layered eye whites/irises, mouths and moustaches, fuller multi-lobe helmet plumes, rounded pauldron/fist forms, stronger shield rims and heraldry, horse/rider facial details and capes, bishop robe layers and staff halos, queen layered hair/gowns/capes, and king fur/coat/remote details. PieceView now loads `*_concept_v3.glb`. CI asset contracts were raised to concept-v3 so future changes cannot silently fall back to the simpler geometry.
+
+
+## Presentation animation milestone
+
+The next gameplay-feel pass now extends animation beyond capture cinematics. Piece selection gets a subtle lift/scale read, normal board moves use anticipation and recovery poses with piece-specific named-part offsets, Kings react when placed in check, and checkmate gives the winning and losing Kings distinct final poses. These presentation motions preserve the existing named-part V3 asset contract so the later Skeleton3D/V4 character swap can reuse the same gameplay hooks instead of rewriting chess logic.
+
+See `DEVELOPMENT_PLAN.md` for the durable multi-milestone roadmap and checkpoint policy.
