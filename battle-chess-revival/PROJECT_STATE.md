@@ -1,6 +1,6 @@
 # Battle Chess Revival — Project State
 
-Last verified release candidate: **RC2**
+Last verified release candidate: **G1 full-upgrade checkpoint**
 Verified branch: `battle-chess-revival`
 Latest verified post-RC visual checkpoint: `5f64732`
 Stable release rollback: `cd20018` (RC2)
@@ -20,21 +20,17 @@ Target release: **Windows x86_64**
 - Cathedral ambience and gameplay/capture SFX.
 - Windows export validated in CI.
 
-## Verified RC2 artifacts
+## Verified G1 full-upgrade artifacts
 
 Windows:
-`BattleChessRevival_RC2_Windows_x86_64_2026-10-03_cd20018.zip`
-
-Contents:
-- `BattleChessRevival.exe`
-- `README.txt`
+`BattleChessRevival_FULL_UPGRADE_G1_Windows_2026-10-03_8dd5e66.zip`
 
 Source:
-`BattleChessRevival_RC2_Source_Godot_4.7.2_2026-10-03_cd20018.zip`
+`BattleChessRevival_FULL_UPGRADE_G1_Source_2026-10-03_8dd5e66.zip`
 
-The source package intentionally excludes generated gameplay/capture/review PNGs; those remain CI QA artifacts.
+Both G1 ZIPs are backed up in the Battle Chess Revival Google Drive folder.
 
-Both RC2 ZIPs are backed up in the Battle Chess Revival Google Drive folder.
+G1 additionally includes strategic AI difficulty levels, move history/Undo, threefold repetition, piece-specific board movement, landing VFX, warmer lighting and a denser authored cathedral.
 
 ## Non-negotiable visual/gameplay rules
 
@@ -42,7 +38,7 @@ Both RC2 ZIPs are backed up in the Battle Chess Revival Google Drive folder.
 2. Gameplay camera stays at a 3/4 side angle with the complete board visible.
 3. Battle/capture camera remains separate and cinematic.
 4. Production GLB/Skeleton3D assets remain the normal path; fallback animation/geometry stays only as safety.
-5. RC2 is the rollback checkpoint for any post-RC work.
+5. G1 full-upgrade checkpoint is the current rollback point; RC2 remains the older clean release-candidate fallback.
 
 ## Post-RC verified visual improvements
 
