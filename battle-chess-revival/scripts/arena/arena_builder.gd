@@ -5,6 +5,10 @@ const CELL_SIZE := 1.20
 const BOARD_Y := 0.38
 const CATHEDRAL_ASSET_PATH := "res://assets/models/cathedral_production_v1.glb"
 
+const QUALITY_LOW := 0
+const QUALITY_MEDIUM := 1
+const QUALITY_HIGH := 2
+
 var generated: Node3D
 var board_root: Node3D
 var sockets_root: Node3D
@@ -21,6 +25,7 @@ var last_move_root: Node3D
 var danger_root: Node3D
 var _selected_piece: PieceView
 var _cathedral_material_cache: Dictionary = {}
+var quality_preset := QUALITY_HIGH
 
 func build() -> void:
 	if generated != null and is_instance_valid(generated):
@@ -41,6 +46,76 @@ func build() -> void:
 	_build_selection_root()
 	_build_last_move_root()
 	_build_danger_root()
+
+func apply_quality_preset(level: int) -> void:
+	quality_preset = clampi(level, QUALITY_LOW, QUALITY_HIGH)
+	if generated == null:
+		return
+
+	var world := generated.get_node_or_null("WorldEnvironment") as WorldEnvironment
+	if world != null and world.environment != null:
+		var env := world.environment
+		match quality_preset:
+			QUALITY_LOW:
+				env.ssao_enabled = false
+				env.glow_enabled = false
+				env.fog_enabled = false
+				env.ssil_enabled = false
+				env.volumetric_fog_enabled = false
+			QUALITY_MEDIUM:
+				env.ssao_enabled = true
+				env.ssao_radius = 0.95
+				env.ssao_intensity = 1.05
+				env.ssao_power = 1.05
+				env.ssao_detail = 0.45
+				env.glow_enabled = true
+				env.glow_intensity = 0.12
+				env.fog_enabled = true
+				env.fog_density = 0.0015
+				env.ssil_enabled = false
+				env.volumetric_fog_enabled = false
+			_:
+				env.ssao_enabled = true
+				env.ssao_radius = 1.25
+				env.ssao_intensity = 1.38
+				env.ssao_power = 1.18
+				env.ssao_detail = 0.62
+				env.glow_enabled = true
+				env.glow_intensity = 0.20
+				env.fog_enabled = true
+				env.fog_density = 0.002
+				if RenderingServer.get_current_rendering_method() == "forward_plus":
+					env.ssil_enabled = true
+					env.volumetric_fog_enabled = true
+					env.volumetric_fog_density = 0.010
+					env.volumetric_fog_length = 30.0
+				else:
+					env.ssil_enabled = false
+					env.volumetric_fog_enabled = false
+
+	var lighting := generated.get_node_or_null("Lighting")
+	if lighting != null:
+		var sun := lighting.get_node_or_null("SunWarm") as DirectionalLight3D
+		var warm := lighting.get_node_or_null("WarmFill") as OmniLight3D
+		var window := lighting.get_node_or_null("WindowSunFill") as OmniLight3D
+		if sun != null:
+			sun.shadow_enabled = true
+			sun.directional_shadow_max_distance = 22.0 if quality_preset == QUALITY_LOW else (30.0 if quality_preset == QUALITY_MEDIUM else 36.0)
+		if warm != null:
+			warm.shadow_enabled = quality_preset == QUALITY_HIGH
+		if window != null:
+			window.shadow_enabled = quality_preset >= QUALITY_MEDIUM
+
+
+func quality_label() -> String:
+	match quality_preset:
+		QUALITY_LOW:
+			return "Низкое"
+		QUALITY_MEDIUM:
+			return "Среднее"
+		_:
+			return "Высокое"
+
 
 func get_square_count() -> int:
 	return _sockets.size()
