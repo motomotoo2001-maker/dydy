@@ -1,8 +1,8 @@
 # Battle Chess Revival — Project State
 
-Last verified release candidate: **G1 full-upgrade checkpoint**
+Last verified release candidate: **G2 full-polish checkpoint**
 Verified branch: `battle-chess-revival`
-Latest verified post-RC visual checkpoint: `5f64732`
+Latest verified post-RC checkpoint: `4f5ca10`
 Stable release rollback: `cd20018` (RC2)
 Engine: **Godot 4.7.2 stable**
 Target release: **Windows x86_64**
@@ -20,7 +20,19 @@ Target release: **Windows x86_64**
 - Cathedral ambience and gameplay/capture SFX.
 - Windows export validated in CI.
 
-## Verified G1 full-upgrade artifacts
+## Verified G2 full-polish artifacts
+
+Windows:
+`BattleChessRevival_G2_Windows_2026-10-03_4f5ca10.zip`
+
+Source:
+`BattleChessRevival_G2_Source_2026-10-03_4f5ca10.zip`
+
+Both G2 ZIPs are backed up in the Battle Chess Revival Google Drive folder.
+
+G2 additionally includes premium board presentation, last-move/check overlays, explicit AI/local mode selection, full promotion choice, stronger battle presentation, persistent settings and a full pause-menu move history.
+
+## Previous G1 full-upgrade artifacts
 
 Windows:
 `BattleChessRevival_FULL_UPGRADE_G1_Windows_2026-10-03_8dd5e66.zip`
@@ -38,7 +50,7 @@ G1 additionally includes strategic AI difficulty levels, move history/Undo, thre
 2. Gameplay camera stays at a 3/4 side angle with the complete board visible.
 3. Battle/capture camera remains separate and cinematic.
 4. Production GLB/Skeleton3D assets remain the normal path; fallback animation/geometry stays only as safety.
-5. G1 full-upgrade checkpoint is the current rollback point; RC2 remains the older clean release-candidate fallback.
+5. G2 full-polish checkpoint is the current rollback point; G1/RC2 remain older stable fallbacks.
 
 ## Post-RC verified visual improvements
 
@@ -51,6 +63,6 @@ G1 additionally includes strategic AI difficulty levels, move history/Undo, thre
 
 ## Next milestone
 
-**G2 — final public build polish**
+**G3 — final public release freeze**
 
-Focus on board/material/prop detail and battle palette while preserving the locked camera, production assets, authored animations and RC2 rollback.
+Add graphics-quality/performance controls, complete the final optimization/audit pass, then produce the final public Windows/source artifacts while preserving the locked camera and verified G2 gameplay/visual baseline.
