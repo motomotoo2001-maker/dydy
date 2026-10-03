@@ -5,8 +5,8 @@ const WHITE_PAWN_ASSET_PATH := "res://assets/models/white_pawn_production_v1.glb
 const BLACK_PAWN_ASSET_PATH := "res://assets/models/black_pawn_concept_v3.glb"
 const WHITE_KNIGHT_ASSET_PATH := "res://assets/models/white_knight_rigged_v1.glb"
 const BLACK_KNIGHT_ASSET_PATH := "res://assets/models/black_knight_rigged_v1.glb"
-const WHITE_BISHOP_ASSET_PATH := "res://assets/models/white_bishop_production_v1.glb"
-const BLACK_BISHOP_ASSET_PATH := "res://assets/models/black_bishop_production_v1.glb"
+const WHITE_BISHOP_ASSET_PATH := "res://assets/models/white_bishop_rigged_v1.glb"
+const BLACK_BISHOP_ASSET_PATH := "res://assets/models/black_bishop_rigged_v1.glb"
 const WHITE_ROOK_ASSET_PATH := "res://assets/models/white_rook_production_v1.glb"
 const BLACK_ROOK_ASSET_PATH := "res://assets/models/black_rook_production_v1.glb"
 const WHITE_QUEEN_ASSET_PATH := "res://assets/models/white_queen_production_v1.glb"
@@ -54,7 +54,7 @@ func _process(delta: float) -> void:
 	visual_root.scale = Vector3.ONE * _design_scale(piece_type) * selected_scale
 	# Rigged Knights use imported bone clips for secondary motion. Keep only
 	# PieceView's subtle root bob so the old named-part layer cannot fight it.
-	if piece_type == &"Knight" and has_authored_animation(&"Idle"):
+	if has_authored_animation(&"Idle"):
 		if not _selected and (_authored_animation_player == null or not _authored_animation_player.is_playing()):
 			play_authored_animation(&"Idle", 1.0, 0.08)
 		return
@@ -121,14 +121,14 @@ func set_battle_animation_active(active: bool) -> void:
 		stop_authored_animation()
 		visual_root.position = Vector3.ZERO
 		visual_root.rotation = Vector3.ZERO
-	elif not active and piece_type == &"Knight":
+	elif not active and has_authored_animation(&"Idle"):
 		play_authored_animation(&"Idle", 1.0, 0.08)
 
 func set_selected(active: bool) -> void:
 	_selected = active
 	if visual_root == null or _battle_animation_active or _presentation_animation_active:
 		return
-	if piece_type == &"Knight" and has_authored_animation(&"Selected"):
+	if has_authored_animation(&"Selected"):
 		if active:
 			play_authored_animation(&"Selected", 1.15, 0.08)
 		else:
@@ -151,7 +151,7 @@ func begin_move_presentation() -> void:
 	_presentation_animation_active = true
 	_restore_visual_part_rest()
 	var base_scale := Vector3.ONE * _design_scale(piece_type)
-	if piece_type == &"Knight" and play_authored_animation(&"Move", 1.55, 0.06):
+	if play_authored_animation(&"Move", 1.55, 0.06):
 		var authored_tween := create_tween().set_parallel()
 		authored_tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		authored_tween.tween_property(visual_root, "scale", base_scale * Vector3(1.025, 0.975, 1.025), 0.08)
@@ -178,7 +178,7 @@ func end_move_presentation() -> void:
 	await tween.finished
 	_restore_visual_part_rest()
 	_presentation_animation_active = false
-	if piece_type == &"Knight":
+	if has_authored_animation(&"Idle"):
 		play_authored_animation(&"Idle", 1.0, 0.10)
 
 func play_check_reaction() -> void:
@@ -207,7 +207,7 @@ func play_victory_pose() -> void:
 		return
 	_presentation_animation_active = true
 	_restore_visual_part_rest()
-	var authored := piece_type == &"Knight" and play_authored_animation(&"Victory", 1.0, 0.08)
+	var authored := play_authored_animation(&"Victory", 1.0, 0.08)
 	if not authored:
 		_apply_victory_part_pose()
 	var base_scale := Vector3.ONE * _design_scale(piece_type)
@@ -223,7 +223,7 @@ func play_defeat_pose() -> void:
 		return
 	_presentation_animation_active = true
 	_restore_visual_part_rest()
-	var authored := piece_type == &"Knight" and play_authored_animation(&"Defeat", 1.0, 0.08)
+	var authored := play_authored_animation(&"Defeat", 1.0, 0.08)
 	if not authored:
 		_pose_named(["Head", "RiderHead", "HorseHead"], Vector3(12.0, 0.0, 0.0), Vector3(0.0, -0.04, 0.0))
 	var base_scale := Vector3.ONE * _design_scale(piece_type)
@@ -235,8 +235,7 @@ func play_defeat_pose() -> void:
 	await tween.finished
 
 func play_hit_pose() -> void:
-	if piece_type == &"Knight":
-		play_authored_animation(&"Hit", 1.2, 0.04)
+	play_authored_animation(&"Hit", 1.2, 0.04)
 
 func has_authored_animation(animation_name: StringName) -> bool:
 	return _authored_animation_player != null and _authored_animation_player.has_animation(animation_name)
