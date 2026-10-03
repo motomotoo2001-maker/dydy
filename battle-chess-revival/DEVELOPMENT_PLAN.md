@@ -80,16 +80,16 @@ Verified at `42ece51`:
 - close White/Black Rook reviews inspected;
 - Godot 4.7.2 import, chess rules, battle smoke and Visual QA all green.
 
-## ACTIVE — Milestone B4: Queen production pair
+## VERIFIED — Milestone B4: Queen production pair
 
-Current task:
-- author White/Black Queen production GLBs with face, hair, crown, cape, staff and readable MagicOrb;
-- preserve Staff / MagicOrb / V3_HairCurl* / V3_Cape* animation targets;
-- keep magic-transformation capture compatibility;
-- add close Queen review renders;
-- pass full Godot 4.7.2 CI and Visual QA before checkpoint.
+Verified at `42a2312`:
+- White/Black Queen production V1: 61 named parts each;
+- Staff / MagicOrb / V3_HairCurl* / V3_Cape* hooks preserved;
+- transformation capture render verified;
+- close White/Black Queen reviews inspected;
+- Godot 4.7.2 import, chess rules, battle smoke and Visual QA all green.
 
-## NEXT — Milestone B5: King production pair
+## ACTIVE — Milestone B5: King production pair
 
 - expressive royal White King and dark-lord Black King;
 - preserve Head / Crown / Scepter / Arm_* / V3_CoatPanel animation targets;
