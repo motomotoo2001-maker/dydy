@@ -362,14 +362,31 @@ Verified checkpoint `e991c34`:
   - `BattleChessRevival_G5_Cinematic_Windows_2026-10-04_e991c34.zip`
   - `BattleChessRevival_G5_Cinematic_Source_2026-10-04_e991c34.zip`.
 
-## ACTIVE — Milestone G6: character secondary motion + silhouette fidelity
+## VERIFIED — Milestone G6: character secondary motion + silhouette fidelity
+
+Verified checkpoint `6a0fbdc`:
+- per-family secondary root motion layers breathing/weight shift over authored idle clips;
+- Queen V2 has stronger crown/hair/cape/staff/orb silhouette;
+- King V2 has stronger crown/beard/mantle/scepter silhouette;
+- Rook V2 has larger fortress crown/fists/shoulder profile;
+- Knight V2 has stronger plume/helmet/pauldron/shield/lance read;
+- Bishop V2 has stronger mitre/cape/staff/trunk read;
+- Pawn remains unchanged because its gameplay silhouette was already clear;
+- production asset contracts lock the new silhouette parts;
+- all rig/runtime animation, AI, Undo/history, promotion, chess-rules, capture, render, Visual-QA and Windows-export gates are green;
+- Drive backups:
+  - `BattleChessRevival_G6_Silhouette_Windows_2026-10-04_6a0fbdc.zip`
+  - `BattleChessRevival_G6_Silhouette_Source_2026-10-04_6a0fbdc.zip`.
+
+## ACTIVE — Milestone G7: gameplay pacing + combat presentation
 
 Current task:
-- layer per-family secondary root motion over authored Skeleton3D Idle clips;
-- improve breathing/weight shift/selection presence without fighting bone animation;
-- keep movement/capture timing deterministic;
-- then target additional silhouette detail on the most visible production characters;
-- preserve G5/G4 checkpoints as rollback.
+- add Full / Fast / Off cinematic capture modes while preserving signature identity and SFX;
+- persist capture mode in player settings;
+- keep Full as the reference-quality mode used by Visual QA;
+- strengthen Hard AI without slowing Easy/Normal;
+- add targeted gameplay feedback only where it improves decision clarity;
+- preserve G6 as the rollback checkpoint.
 
 ## AFTER E — Milestone F: optimization and release candidate
 
