@@ -33,12 +33,13 @@ jobs:
           ./blender-5.2.2/blender --background battle-chess-revival/.generated/pawns_v2_source.blend --python battle-chess-revival/tools/blender/rig_pawn_v2.py -- --side white --output battle-chess-revival/assets/models/white_pawn_production_v1.glb
           ./blender-5.2.2/blender --background battle-chess-revival/.generated/pawns_v2_source.blend --python battle-chess-revival/tools/blender/rig_pawn_v2.py -- --side black --output battle-chess-revival/assets/models/black_pawn_concept_v3.glb
           ./blender-5.2.2/blender --background --python battle-chess-revival/tools/blender/build_knights_v1.py -- --white-output battle-chess-revival/assets/models/white_knight_production_v1.glb --black-output battle-chess-revival/assets/models/black_knight_production_v1.glb
+          ./blender-5.2.2/blender --background --python battle-chess-revival/tools/blender/build_bishops_v1.py -- --white-output battle-chess-revival/assets/models/white_bishop_production_v1.glb --black-output battle-chess-revival/assets/models/black_bishop_production_v1.glb
           test -s battle-chess-revival/assets/models/white_pawn_production_v1.glb
           test -s battle-chess-revival/assets/models/black_pawn_concept_v3.glb
           test -s battle-chess-revival/assets/models/white_knight_production_v1.glb
           test -s battle-chess-revival/assets/models/black_knight_production_v1.glb
-          test -s battle-chess-revival/assets/models/white_bishop_concept_v3.glb
-          test -s battle-chess-revival/assets/models/black_bishop_concept_v3.glb
+          test -s battle-chess-revival/assets/models/white_bishop_production_v1.glb
+          test -s battle-chess-revival/assets/models/black_bishop_production_v1.glb
           test -s battle-chess-revival/assets/models/white_rook_concept_v3.glb
           test -s battle-chess-revival/assets/models/black_rook_concept_v3.glb
           test -s battle-chess-revival/assets/models/white_queen_concept_v3.glb

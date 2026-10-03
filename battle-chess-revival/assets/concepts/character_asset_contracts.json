@@ -1,6 +1,6 @@
 {
-  "version": "production-pawns-v2+production-knights-v1+concept-v3",
-  "source": "approved character sheets; White/Black Pawns and Knight pair authored in Blender 5.2.2; remaining army concept-v3",
+  "version": "production-pawns-v2+production-knights-v1+production-bishops-v1+concept-v3",
+  "source": "approved character sheets; Pawn, Knight and Bishop production families authored in Blender 5.2.2; remaining army concept-v3",
   "assets": {
     "white_pawn_production_v1.glb": {
       "family": "Pawn",
@@ -35,42 +35,6 @@
         "EyeWL",
         "Ear_L",
         "ShieldSlash"
-      ]
-    },
-    "white_bishop_concept_v3.glb": {
-      "family": "Bishop",
-      "side": "White",
-      "min_parts": 32,
-      "required_parts": [
-        "Head",
-        "Trunk",
-        "Staff",
-        "MitreTall",
-        "Concept_RobeFront",
-        "Concept_Cape",
-        "Concept_InnerEar_L",
-        "Concept_ChestGem",
-        "V3_EyeWhite_L",
-        "V3_MitreGem",
-        "V3_StaffOuterHalo"
-      ]
-    },
-    "black_bishop_concept_v3.glb": {
-      "family": "Bishop",
-      "side": "Black",
-      "min_parts": 33,
-      "required_parts": [
-        "Head",
-        "Snout",
-        "HornL",
-        "Staff",
-        "Concept_RobeFront",
-        "Concept_Cape",
-        "Concept_Skull",
-        "Concept_OrbHalo",
-        "V3_EyeWhite_L",
-        "V3_MitreGem",
-        "V3_StaffOuterHalo"
       ]
     },
     "white_rook_concept_v3.glb": {
@@ -215,6 +179,47 @@
         "Production_Plume_0",
         "HelmetHorn_L",
         "Cape"
+      ]
+    },
+    "white_bishop_production_v1.glb": {
+      "family": "Bishop",
+      "side": "White",
+      "min_parts": 60,
+      "required_parts": [
+        "Head",
+        "Trunk",
+        "V3_TrunkTip",
+        "Staff",
+        "V3_CapeLayer",
+        "MitreTall",
+        "MitreGem",
+        "Ear_L",
+        "Ear_R",
+        "Tusk_L",
+        "Tusk_R",
+        "ChestGem",
+        "StaffHalo",
+        "StaffOuterHalo"
+      ]
+    },
+    "black_bishop_production_v1.glb": {
+      "family": "Bishop",
+      "side": "Black",
+      "min_parts": 64,
+      "required_parts": [
+        "Head",
+        "Trunk",
+        "V3_TrunkTip",
+        "Staff",
+        "V3_CapeLayer",
+        "MitreTall",
+        "MitreGem",
+        "HornL",
+        "HornR",
+        "SkullCharm",
+        "ChestGem",
+        "StaffHalo",
+        "StaffOuterHalo"
       ]
     }
   }
