@@ -158,6 +158,11 @@ def build(side,outpath):
     O.append(sphere("CrownGem",(0,-.195,1.96),(.048,.025,.055),P["gem"],28,14))
     O.append(sphere("CrownGem_L",(-.105,-.175,1.94),(.030,.020,.034),P["gem"],24,12))
     O.append(sphere("CrownGem_R",(.105,-.175,1.94),(.030,.020,.034),P["gem"],24,12))
+    # G6 silhouette V2: broader royal crown and beard silhouette.
+    O.append(cone("CrownWing_L",(-.215,.015,2.03),.052,.006,.36,P["gold"],rot=(0,math.radians(-15),math.radians(-25)),verts=30))
+    O.append(cone("CrownWing_R",(.215,.015,2.03),.052,.006,.36,P["gold"],rot=(0,math.radians(15),math.radians(25)),verts=30))
+    O.append(sphere("BeardSideMass_L",(-.15,-.08,1.50),(.09,.075,.22),P["hair"],36,18))
+    O.append(sphere("BeardSideMass_R",(.15,-.08,1.50),(.09,.075,.22),P["hair"],36,18))
 
     # Scepter.
     sx=.44
@@ -165,6 +170,13 @@ def build(side,outpath):
     O.append(torus("ScepterRing",(sx,-.02,1.93),.15,.024,P["gold"],rot=(math.radians(90),0,0)))
     O.append(sphere("ScepterGem",(sx,-.03,1.93),(.085,.060,.085),P["gem"],36,18))
     O.append(cone("ScepterCrown",(sx,-.01,2.17),.050,.004,.22,P["gold"],verts=28))
+    O.append(torus("ScepterHalo",(sx,-.02,1.93),.255,.012,P["gold"],rot=(math.radians(90),0,0)))
+    O.append(cone("ScepterProng_L",(sx-.105,-.015,2.08),.028,.004,.24,P["gold"],rot=(0,math.radians(-10),math.radians(-22)),verts=24))
+    O.append(cone("ScepterProng_R",(sx+.105,-.015,2.08),.028,.004,.24,P["gold"],rot=(0,math.radians(10),math.radians(22)),verts=24))
+    O.append(box("CapeShoulder_L",(-.285,.18,1.36),(.17,.045,.12),P["cloth"],rot=(math.radians(-9),0,math.radians(-10)),bevel=.045))
+    O.append(box("CapeShoulder_R",(.285,.18,1.36),(.17,.045,.12),P["cloth"],rot=(math.radians(-9),0,math.radians(10)),bevel=.045))
+    O.append(box("Shoulder_L_Mantle",(-.37,-.005,1.41),(.115,.12,.08),P["gold"],rot=(0,0,math.radians(-12)),bevel=.05))
+    O.append(box("Shoulder_R_Mantle",(.37,-.005,1.41),(.115,.12,.08),P["gold"],rot=(0,0,math.radians(12)),bevel=.05))
 
     if side=="white":
         O.append(box("ChestCrossV",(0,-.252,1.28),(.028,.010,.12),P["gold"],bevel=.006))
@@ -182,6 +194,8 @@ def build(side,outpath):
     # Extra trim/detail.
     for i,z in enumerate((.44,.60,.78,.96)):
         O.append(torus(f"RobeTrim_{i}",(0,0,z),.35-i*.018,.010,P["gold"]))
+    O.append(box("RobeSilhouette_L",(-.36,.02,.72),(.09,.11,.36),P["robe2"],rot=(0,0,math.radians(-5)),bevel=.055))
+    O.append(box("RobeSilhouette_R",(.36,.02,.72),(.09,.11,.36),P["robe2"],rot=(0,0,math.radians(5)),bevel=.055))
     for i,(x,z) in enumerate(((-.18,1.18),(.18,1.18),(-.24,1.02),(.24,1.02))):
         O.append(sphere(f"RobeGem_{i}",(x,-.250,z),(.032,.018,.032),P["gem"],22,11))
 
