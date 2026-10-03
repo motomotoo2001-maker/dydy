@@ -233,7 +233,42 @@ func _run() -> void:
 	if white_knight != null:
 		white_knight.set_battle_animation_active(false)
 
-	print("RENDER_CAPTURE_PASS gameplay=", image.get_width(), "x", image.get_height(), " captures=", CAPTURES.size(), " lineups=2 reviews=13")
+	# Authored Bishop state diagnostics.
+	_prepare_asset_review(arena, &"Black", &"Bishop")
+	var black_bishop := arena.find_piece(&"Black", &"Bishop")
+	if black_bishop != null:
+		black_bishop.set_battle_animation_active(true)
+		black_bishop.play_authored_animation(&"Hit", 1.0, 0.0)
+		await create_timer(maxf(black_bishop.authored_animation_length(&"Hit") * 0.36, 0.12)).timeout
+	await process_frame
+	await RenderingServer.frame_post_draw
+	var bishop_hit_review := get_root().get_texture().get_image()
+	var bishop_hit_error := bishop_hit_review.save_png("res://asset_review_black_bishop_hit.png")
+	if bishop_hit_error != OK:
+		push_error("RENDER_CAPTURE_FAIL: Bishop Hit review save_png error %s" % bishop_hit_error)
+		quit(1)
+		return
+	if black_bishop != null:
+		black_bishop.set_battle_animation_active(false)
+
+	_prepare_asset_review(arena, &"White", &"Bishop")
+	var white_bishop := arena.find_piece(&"White", &"Bishop")
+	if white_bishop != null:
+		white_bishop.set_battle_animation_active(true)
+		white_bishop.play_authored_animation(&"RamCharge", 1.0, 0.0)
+		await create_timer(maxf(white_bishop.authored_animation_length(&"RamCharge") * 0.45, 0.20)).timeout
+	await process_frame
+	await RenderingServer.frame_post_draw
+	var bishop_ram_review := get_root().get_texture().get_image()
+	var bishop_ram_error := bishop_ram_review.save_png("res://asset_review_white_bishop_ramcharge.png")
+	if bishop_ram_error != OK:
+		push_error("RENDER_CAPTURE_FAIL: Bishop RamCharge review save_png error %s" % bishop_ram_error)
+		quit(1)
+		return
+	if white_bishop != null:
+		white_bishop.set_battle_animation_active(false)
+
+	print("RENDER_CAPTURE_PASS gameplay=", image.get_width(), "x", image.get_height(), " captures=", CAPTURES.size(), " lineups=2 reviews=15")
 	root.queue_free()
 	await process_frame
 	quit(0)
