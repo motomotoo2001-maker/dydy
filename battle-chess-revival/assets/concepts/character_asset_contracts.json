@@ -1,5 +1,5 @@
 {
-  "version": "production-all-families-v1+authored-all-families-c6",
+  "version": "production-all-families-v1+queen-silhouette-g6",
   "source": "approved character sheets; all six families production-authored in Blender, with unified Pawn production naming and authored animation contract",
   "assets": {
     "white_pawn_production_v1.glb": {
@@ -146,7 +146,7 @@
     "white_queen_production_v1.glb": {
       "family": "Queen",
       "side": "White",
-      "min_parts": 56,
+      "min_parts": 70,
       "required_parts": [
         "Head",
         "Hair",
@@ -161,13 +161,20 @@
         "V3_Cape_R",
         "CrownGem",
         "SkirtCore",
-        "Bodice"
+        "Bodice",
+        "CrownWing_L",
+        "CrownWing_R",
+        "StaffHaloOuter",
+        "V3_CapeShoulder_L",
+        "V3_CapeShoulder_R",
+        "SkirtSilhouette_L",
+        "SkirtSilhouette_R"
       ]
     },
     "black_queen_production_v1.glb": {
       "family": "Queen",
       "side": "Black",
-      "min_parts": 58,
+      "min_parts": 72,
       "required_parts": [
         "Head",
         "Hair",
@@ -182,7 +189,14 @@
         "V3_Cape_R",
         "CrownGem",
         "CrownHorn_L",
-        "CrownHorn_R"
+        "CrownHorn_R",
+        "CrownWing_L",
+        "CrownWing_R",
+        "StaffHaloOuter",
+        "V3_CapeShoulder_L",
+        "V3_CapeShoulder_R",
+        "SkirtSilhouette_L",
+        "SkirtSilhouette_R"
       ]
     },
     "white_king_production_v1.glb": {
