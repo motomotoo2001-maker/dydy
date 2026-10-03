@@ -165,29 +165,29 @@ func set_battle_lighting(active: bool) -> void:
 	var cool := lighting.get_node_or_null("CoolRim") as OmniLight3D
 	var window := lighting.get_node_or_null("WindowSunFill") as OmniLight3D
 	if sun:
-		sun.light_energy = 0.58 if active else 1.18
+		sun.light_energy = 0.50 if active else 0.92
 	if warm:
-		warm.light_energy = 0.30 if active else 1.45
+		warm.light_energy = 0.28 if active else 0.92
 	if cool:
-		cool.light_energy = 0.92 if active else 1.35
+		cool.light_energy = 0.82 if active else 1.05
 	if window:
-		window.light_energy = 0.34 if active else 1.75
+		window.light_energy = 0.30 if active else 1.20
 
 func _build_environment() -> void:
 	var world := WorldEnvironment.new()
 	world.name = "WorldEnvironment"
 	var env := Environment.new()
 	env.background_mode = Environment.BG_COLOR
-	env.background_color = Color("#251b19")
+	env.background_color = Color("#171214")
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color("#e0c8aa")
-	env.ambient_light_energy = 0.34
+	env.ambient_light_color = Color("#c6b7aa")
+	env.ambient_light_energy = 0.25
 	env.tonemap_mode = Environment.TONE_MAPPER_AGX
-	env.tonemap_agx_contrast = 1.18
+	env.tonemap_agx_contrast = 1.24
 	env.tonemap_agx_white = 8.0
 	env.ssao_enabled = true
 	env.glow_enabled = true
-	env.glow_intensity = 0.24
+	env.glow_intensity = 0.20
 	env.fog_enabled = true
 	env.fog_density = 0.002
 	if RenderingServer.get_current_rendering_method() == "forward_plus":
@@ -219,6 +219,7 @@ func _build_external_cathedral() -> bool:
 		return false
 	instance.name = "CathedralProductionV1"
 	generated.add_child(instance)
+	_apply_cathedral_material_overrides(instance)
 	return true
 
 func _build_cathedral_fallback() -> void:
@@ -349,7 +350,7 @@ func _build_lighting() -> void:
 	var sun := DirectionalLight3D.new()
 	sun.name = "SunWarm"
 	sun.light_color = Color("#ffe7bd")
-	sun.light_energy = 1.18
+	sun.light_energy = 0.92
 	sun.shadow_enabled = true
 	sun.rotation_degrees = Vector3(-48, -38, 0)
 	root.add_child(sun)
@@ -358,7 +359,7 @@ func _build_lighting() -> void:
 	warm.name = "WarmFill"
 	warm.position = Vector3(-6.5, 6.8, -4.0)
 	warm.light_color = Color("#f6c898")
-	warm.light_energy = 1.45
+	warm.light_energy = 0.92
 	warm.omni_range = 15.0
 	warm.shadow_enabled = true
 	root.add_child(warm)
@@ -367,7 +368,7 @@ func _build_lighting() -> void:
 	cool.name = "CoolRim"
 	cool.position = Vector3(6.5, 5.0, -2.0)
 	cool.light_color = Color("#755cff")
-	cool.light_energy = 1.35
+	cool.light_energy = 1.05
 	cool.omni_range = 12.0
 	root.add_child(cool)
 
@@ -375,10 +376,36 @@ func _build_lighting() -> void:
 	window_key.name = "WindowSunFill"
 	window_key.position = Vector3(-4.8, 7.8, -10.5)
 	window_key.light_color = Color("#ffe2ac")
-	window_key.light_energy = 1.75
+	window_key.light_energy = 1.20
 	window_key.omni_range = 16.0
 	window_key.shadow_enabled = true
 	root.add_child(window_key)
+
+	# D2 stained-glass light shaping. These are intentionally soft and low
+	# energy: they tint architecture/contact shadows without recoloring pieces.
+	var stained_red := OmniLight3D.new()
+	stained_red.name = "StainedRed"
+	stained_red.position = Vector3(-5.6, 5.4, -9.6)
+	stained_red.light_color = Color("#cc4960")
+	stained_red.light_energy = 0.52
+	stained_red.omni_range = 9.5
+	root.add_child(stained_red)
+
+	var stained_gold := OmniLight3D.new()
+	stained_gold.name = "StainedGold"
+	stained_gold.position = Vector3(0.0, 6.0, -10.4)
+	stained_gold.light_color = Color("#ffcf73")
+	stained_gold.light_energy = 0.48
+	stained_gold.omni_range = 10.5
+	root.add_child(stained_gold)
+
+	var stained_blue := OmniLight3D.new()
+	stained_blue.name = "StainedBlue"
+	stained_blue.position = Vector3(5.6, 5.0, -9.0)
+	stained_blue.light_color = Color("#6e8fe0")
+	stained_blue.light_energy = 0.42
+	stained_blue.omni_range = 9.0
+	root.add_child(stained_blue)
 
 func _build_selection_root() -> void:
 	selection_root = Node3D.new()
@@ -430,6 +457,90 @@ func _spawn_piece(p_side: StringName, p_type: StringName, square: StringName) ->
 	piece.setup(p_type, p_side, square, marker.global_position)
 	_pieces.append(piece)
 	_piece_by_square[square] = piece
+
+func _apply_cathedral_material_overrides(node: Node) -> void:
+	if node is MeshInstance3D:
+		var mesh_instance := node as MeshInstance3D
+		var n := String(mesh_instance.name)
+		if n.contains("Glass"):
+			var glass_color := Color("#d85f74")
+			if n.contains("_1") or n.contains("Gold"):
+				glass_color = Color("#e5b663")
+			elif n.contains("_2") or n.contains("Blue"):
+				glass_color = Color("#6688ca")
+			mesh_instance.material_override = _cathedral_glass_material(glass_color)
+		elif n.contains("Gold") or n.contains("Trim") or n.contains("Frame") or n.contains("Cap") or n.contains("Halo") or n.contains("Bar") or n.contains("Band"):
+			mesh_instance.material_override = _cathedral_gold_material()
+		elif n.contains("BannerWhite") or n.contains("Red"):
+			mesh_instance.material_override = _cathedral_cloth_material(Color("#6e2027"))
+		elif n.contains("BannerBlack") or n.contains("Blue"):
+			mesh_instance.material_override = _cathedral_cloth_material(Color("#263b62"))
+		elif n.contains("Flame"):
+			mesh_instance.material_override = _cathedral_glass_material(Color("#ff9a3d"), 4.5)
+		elif n.contains("Candle"):
+			mesh_instance.material_override = _mat(Color("#dfceb0"), 0.74, 0.0)
+		elif n.contains("Floor"):
+			mesh_instance.material_override = _cathedral_stone_material(Color("#302a2b"), Color("#554846"), 0.58)
+		elif n.contains("StoneDark") or n.contains("Inset"):
+			mesh_instance.material_override = _cathedral_stone_material(Color("#383031"), Color("#5d5050"), 0.66)
+		else:
+			mesh_instance.material_override = _cathedral_stone_material(Color("#766b60"), Color("#a19282"), 0.60)
+	for child in node.get_children():
+		_apply_cathedral_material_overrides(child)
+
+func _cathedral_stone_material(base_color: Color, detail_color: Color, surface_roughness: float) -> ShaderMaterial:
+	var shader := Shader.new()
+	shader.code = """
+shader_type spatial;
+render_mode diffuse_burley, specular_schlick_ggx;
+uniform vec3 base_color;
+uniform vec3 detail_color;
+uniform float surface_roughness = 0.60;
+varying vec3 local_position;
+void vertex() {
+	local_position = VERTEX;
+}
+void fragment() {
+	float broad = sin(local_position.x * 1.65 + local_position.y * 0.43 + local_position.z * 1.18);
+	float fine_a = sin(local_position.x * 8.7 - local_position.z * 6.1 + local_position.y * 2.3);
+	float fine_b = sin(local_position.x * 17.2 + local_position.z * 11.4);
+	float detail = broad * 0.18 + fine_a * 0.08 + fine_b * 0.035;
+	float speck = smoothstep(0.72, 0.96, abs(fine_a * 0.72 + fine_b * 0.28));
+	ALBEDO = mix(base_color, detail_color, clamp(0.20 + detail + speck * 0.10, 0.0, 0.38));
+	ROUGHNESS = clamp(surface_roughness + fine_b * 0.045, 0.38, 0.82);
+	METALLIC = 0.0;
+}
+"""
+	var material := ShaderMaterial.new()
+	material.shader = shader
+	material.set_shader_parameter("base_color", Vector3(base_color.r, base_color.g, base_color.b))
+	material.set_shader_parameter("detail_color", Vector3(detail_color.r, detail_color.g, detail_color.b))
+	material.set_shader_parameter("surface_roughness", surface_roughness)
+	return material
+
+func _cathedral_gold_material() -> StandardMaterial3D:
+	var material := StandardMaterial3D.new()
+	material.albedo_color = Color("#b57a2d")
+	material.metallic = 0.86
+	material.roughness = 0.24
+	return material
+
+func _cathedral_cloth_material(color: Color) -> StandardMaterial3D:
+	var material := StandardMaterial3D.new()
+	material.albedo_color = color
+	material.metallic = 0.0
+	material.roughness = 0.72
+	return material
+
+func _cathedral_glass_material(color: Color, energy: float = 2.4) -> StandardMaterial3D:
+	var material := StandardMaterial3D.new()
+	material.albedo_color = color.darkened(0.28)
+	material.metallic = 0.0
+	material.roughness = 0.18
+	material.emission_enabled = true
+	material.emission = color
+	material.emission_energy_multiplier = energy
+	return material
 
 func _mat(color: Color, roughness: float, metallic: float) -> StandardMaterial3D:
 	var mat := StandardMaterial3D.new()
