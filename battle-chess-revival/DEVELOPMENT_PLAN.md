@@ -237,28 +237,44 @@ Fixed camera rule:
 - gameplay = full-board 3/4 side angle;
 - battle/capture = separate cinematic camera.
 
-## ACTIVE — Milestone E1: UX / HUD / settings
+## VERIFIED — Milestone E1: UX / HUD / settings
+
+Final checkpoint `7f7db76` + E1 HUD commits verified:
+- compact production turn/status card replaces the debug HUD;
+- help strip, check banner and pause/settings overlay preserve board visibility;
+- Master/Ambience/SFX controls are available in pause settings;
+- user-approved full-board 3/4 gameplay camera is locked;
+- UI smoke, gameplay render and Visual QA are green;
+- Drive checkpoint: `BattleChessRevival_E1_UX_SIDE_CAMERA_FINAL_2026-10-03_7f7db76.zip`.
+
+## VERIFIED — Milestone E2: audio and feedback
+
+Final checkpoint `4ec32ce` verified:
+- deterministic CI audio pack builds 11 WAV assets;
+- looped cathedral ambience plus selection/move/check/checkmate feedback;
+- unique Pawn/Knight/Bishop/Rook/Queen/King signature impact sounds;
+- AudioDirector routes gameplay/BattleDirector events through Ambience and SFX buses;
+- Master/Ambience/SFX sliders are wired and covered by UI/audio smoke tests;
+- complete rig/rules/capture/render/Visual-QA workflow remains green;
+- Drive checkpoint: `BattleChessRevival_E2_AUDIO_FINAL_2026-10-03_4ec32ce.zip`.
+
+## ACTIVE — Milestone E3: final presentation polish
 
 Current task:
-- replace the debug-looking top-left HUD with a production-styled compact turn/status panel;
-- add pause/settings overlay with audio sliders and restart/return controls;
-- add check/checkmate banners and short onboarding hints without obscuring the board;
-- preserve keyboard shortcuts and deterministic test controls;
-- add UI smoke coverage and render inspection.
+- short title/intro presentation in normal gameplay only;
+- dedicated checkmate/draw endgame overlay;
+- rematch button and keyboard rematch flow;
+- lock further board input after a terminal game state;
+- preserve automated render baselines;
+- pass presentation smoke + full Visual QA before freezing Milestone E.
 
-## NEXT — Milestone E2: audio and feedback
+## NEXT — Milestone F: optimization and release candidate
 
-- ambient cathedral bed;
-- selection/move/check/checkmate SFX;
-- unique impact sounds for Pawn/Knight/Bishop/Rook/Queen/King captures;
-- audio bus volume controls wired to settings.
-
-## NEXT + 1 — Milestone E3: final presentation polish
-
-- title/intro presentation;
-- restart/rematch flow;
-- check/checkmate winner/loser presentation;
-- final UX regression review.
+- draw-call/material/asset-size review;
+- final missing-reference validation;
+- Windows export/package;
+- release-candidate smoke/render gate;
+- final source/project ZIP + Drive backup + project-state handoff.
 
 ## AFTER E — Milestone F: optimization and release candidate
 
