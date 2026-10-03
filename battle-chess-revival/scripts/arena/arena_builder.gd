@@ -17,6 +17,7 @@ var _pieces: Array[PieceView] = []
 var _sockets: Dictionary = {}
 var _piece_by_square: Dictionary = {}
 var selection_root: Node3D
+var last_move_root: Node3D
 var _selected_piece: PieceView
 var _cathedral_material_cache: Dictionary = {}
 
@@ -37,6 +38,7 @@ func build() -> void:
 	_build_lighting()
 	_build_pieces()
 	_build_selection_root()
+	_build_last_move_root()
 
 func get_square_count() -> int:
 	return _sockets.size()
@@ -152,6 +154,7 @@ func _spawn_move_landing_fx(target: Vector3, piece: PieceView) -> void:
 
 func reset_pieces() -> void:
 	clear_selection()
+	clear_last_move()
 	if pieces_root == null:
 		return
 	for child in pieces_root.get_children():
@@ -164,6 +167,7 @@ func sync_pieces_from_state(state: ChessState) -> void:
 	# Rebuild the visual board from an arbitrary legal ChessState. This is used
 	# by Undo/rematch tooling and deliberately avoids replaying battle VFX.
 	clear_selection()
+	clear_last_move()
 	if pieces_root == null:
 		return
 	for child in pieces_root.get_children():
@@ -548,7 +552,34 @@ func _build_selection_root() -> void:
 	selection_root.name = "SelectionOverlay"
 	generated.add_child(selection_root)
 
+func _build_last_move_root() -> void:
+	last_move_root = Node3D.new()
+	last_move_root.name = "LastMoveOverlay"
+	generated.add_child(last_move_root)
+
+
+func clear_last_move() -> void:
+	if last_move_root == null:
+		return
+	for child in last_move_root.get_children():
+		child.queue_free()
+
+
+func show_last_move(from_square: StringName, to_square: StringName) -> void:
+	clear_last_move()
+	if last_move_root == null:
+		return
+	_add_overlay_to(last_move_root, from_square, Color(0.27, 0.58, 0.92, 0.19), 0.045, 0.84)
+	_add_overlay_to(last_move_root, to_square, Color(0.95, 0.72, 0.24, 0.25), 0.047, 0.84)
+
+
 func _add_square_overlay(square: StringName, color: Color) -> void:
+	_add_overlay_to(selection_root, square, color, 0.055, 0.90)
+
+
+func _add_overlay_to(parent: Node3D, square: StringName, color: Color, y_offset: float, size_factor: float) -> void:
+	if parent == null:
+		return
 	var marker := get_socket(square)
 	if marker == null:
 		return
@@ -557,15 +588,15 @@ func _add_square_overlay(square: StringName, color: Color) -> void:
 	mat.albedo_color = color
 	mat.emission_enabled = true
 	mat.emission = Color(color.r, color.g, color.b, 1.0)
-	mat.emission_energy_multiplier = 1.3
+	mat.emission_energy_multiplier = 1.15
 
 	var mesh := BoxMesh.new()
-	mesh.size = Vector3(CELL_SIZE * 0.90, 0.018, CELL_SIZE * 0.90)
+	mesh.size = Vector3(CELL_SIZE * size_factor, 0.014, CELL_SIZE * size_factor)
 	var overlay := MeshInstance3D.new()
 	overlay.mesh = mesh
 	overlay.material_override = mat
-	selection_root.add_child(overlay)
-	overlay.global_position = marker.global_position + Vector3(0, 0.055, 0)
+	parent.add_child(overlay)
+	overlay.global_position = marker.global_position + Vector3(0, y_offset, 0)
 
 func _build_pieces() -> void:
 	pieces_root = Node3D.new()
