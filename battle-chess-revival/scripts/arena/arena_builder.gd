@@ -3,6 +3,7 @@ extends Node3D
 
 const CELL_SIZE := 1.20
 const BOARD_Y := 0.38
+const CATHEDRAL_ASSET_PATH := "res://assets/models/cathedral_production_v1.glb"
 
 var generated: Node3D
 var board_root: Node3D
@@ -198,6 +199,29 @@ func _build_environment() -> void:
 	generated.add_child(world)
 
 func _build_cathedral() -> void:
+	# D1 production environment: prefer the Blender-authored cathedral in real
+	# rendering. Headless rules/smoke tests retain the lightweight procedural
+	# fallback so gameplay logic never depends on GPU asset loading.
+	if DisplayServer.get_name() != "headless" and _build_external_cathedral():
+		return
+	_build_cathedral_fallback()
+
+func _build_external_cathedral() -> bool:
+	if not ResourceLoader.exists(CATHEDRAL_ASSET_PATH):
+		return false
+	var packed := load(CATHEDRAL_ASSET_PATH) as PackedScene
+	if packed == null:
+		push_warning("Could not load production cathedral: %s" % CATHEDRAL_ASSET_PATH)
+		return false
+	var instance := packed.instantiate()
+	if instance == null:
+		push_warning("Could not instantiate production cathedral: %s" % CATHEDRAL_ASSET_PATH)
+		return false
+	instance.name = "CathedralProductionV1"
+	generated.add_child(instance)
+	return true
+
+func _build_cathedral_fallback() -> void:
 	var root := Node3D.new()
 	root.name = "Cathedral"
 	generated.add_child(root)
