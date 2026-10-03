@@ -267,7 +267,7 @@ Final presentation verified:
 - terminal game states lock further board input correctly;
 - production HUD/audio/camera baselines remain green.
 
-## ACTIVE — Milestone F: optimization and release candidate
+## VERIFIED — Milestone F: optimization and release candidate
 
 ### RC1 verified at `e404dbc`
 
@@ -281,13 +281,31 @@ Final presentation verified:
   - `BattleChessRevival_RC1_Windows_x86_64_2026-10-03_e404dbc.zip`
   - `BattleChessRevival_RC1_Source_Godot_4.7.2_2026-10-03_e404dbc.zip`
 
-Current task:
-- final RC hardening: startup/runtime smoke on exported package where possible;
-- reduce source-package debug/render leftovers not required by players;
-- add a concise release README/control guide;
-- freeze RC2 only if no gameplay/visual regression is introduced.
+RC2 verified at `cd20018`:
+- full regression CI is green after release-packaging changes;
+- Windows ZIP contains `BattleChessRevival.exe` + `README.txt`;
+- source ZIP contains the Godot project/tooling but excludes generated gameplay/capture/review PNGs;
+- source artifact dropped from ~62.8 MB to ~45.9 MB without removing production source;
+- Visual QA remains green;
+- Windows export remains a single-file Godot build (~157.6 MB executable);
+- Google Drive backups:
+  - `BattleChessRevival_RC2_Windows_x86_64_2026-10-03_cd20018.zip`
+  - `BattleChessRevival_RC2_Source_Godot_4.7.2_2026-10-03_cd20018.zip`
 
-## NEXT — RC2 / release freeze
+### Release-candidate freeze
+
+RC2 is the current verified release candidate.
+
+## ACTIVE — Milestone G1: post-RC gameplay/visual refinement
+
+Next development direction:
+- only make changes that visibly improve the game beyond RC2;
+- preserve the fixed 3/4 full-board gameplay camera;
+- preserve all authored character animation/capture contracts;
+- add optional quality/performance settings only if they do not complicate the current release flow;
+- keep RC2 as the rollback checkpoint.
+
+## NEXT — Milestone G2: final public build polish
 
 - draw-call/material/asset-size review;
 - final missing-reference validation;
