@@ -129,6 +129,7 @@ func _pawn_toe_stab(attacker: PieceView, victim: PieceView, data: CaptureAnimati
 	_impact_burst(victim.foot_target.global_position + Vector3(0.10, 0.28, 0.28), Color("#ffd35c"), 1.15)
 	_flash(victim.foot_target.global_position, Color("#ffd35c"), 0.26)
 	_comic_text("BAM!", victim.battle_target.global_position + Vector3(0, 0.65, 0), Color("#ffd84f"))
+	victim.play_hit_pose()
 	capture_impact.emit(data.id)
 	await _parallel(victim.visual_root, {
 		"scale": Vector3(1.18, 0.82, 1.18),
@@ -149,6 +150,50 @@ func _pawn_toe_stab(attacker: PieceView, victim: PieceView, data: CaptureAnimati
 	await _wait(0.10)
 
 func _knight_double_kick(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
+	if attacker.has_authored_animation(&"DoubleKick"):
+		await _knight_double_kick_authored(attacker, victim, data)
+		return
+	await _knight_double_kick_fallback(attacker, victim, data)
+
+func _knight_double_kick_authored(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
+	# The rig clip handles horse/rider mechanics. BattleDirector keeps spatial
+	# staging, victim reaction, camera punch and impact VFX deterministic.
+	await _tween(attacker.visual_root, "rotation_degrees:y", 180.0, 0.24)
+	var playback_speed := 1.15
+	var clip_length := attacker.authored_animation_length(&"DoubleKick") / playback_speed
+	if clip_length <= 0.0:
+		clip_length = 1.20
+	attacker.play_authored_animation(&"DoubleKick", playback_speed, 0.05)
+
+	# Rear-hoof contact is authored near frame 21 of the 36-frame clip.
+	await _wait(clip_length * 0.57)
+	victim.play_hit_pose()
+	_camera_punch(0.18)
+	_impact_burst(victim.battle_target.global_position, Color("#ffcc72"), 1.20)
+	_flash(victim.battle_target.global_position, Color("#fff0c2"), 0.30)
+	_comic_text("KICK!", victim.battle_target.global_position + Vector3(0, 0.7, 0), Color("#ffb953"))
+	victim.play_hit_pose()
+	capture_impact.emit(data.id)
+
+	await _parallel(victim.visual_root, {
+		"scale": Vector3(1.58, 0.64, 0.96),
+		"position": Vector3(0.48, 0.20, 0),
+		"rotation_degrees:y": 120.0
+	}, 0.10)
+
+	var fly := create_tween().set_parallel()
+	fly.tween_property(victim.visual_root, "position", Vector3(4.3, 1.25, 0), _d(0.48))
+	fly.tween_property(victim.visual_root, "rotation_degrees:y", 1080.0, _d(0.48))
+	await fly.finished
+
+	var remaining := maxf(clip_length * 0.43 - 0.58, 0.02)
+	await _wait(remaining)
+	attacker.stop_authored_animation()
+	await _tween(attacker.visual_root, "rotation_degrees:y", 360.0, 0.26)
+	await _tween(attacker.visual_root, "position", Vector3.ZERO, 0.12)
+	await _wait(0.08)
+
+func _knight_double_kick_fallback(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
 	await _tween(attacker.visual_root, "rotation_degrees:y", 180.0, 0.30)
 	await _parallel(attacker.visual_root, {
 		"position": Vector3(0, 0.20, 0),
@@ -172,6 +217,7 @@ func _knight_double_kick(attacker: PieceView, victim: PieceView, data: CaptureAn
 	_impact_burst(victim.battle_target.global_position, Color("#ffcc72"), 1.15)
 	_flash(victim.battle_target.global_position, Color("#fff0c2"), 0.28)
 	_comic_text("KICK!", victim.battle_target.global_position + Vector3(0, 0.7, 0), Color("#ffb953"))
+	victim.play_hit_pose()
 	capture_impact.emit(data.id)
 	await _animate_part_prefix(attacker, "Leg_", Vector3(-52, 0, 0), Vector3.ZERO, 0.065)
 	await _animate_part_prefix(attacker, "Hoof_", Vector3(-40, 0, 0), Vector3.ZERO, 0.065)
@@ -220,6 +266,7 @@ func _bishop_ram(attacker: PieceView, victim: PieceView, data: CaptureAnimationD
 	_shockwave(victim.global_position, Color("#c99b62"), 0.85)
 	_flash(victim.battle_target.global_position, Color("#ffcb75"), 0.36)
 	_comic_text("WHOOSH!", victim.battle_target.global_position + Vector3(0, 0.8, 0), Color("#f0b65e"))
+	victim.play_hit_pose()
 	capture_impact.emit(data.id)
 	_skid_mark(attacker.global_position - Vector3(1.2, 0.36, 0))
 
@@ -259,6 +306,7 @@ func _rook_crush(attacker: PieceView, victim: PieceView, data: CaptureAnimationD
 	_shockwave(victim.global_position, Color("#d0b28a"), 1.15)
 	_flash(victim.battle_target.global_position, Color("#f1d1a2"), 0.42)
 	_comic_text("SPLOTCH!", victim.battle_target.global_position + Vector3(0, 0.8, 0), Color("#f3d8a6"))
+	victim.play_hit_pose()
 	capture_impact.emit(data.id)
 	_dust(victim.global_position)
 	_dust(victim.global_position + Vector3(0.35, 0, 0.15))
@@ -287,6 +335,7 @@ func _queen_transform(attacker: PieceView, victim: PieceView, data: CaptureAnima
 	_camera_punch(0.08)
 	_impact_burst(victim.battle_target.global_position, Color("#b862ff"), 1.05)
 	_comic_text("POOF!", victim.battle_target.global_position + Vector3(0, 0.8, 0), Color("#c979ff"))
+	victim.play_hit_pose()
 	capture_impact.emit(data.id)
 	victim.visible = false
 	var replacement := _spawn_magic_result(victim.piece_type, victim.global_position)
@@ -319,6 +368,7 @@ func _king_trapdoor(attacker: PieceView, victim: PieceView, data: CaptureAnimati
 	_camera_punch(0.09)
 	_shockwave(victim.global_position, Color("#7b5a48"), 0.65)
 	_comic_text("CLACK!", victim.battle_target.global_position + Vector3(0, 0.55, 0), Color("#d6a578"))
+	victim.play_hit_pose()
 	capture_impact.emit(data.id)
 	await _parallel(victim.visual_root, {
 		"position": Vector3(0, -5.0, 0),
