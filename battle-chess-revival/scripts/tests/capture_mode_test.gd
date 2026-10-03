@@ -48,10 +48,10 @@ func _run() -> void:
 		return
 
 	battle.set_capture_mode(BattleDirector.CaptureMode.OFF)
-	var impact_seen := false
-	battle.capture_impact.connect(func(_id: StringName): impact_seen = true, CONNECT_ONE_SHOT)
+	var seen := {"impact": false}
+	battle.capture_impact.connect(func(_id: StringName): seen["impact"] = true, CONNECT_ONE_SHOT)
 	await battle.play_board_capture(attacker, victim)
-	if not impact_seen:
+	if not bool(seen["impact"]):
 		_fail("Off mode did not emit signature impact")
 		return
 	if battle.busy:
