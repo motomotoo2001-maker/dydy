@@ -46,6 +46,24 @@ func _run() -> void:
 		_check(repetition.try_move(&"F6", &"G8"), "repetition black knight home %d" % cycle)
 	_check(repetition.get_game_status() == &"draw_repetition", "threefold repetition detected")
 
+	var promotion := ChessState.new(false)
+	promotion.board = {
+		&"H1": {"side": ChessState.WHITE, "type": &"King", "has_moved": true},
+		&"A8": {"side": ChessState.BLACK, "type": &"King", "has_moved": true},
+		&"G7": {"side": ChessState.WHITE, "type": &"Pawn", "has_moved": true},
+	}
+	promotion.turn = ChessState.WHITE
+	promotion.castling_rights = {"K": false, "Q": false, "k": false, "q": false}
+	var promotion_moves: Array[Dictionary] = []
+	for move in promotion.legal_moves_from(&"G7"):
+		if move.get("to", &"") == &"G8" and move.has("promotion"):
+			promotion_moves.append(move)
+	_check(promotion_moves.size() == 4, "promotion offers four legal piece choices")
+	var promotion_types: Array[StringName] = []
+	for move in promotion_moves:
+		promotion_types.append(move.get("promotion", &""))
+	_check(&"Queen" in promotion_types and &"Rook" in promotion_types and &"Bishop" in promotion_types and &"Knight" in promotion_types, "promotion choices include Q/R/B/N")
+
 	var mate := ChessState.new()
 	_check(mate.try_move(&"F2", &"F3"), "fool mate f2-f3")
 	_check(mate.try_move(&"E7", &"E5"), "fool mate e7-e5")
