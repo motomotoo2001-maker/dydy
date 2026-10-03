@@ -45,15 +45,36 @@ func _process(delta: float) -> void:
 		return
 	_idle_clock += delta
 	var profile := _idle_profile(piece_type)
+	var secondary := _secondary_motion_profile(piece_type)
 	var wave := sin(_idle_clock * profile.x + _idle_phase)
 	var slow_wave := sin(_idle_clock * profile.x * 0.47 + _idle_phase * 0.7)
+	var micro_wave := sin(_idle_clock * profile.x * 0.73 + _idle_phase * 1.31)
+	var selection_wave := sin(_idle_clock * 3.2 + _idle_phase * 0.35)
+	var side_sign := 1.0 if side == &"White" else -1.0
 	var selected_lift := 0.045 if _selected else 0.0
 	var selected_scale := 1.035 if _selected else 1.0
-	visual_root.position.y = selected_lift + wave * profile.y
-	visual_root.rotation_degrees.z = slow_wave * profile.z
-	visual_root.scale = Vector3.ONE * _design_scale(piece_type) * selected_scale
-	# Rigged Knights use imported bone clips for secondary motion. Keep only
-	# PieceView's subtle root bob so the old named-part layer cannot fight it.
+	var selected_pulse := (selection_wave * 0.006) if _selected else 0.0
+	var base_scale := _design_scale(piece_type)
+
+	# G6 secondary root motion is intentionally outside the imported Skeleton3D.
+	# It adds weight/breathing while authored clips continue to own all bones.
+	visual_root.position = Vector3(
+		micro_wave * secondary.w,
+		selected_lift + wave * profile.y,
+		slow_wave * secondary.w * 0.45
+	)
+	visual_root.rotation_degrees = Vector3(
+		wave * secondary.x,
+		micro_wave * secondary.y * side_sign,
+		slow_wave * profile.z
+	)
+	var breathe := slow_wave * secondary.z
+	visual_root.scale = Vector3(
+		1.0 + breathe * 0.35 + selected_pulse,
+		1.0 + breathe + selected_pulse,
+		1.0 - breathe * 0.24 + selected_pulse
+	) * base_scale * selected_scale
+
 	if has_authored_animation(&"Idle"):
 		if not _selected and (_authored_animation_player == null or not _authored_animation_player.is_playing()):
 			play_authored_animation(&"Idle", 1.0, 0.08)
@@ -430,6 +451,24 @@ func _idle_named(
 		var rest: Dictionary = _visual_part_rest[id]
 		part.rotation_degrees = rest["rotation"] + rotation_offset
 		part.position = rest["position"] + position_offset
+
+func _secondary_motion_profile(t: StringName) -> Vector4:
+	# x=pitch degrees, y=yaw degrees, z=breathing scale, w=horizontal drift.
+	match t:
+		&"Pawn":
+			return Vector4(0.55, 0.34, 0.0040, 0.0060)
+		&"Knight":
+			return Vector4(0.85, 0.56, 0.0060, 0.0085)
+		&"Bishop":
+			return Vector4(0.46, 0.30, 0.0045, 0.0055)
+		&"Rook":
+			return Vector4(0.20, 0.16, 0.0022, 0.0030)
+		&"Queen":
+			return Vector4(0.42, 0.38, 0.0052, 0.0065)
+		&"King":
+			return Vector4(0.32, 0.24, 0.0036, 0.0045)
+	return Vector4(0.30, 0.20, 0.0030, 0.0040)
+
 
 func _idle_profile(t: StringName) -> Vector3:
 	match t:
