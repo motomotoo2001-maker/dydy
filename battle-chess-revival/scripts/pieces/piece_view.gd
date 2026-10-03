@@ -35,6 +35,7 @@ var _idle_phase := 0.0
 var _battle_animation_active := false
 var _presentation_animation_active := false
 var _selected := false
+var _authored_animation_player: AnimationPlayer = null
 
 func _ready() -> void:
 	set_process(DisplayServer.get_name() != "headless")
@@ -51,6 +52,12 @@ func _process(delta: float) -> void:
 	visual_root.position.y = selected_lift + wave * profile.y
 	visual_root.rotation_degrees.z = slow_wave * profile.z
 	visual_root.scale = Vector3.ONE * _design_scale(piece_type) * selected_scale
+	# Rigged Knights use imported bone clips for secondary motion. Keep only
+	# PieceView's subtle root bob so the old named-part layer cannot fight it.
+	if piece_type == &"Knight" and has_authored_animation(&"Idle"):
+		if not _selected and (_authored_animation_player == null or not _authored_animation_player.is_playing()):
+			play_authored_animation(&"Idle", 1.0, 0.08)
+		return
 	_apply_secondary_idle(wave, slow_wave)
 
 func setup(
@@ -68,6 +75,7 @@ func setup(
 	rotation_degrees.y = 180.0 if side == &"Black" else 0.0
 	_idle_phase = float(abs(hash(String(home_square) + String(side)))) * 0.00017
 	_build_visual()
+	_refresh_authored_animation_player()
 	_cache_visual_part_rest()
 	_build_anchors()
 	_apply_rest_pose()
@@ -79,6 +87,7 @@ func reset_visual() -> void:
 		return
 	visual_root.position = Vector3.ZERO
 	visual_root.rotation = Vector3.ZERO
+	_reset_authored_pose()
 	_restore_visual_part_rest()
 	_apply_rest_pose()
 	visible = true
@@ -101,6 +110,7 @@ func change_type(new_type: StringName) -> void:
 	for child in get_children():
 		child.free()
 	_build_visual()
+	_refresh_authored_animation_player()
 	_cache_visual_part_rest()
 	_build_anchors()
 	_apply_rest_pose()
@@ -108,12 +118,24 @@ func change_type(new_type: StringName) -> void:
 func set_battle_animation_active(active: bool) -> void:
 	_battle_animation_active = active
 	if active and visual_root != null:
+		stop_authored_animation()
 		visual_root.position = Vector3.ZERO
 		visual_root.rotation = Vector3.ZERO
+	elif not active and piece_type == &"Knight":
+		play_authored_animation(&"Idle", 1.0, 0.08)
 
 func set_selected(active: bool) -> void:
 	_selected = active
 	if visual_root == null or _battle_animation_active or _presentation_animation_active:
+		return
+	if piece_type == &"Knight" and has_authored_animation(&"Selected"):
+		if active:
+			play_authored_animation(&"Selected", 1.15, 0.08)
+		else:
+			visual_root.position = Vector3.ZERO
+			visual_root.rotation = Vector3.ZERO
+			_apply_rest_pose()
+			play_authored_animation(&"Idle", 1.0, 0.10)
 		return
 	if not active:
 		visual_root.position = Vector3.ZERO
@@ -129,6 +151,13 @@ func begin_move_presentation() -> void:
 	_presentation_animation_active = true
 	_restore_visual_part_rest()
 	var base_scale := Vector3.ONE * _design_scale(piece_type)
+	if piece_type == &"Knight" and play_authored_animation(&"Move", 1.55, 0.06):
+		var authored_tween := create_tween().set_parallel()
+		authored_tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		authored_tween.tween_property(visual_root, "scale", base_scale * Vector3(1.025, 0.975, 1.025), 0.08)
+		authored_tween.tween_property(visual_root, "rotation_degrees:x", -2.0, 0.08)
+		await authored_tween.finished
+		return
 	_apply_move_part_pose(true)
 	var tween := create_tween().set_parallel()
 	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
@@ -149,6 +178,8 @@ func end_move_presentation() -> void:
 	await tween.finished
 	_restore_visual_part_rest()
 	_presentation_animation_active = false
+	if piece_type == &"Knight":
+		play_authored_animation(&"Idle", 1.0, 0.10)
 
 func play_check_reaction() -> void:
 	if visual_root == null:
@@ -176,7 +207,9 @@ func play_victory_pose() -> void:
 		return
 	_presentation_animation_active = true
 	_restore_visual_part_rest()
-	_apply_victory_part_pose()
+	var authored := piece_type == &"Knight" and play_authored_animation(&"Victory", 1.0, 0.08)
+	if not authored:
+		_apply_victory_part_pose()
 	var base_scale := Vector3.ONE * _design_scale(piece_type)
 	var tween := create_tween().set_parallel()
 	tween.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
@@ -190,7 +223,9 @@ func play_defeat_pose() -> void:
 		return
 	_presentation_animation_active = true
 	_restore_visual_part_rest()
-	_pose_named(["Head", "RiderHead", "HorseHead"], Vector3(12.0, 0.0, 0.0), Vector3(0.0, -0.04, 0.0))
+	var authored := piece_type == &"Knight" and play_authored_animation(&"Defeat", 1.0, 0.08)
+	if not authored:
+		_pose_named(["Head", "RiderHead", "HorseHead"], Vector3(12.0, 0.0, 0.0), Vector3(0.0, -0.04, 0.0))
 	var base_scale := Vector3.ONE * _design_scale(piece_type)
 	var tween := create_tween().set_parallel()
 	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
@@ -198,6 +233,56 @@ func play_defeat_pose() -> void:
 	tween.tween_property(visual_root, "rotation_degrees:z", 9.0 if side == &"White" else -9.0, 0.26)
 	tween.tween_property(visual_root, "scale", base_scale * Vector3(1.04, 0.86, 1.04), 0.26)
 	await tween.finished
+
+func play_hit_pose() -> void:
+	if piece_type == &"Knight":
+		play_authored_animation(&"Hit", 1.2, 0.04)
+
+func has_authored_animation(animation_name: StringName) -> bool:
+	return _authored_animation_player != null and _authored_animation_player.has_animation(animation_name)
+
+func play_authored_animation(
+	animation_name: StringName,
+	speed_scale: float = 1.0,
+	blend_time: float = 0.08
+) -> bool:
+	if not has_authored_animation(animation_name):
+		return false
+	_authored_animation_player.play(animation_name, blend_time, speed_scale)
+	return true
+
+func stop_authored_animation() -> void:
+	if _authored_animation_player != null:
+		_authored_animation_player.stop()
+
+func authored_animation_length(animation_name: StringName) -> float:
+	if not has_authored_animation(animation_name):
+		return 0.0
+	var animation := _authored_animation_player.get_animation(animation_name)
+	return animation.length if animation != null else 0.0
+
+func _refresh_authored_animation_player() -> void:
+	_authored_animation_player = _find_animation_player(visual_root)
+
+func _find_animation_player(node: Node) -> AnimationPlayer:
+	if node == null:
+		return null
+	if node is AnimationPlayer:
+		return node as AnimationPlayer
+	for child in node.get_children():
+		var found := _find_animation_player(child)
+		if found != null:
+			return found
+	return null
+
+func _reset_authored_pose() -> void:
+	if _authored_animation_player == null:
+		return
+	_authored_animation_player.stop()
+	if _authored_animation_player.has_animation(&"Idle"):
+		_authored_animation_player.play(&"Idle")
+		_authored_animation_player.seek(0.0, true)
+		_authored_animation_player.stop()
 
 func get_visual_parts(prefix: String) -> Array[Node3D]:
 	var result: Array[Node3D] = []
