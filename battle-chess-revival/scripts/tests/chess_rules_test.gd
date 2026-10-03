@@ -38,6 +38,14 @@ func _run() -> void:
 	_check(castle.get_piece(&"G1").get("type", &"") == &"King", "king lands on g1")
 	_check(castle.get_piece(&"F1").get("type", &"") == &"Rook", "rook lands on f1")
 
+	var repetition := ChessState.new()
+	for cycle in range(2):
+		_check(repetition.try_move(&"G1", &"F3"), "repetition white knight out %d" % cycle)
+		_check(repetition.try_move(&"G8", &"F6"), "repetition black knight out %d" % cycle)
+		_check(repetition.try_move(&"F3", &"G1"), "repetition white knight home %d" % cycle)
+		_check(repetition.try_move(&"F6", &"G8"), "repetition black knight home %d" % cycle)
+	_check(repetition.get_game_status() == &"draw_repetition", "threefold repetition detected")
+
 	var mate := ChessState.new()
 	_check(mate.try_move(&"F2", &"F3"), "fool mate f2-f3")
 	_check(mate.try_move(&"E7", &"E5"), "fool mate e7-e5")
