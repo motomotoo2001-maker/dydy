@@ -59,22 +59,27 @@ Exit gate:
 - Visual QA regression gate passes;
 - screenshots visibly show the production Knight pair rather than fallback V3 models.
 
-## ACTIVE — Milestone B2: Bishop production pair
+## VERIFIED — Milestone B2: Bishop production pair
+
+Verified at `d3a39e8`:
+- White Bishop production V1: 62 named parts;
+- Black Bishop production V1: 65 named parts;
+- required Head / Trunk / V3_TrunkTip / Staff / V3_CapeLayer hooks preserved;
+- ram-charge capture smoke and rendered impact verified;
+- production Knight and Bishop canonical forward axes normalized in PieceView;
+- Godot 4.7.2 import, chess rules, battle smoke and Visual QA all green;
+- front close-up reviews inspected after axis correction.
+
+## ACTIVE — Milestone B3: Rook production pair
 
 Current task:
-- author White Bishop and Black Bishop as Blender-generated production GLBs;
-- preserve Head/Trunk(or Snout)/Staff/Cape animation targets;
-- add close-up Bishop review renders;
-- validate ram-charge capture compatibility;
-- pass Godot 4.7.2 CI + Visual QA before freezing checkpoint.
-
-## NEXT — Milestone B3: Rook production pair
+- author White and Black Rook production GLBs as massive fortress/bruiser characters;
+- preserve TowerCore / CrownBase / Arm_* / Fist_* animation targets;
+- keep jump-crush capture compatibility;
+- add close Rook review renders and inspect them before checkpoint;
+- pass the full Godot 4.7.2 CI and Visual QA gate.
 
 Knight B1 verified at `26e07749`: production White/Black Knight GLBs are generated in Blender, contracts pass (72/78 parts), gameplay/capture tests pass, close front review renders verified, and Visual QA regression gate passes.
-
-Rook:
-- massive fortress/bruiser silhouette, articulated arms/fists;
-- jump-crush capture compatibility.
 
 Each family ships independently and keeps the previous verified asset as rollback.
 
