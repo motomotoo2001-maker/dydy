@@ -186,6 +186,10 @@ func _build_environment() -> void:
 	env.tonemap_agx_contrast = 1.24
 	env.tonemap_agx_white = 8.0
 	env.ssao_enabled = true
+	env.ssao_radius = 1.25
+	env.ssao_intensity = 1.38
+	env.ssao_power = 1.18
+	env.ssao_detail = 0.62
 	env.glow_enabled = true
 	env.glow_intensity = 0.20
 	env.fog_enabled = true
@@ -321,26 +325,26 @@ func _build_cameras() -> void:
 
 	gameplay_camera = Camera3D.new()
 	gameplay_camera.name = "GameplayCamera"
-	gameplay_camera.position = Vector3(0, 9.15, 12.45)
-	gameplay_camera.fov = 38.0
+	gameplay_camera.position = Vector3(0, 8.55, 13.15)
+	gameplay_camera.fov = 39.5
 	gameplay_camera.current = true
 	root.add_child(gameplay_camera)
-	gameplay_camera.look_at(Vector3(0, 0.82, -0.15), Vector3.UP)
+	gameplay_camera.look_at(Vector3(0, 0.95, -0.55), Vector3.UP)
 
 	battle_camera = Camera3D.new()
 	battle_camera.name = "BattleCamera"
-	battle_camera.position = Vector3(0, 2.20, 4.75)
-	battle_camera.fov = 42.0
+	battle_camera.position = Vector3(0, 2.28, 4.95)
+	battle_camera.fov = 40.5
 	battle_camera.current = false
 	if RenderingServer.get_current_rendering_method() == "forward_plus":
 		var battle_attributes := CameraAttributesPractical.new()
 		battle_attributes.dof_blur_far_enabled = true
-		battle_attributes.dof_blur_far_distance = 5.0
-		battle_attributes.dof_blur_far_transition = 4.0
-		battle_attributes.dof_blur_amount = 0.06
+		battle_attributes.dof_blur_far_distance = 5.6
+		battle_attributes.dof_blur_far_transition = 3.8
+		battle_attributes.dof_blur_amount = 0.045
 		battle_camera.attributes = battle_attributes
 	root.add_child(battle_camera)
-	battle_camera.look_at(Vector3(0, 0.85, 0), Vector3.UP)
+	battle_camera.look_at(Vector3(0, 0.92, -0.10), Vector3.UP)
 
 func _build_lighting() -> void:
 	var root := Node3D.new()
@@ -352,6 +356,8 @@ func _build_lighting() -> void:
 	sun.light_color = Color("#ffe7bd")
 	sun.light_energy = 0.92
 	sun.shadow_enabled = true
+	sun.directional_shadow_max_distance = 36.0
+	sun.directional_shadow_fade_start = 0.82
 	sun.rotation_degrees = Vector3(-48, -38, 0)
 	root.add_child(sun)
 
