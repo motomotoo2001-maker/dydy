@@ -35,6 +35,7 @@ jobs:
           ./blender-5.2.2/blender --background --python battle-chess-revival/tools/blender/build_knights_v1.py -- --white-output battle-chess-revival/assets/models/white_knight_production_v1.glb --black-output battle-chess-revival/assets/models/black_knight_production_v1.glb
           ./blender-5.2.2/blender --background --python battle-chess-revival/tools/blender/build_bishops_v1.py -- --white-output battle-chess-revival/assets/models/white_bishop_production_v1.glb --black-output battle-chess-revival/assets/models/black_bishop_production_v1.glb
           ./blender-5.2.2/blender --background --python battle-chess-revival/tools/blender/build_rooks_v1.py -- --white-output battle-chess-revival/assets/models/white_rook_production_v1.glb --black-output battle-chess-revival/assets/models/black_rook_production_v1.glb
+          ./blender-5.2.2/blender --background --python battle-chess-revival/tools/blender/build_queens_v1.py -- --white-output battle-chess-revival/assets/models/white_queen_production_v1.glb --black-output battle-chess-revival/assets/models/black_queen_production_v1.glb
           test -s battle-chess-revival/assets/models/white_pawn_production_v1.glb
           test -s battle-chess-revival/assets/models/black_pawn_concept_v3.glb
           test -s battle-chess-revival/assets/models/white_knight_production_v1.glb
@@ -43,8 +44,8 @@ jobs:
           test -s battle-chess-revival/assets/models/black_bishop_production_v1.glb
           test -s battle-chess-revival/assets/models/white_rook_production_v1.glb
           test -s battle-chess-revival/assets/models/black_rook_production_v1.glb
-          test -s battle-chess-revival/assets/models/white_queen_concept_v3.glb
-          test -s battle-chess-revival/assets/models/black_queen_concept_v3.glb
+          test -s battle-chess-revival/assets/models/white_queen_production_v1.glb
+          test -s battle-chess-revival/assets/models/black_queen_production_v1.glb
           test -s battle-chess-revival/assets/models/white_king_concept_v3.glb
           test -s battle-chess-revival/assets/models/black_king_concept_v3.glb
           rm -rf battle-chess-revival/.generated

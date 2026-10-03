@@ -9,8 +9,8 @@ const WHITE_BISHOP_ASSET_PATH := "res://assets/models/white_bishop_production_v1
 const BLACK_BISHOP_ASSET_PATH := "res://assets/models/black_bishop_production_v1.glb"
 const WHITE_ROOK_ASSET_PATH := "res://assets/models/white_rook_production_v1.glb"
 const BLACK_ROOK_ASSET_PATH := "res://assets/models/black_rook_production_v1.glb"
-const WHITE_QUEEN_ASSET_PATH := "res://assets/models/white_queen_concept_v3.glb"
-const BLACK_QUEEN_ASSET_PATH := "res://assets/models/black_queen_concept_v3.glb"
+const WHITE_QUEEN_ASSET_PATH := "res://assets/models/white_queen_production_v1.glb"
+const BLACK_QUEEN_ASSET_PATH := "res://assets/models/black_queen_production_v1.glb"
 const WHITE_KING_ASSET_PATH := "res://assets/models/white_king_concept_v3.glb"
 const BLACK_KING_ASSET_PATH := "res://assets/models/black_king_concept_v3.glb"
 
@@ -452,13 +452,13 @@ func _build_visual() -> void:
 		return
 	if piece_type == &"Queen" and side == &"White":
 		if DisplayServer.get_name() != "headless":
-			if _build_external_asset(WHITE_QUEEN_ASSET_PATH, "WhiteQueenRefinedMeshV1"):
+			if _build_external_asset(WHITE_QUEEN_ASSET_PATH, "WhiteQueenRefinedMeshV1", 180.0):
 				return
 		_build_white_queen_production_blockout()
 		return
 	if piece_type == &"Queen" and side == &"Black":
 		if DisplayServer.get_name() != "headless":
-			if _build_external_asset(BLACK_QUEEN_ASSET_PATH, "BlackQueenRefinedMeshV1"):
+			if _build_external_asset(BLACK_QUEEN_ASSET_PATH, "BlackQueenRefinedMeshV1", 180.0):
 				return
 		_build_black_queen_production_blockout()
 		return

@@ -1,6 +1,6 @@
 {
-  "version": "production-pawns-v2+production-knights-v1+production-bishops-v1+production-rooks-v1+concept-v3",
-  "source": "approved character sheets; Pawn, Knight, Bishop and Rook production families authored in Blender 5.2.2; Queen/King remain concept-v3",
+  "version": "production-pawns-v2+production-knights-v1+production-bishops-v1+production-rooks-v1+production-queens-v1+concept-v3",
+  "source": "approved character sheets; Pawn, Knight, Bishop, Rook and Queen production families authored in Blender 5.2.2; King remains concept-v3",
   "assets": {
     "white_pawn_production_v1.glb": {
       "family": "Pawn",
@@ -35,42 +35,6 @@
         "EyeWL",
         "Ear_L",
         "ShieldSlash"
-      ]
-    },
-    "white_queen_concept_v3.glb": {
-      "family": "Queen",
-      "side": "White",
-      "min_parts": 33,
-      "required_parts": [
-        "Head",
-        "Hair",
-        "CrownBand",
-        "Staff",
-        "MagicOrb",
-        "Concept_SkirtBlue",
-        "Concept_Cape_L",
-        "Concept_CrownGem",
-        "V3_EyeWhite_L",
-        "V3_HairCurl_-1_0",
-        "V3_SkirtLayerFront"
-      ]
-    },
-    "black_queen_concept_v3.glb": {
-      "family": "Queen",
-      "side": "Black",
-      "min_parts": 33,
-      "required_parts": [
-        "Head",
-        "Hair",
-        "CrownBand",
-        "Staff",
-        "MagicOrb",
-        "Concept_SkirtMagenta",
-        "Concept_Cape_L",
-        "Concept_CrownGem",
-        "V3_EyeWhite_L",
-        "V3_HairCurl_-1_0",
-        "V3_SkirtLayerFront"
       ]
     },
     "white_king_concept_v3.glb": {
@@ -229,6 +193,48 @@
         "EyeR",
         "ShoulderSpike_L",
         "ShoulderSpike_R"
+      ]
+    },
+    "white_queen_production_v1.glb": {
+      "family": "Queen",
+      "side": "White",
+      "min_parts": 56,
+      "required_parts": [
+        "Head",
+        "Hair",
+        "HairBack",
+        "CrownBand",
+        "Staff",
+        "MagicOrb",
+        "V3_HairCurl_0",
+        "V3_HairCurl_1",
+        "V3_Cape",
+        "V3_Cape_L",
+        "V3_Cape_R",
+        "CrownGem",
+        "SkirtCore",
+        "Bodice"
+      ]
+    },
+    "black_queen_production_v1.glb": {
+      "family": "Queen",
+      "side": "Black",
+      "min_parts": 58,
+      "required_parts": [
+        "Head",
+        "Hair",
+        "HairBack",
+        "CrownBand",
+        "Staff",
+        "MagicOrb",
+        "V3_HairCurl_0",
+        "V3_HairCurl_1",
+        "V3_Cape",
+        "V3_Cape_L",
+        "V3_Cape_R",
+        "CrownGem",
+        "CrownHorn_L",
+        "CrownHorn_R"
       ]
     }
   }
