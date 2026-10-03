@@ -1,6 +1,11 @@
 class_name ChessController
 extends Node
 
+signal piece_selected(piece_type: StringName)
+signal move_committed(piece_type: StringName, capture: bool)
+signal game_status_changed(status: StringName)
+signal game_restarted
+
 var arena: ArenaBuilder
 var battle_director: BattleDirector
 var state := ChessState.new()
@@ -17,6 +22,8 @@ var alert_panel: PanelContainer
 var alert_label: Label
 var pause_overlay: Control
 var volume_slider: HSlider
+var ambience_slider: HSlider
+var sfx_slider: HSlider
 var hud_layer: CanvasLayer
 
 func setup(p_arena: ArenaBuilder, p_battle_director: BattleDirector) -> void:
@@ -72,6 +79,9 @@ func _select(square: StringName) -> void:
 	selected_square = square
 	selected_moves = state.legal_moves_from(square)
 	arena.show_selection(selected_square, selected_moves)
+	var selected_piece := state.get_piece(square)
+	if not selected_piece.is_empty():
+		piece_selected.emit(selected_piece.get("type", &""))
 
 func _clear_selection() -> void:
 	selected_square = &""
@@ -108,8 +118,10 @@ func _execute_move(move: Dictionary, allow_ai_reply: bool) -> void:
 	if original_type == &"Pawn" and not resulting_piece.is_empty() and resulting_piece["type"] != &"Pawn":
 		attacker.change_type(resulting_piece["type"])
 
+	move_committed.emit(original_type, victim != null)
 	_refresh_hud()
 	var status := state.get_game_status()
+	game_status_changed.emit(status)
 	if status == &"check":
 		await arena.play_check_reaction(state.turn)
 	elif status == &"checkmate":
@@ -264,8 +276,8 @@ func _build_pause_overlay() -> void:
 	var card := PanelContainer.new()
 	card.name = "SettingsCard"
 	card.set_anchors_preset(Control.PRESET_CENTER)
-	card.position = Vector2(-190, -170)
-	card.size = Vector2(380, 340)
+	card.position = Vector2(-205, -220)
+	card.size = Vector2(410, 440)
 	card.add_theme_stylebox_override("panel", _panel_style(Color(0.07, 0.055, 0.065, 0.98), Color("#b7833e"), 16, 2))
 	pause_overlay.add_child(card)
 
@@ -297,19 +309,9 @@ func _build_pause_overlay() -> void:
 	var separator := HSeparator.new()
 	column.add_child(separator)
 
-	var volume_title := Label.new()
-	volume_title.text = "Общая громкость"
-	volume_title.add_theme_font_size_override("font_size", 14)
-	column.add_child(volume_title)
-
-	volume_slider = HSlider.new()
-	volume_slider.name = "MasterVolume"
-	volume_slider.min_value = 0.0
-	volume_slider.max_value = 1.0
-	volume_slider.step = 0.01
-	volume_slider.value = _current_master_volume_linear()
-	volume_slider.value_changed.connect(_on_master_volume_changed)
-	column.add_child(volume_slider)
+	volume_slider = _add_volume_slider(column, "Общая громкость", &"Master", "MasterVolume")
+	ambience_slider = _add_volume_slider(column, "Окружение", &"Ambience", "AmbienceVolume")
+	sfx_slider = _add_volume_slider(column, "Эффекты", &"SFX", "SFXVolume")
 
 	var resume := Button.new()
 	resume.name = "ResumeButton"
@@ -362,16 +364,33 @@ func _restart_from_pause() -> void:
 	restart_game()
 
 
-func _on_master_volume_changed(value: float) -> void:
-	var bus := AudioServer.get_bus_index("Master")
+func _add_volume_slider(column: VBoxContainer, title_text: String, bus_name: StringName, node_name: String) -> HSlider:
+	var title := Label.new()
+	title.text = title_text
+	title.add_theme_font_size_override("font_size", 13)
+	column.add_child(title)
+
+	var slider := HSlider.new()
+	slider.name = node_name
+	slider.min_value = 0.0
+	slider.max_value = 1.0
+	slider.step = 0.01
+	slider.value = _current_bus_volume_linear(bus_name)
+	slider.value_changed.connect(_on_bus_volume_changed.bind(bus_name))
+	column.add_child(slider)
+	return slider
+
+
+func _on_bus_volume_changed(value: float, bus_name: StringName) -> void:
+	var bus := AudioServer.get_bus_index(bus_name)
 	if bus < 0:
 		return
 	AudioServer.set_bus_volume_db(bus, linear_to_db(maxf(value, 0.001)))
 	AudioServer.set_bus_mute(bus, value <= 0.001)
 
 
-func _current_master_volume_linear() -> float:
-	var bus := AudioServer.get_bus_index("Master")
+func _current_bus_volume_linear(bus_name: StringName) -> float:
+	var bus := AudioServer.get_bus_index(bus_name)
 	if bus < 0:
 		return 1.0
 	if AudioServer.is_bus_mute(bus):
@@ -386,6 +405,7 @@ func restart_game() -> void:
 	arena.reset_pieces()
 	_clear_selection()
 	_refresh_hud()
+	game_restarted.emit()
 
 func _refresh_hud() -> void:
 	if status_label == null:
