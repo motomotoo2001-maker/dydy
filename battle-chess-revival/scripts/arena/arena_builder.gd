@@ -16,6 +16,7 @@ var _pieces: Array[PieceView] = []
 var _sockets: Dictionary = {}
 var _piece_by_square: Dictionary = {}
 var selection_root: Node3D
+var _selected_piece: PieceView
 
 func build() -> void:
 	if generated != null and is_instance_valid(generated):
@@ -62,6 +63,7 @@ func animate_piece_move(piece: PieceView, square: StringName) -> void:
 	piece.current_square = square
 	_piece_by_square[square] = piece
 	var target := get_socket(square).global_position
+	await piece.begin_move_presentation()
 	if piece.piece_type == &"Knight":
 		var midpoint := (piece.global_position + target) * 0.5
 		midpoint.y += 0.62
@@ -76,6 +78,7 @@ func animate_piece_move(piece: PieceView, square: StringName) -> void:
 		tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
 		tween.tween_property(piece, "global_position", target, 0.28)
 		await tween.finished
+	await piece.end_move_presentation()
 
 func reset_pieces() -> void:
 	clear_selection()
@@ -95,6 +98,9 @@ func remove_piece(piece: PieceView) -> void:
 	piece.queue_free()
 
 func clear_selection() -> void:
+	if _selected_piece != null and is_instance_valid(_selected_piece):
+		_selected_piece.set_selected(false)
+	_selected_piece = null
 	if selection_root == null:
 		return
 	for child in selection_root.get_children():
@@ -102,6 +108,9 @@ func clear_selection() -> void:
 
 func show_selection(square: StringName, moves: Array[Dictionary]) -> void:
 	clear_selection()
+	_selected_piece = get_piece_at(square)
+	if _selected_piece != null:
+		_selected_piece.set_selected(true)
 	_add_square_overlay(square, Color(0.95, 0.78, 0.18, 0.42))
 	for move in moves:
 		var color := Color(0.95, 0.25, 0.25, 0.48) if move.get("capture", false) else Color(0.25, 0.82, 0.48, 0.38)
@@ -109,6 +118,19 @@ func show_selection(square: StringName, moves: Array[Dictionary]) -> void:
 
 func get_socket(square: StringName) -> Marker3D:
 	return _sockets.get(square) as Marker3D
+
+func play_check_reaction(side: StringName) -> void:
+	var king := find_piece(side, &"King")
+	if king != null:
+		await king.play_check_reaction()
+
+func play_checkmate_presentation(winner_side: StringName, loser_side: StringName) -> void:
+	var loser_king := find_piece(loser_side, &"King")
+	var winner_king := find_piece(winner_side, &"King")
+	if loser_king != null:
+		await loser_king.play_defeat_pose()
+	if winner_king != null:
+		await winner_king.play_victory_pose()
 
 func find_piece(p_side: StringName, p_type: StringName, occurrence: int = 0) -> PieceView:
 	var found := 0
