@@ -92,6 +92,30 @@ func reset_pieces() -> void:
 	_piece_by_square.clear()
 	_populate_pieces()
 
+func sync_pieces_from_state(state: ChessState) -> void:
+	# Rebuild the visual board from an arbitrary legal ChessState. This is used
+	# by Undo/rematch tooling and deliberately avoids replaying battle VFX.
+	clear_selection()
+	if pieces_root == null:
+		return
+	for child in pieces_root.get_children():
+		child.free()
+	_pieces.clear()
+	_piece_by_square.clear()
+
+	var squares: Array = state.board.keys()
+	squares.sort()
+	for square_variant in squares:
+		var square: StringName = square_variant
+		var data: Dictionary = state.board[square]
+		if data.is_empty():
+			continue
+		_spawn_piece(
+			data.get("side", &"White"),
+			data.get("type", &"Pawn"),
+			square
+		)
+
 func remove_piece(piece: PieceView) -> void:
 	if piece == null:
 		return
