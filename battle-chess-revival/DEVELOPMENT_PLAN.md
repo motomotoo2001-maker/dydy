@@ -41,7 +41,7 @@ Production order:
 5. King pair.
 6. Final Pawn polish after the other silhouettes are locked.
 
-### B1 — Knight pair (current task)
+### B1 — Knight pair (verified)
 
 Deliverables:
 - high-detail White Knight and Black Knight models with clearly different personalities;
@@ -59,11 +59,18 @@ Exit gate:
 - Visual QA regression gate passes;
 - screenshots visibly show the production Knight pair rather than fallback V3 models.
 
-## NEXT — Milestone B2/B3: Bishop and Rook production pairs
+## ACTIVE — Milestone B2: Bishop production pair
 
-Bishop:
-- elephant/cleric silhouette, expressive trunk/head, staff, cloth layers;
-- ram-charge capture compatibility.
+Current task:
+- author White Bishop and Black Bishop as Blender-generated production GLBs;
+- preserve Head/Trunk(or Snout)/Staff/Cape animation targets;
+- add close-up Bishop review renders;
+- validate ram-charge capture compatibility;
+- pass Godot 4.7.2 CI + Visual QA before freezing checkpoint.
+
+## NEXT — Milestone B3: Rook production pair
+
+Knight B1 verified at `26e07749`: production White/Black Knight GLBs are generated in Blender, contracts pass (72/78 parts), gameplay/capture tests pass, close front review renders verified, and Visual QA regression gate passes.
 
 Rook:
 - massive fortress/bruiser silhouette, articulated arms/fists;
