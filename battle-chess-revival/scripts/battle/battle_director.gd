@@ -5,8 +5,15 @@ signal capture_started(id: StringName)
 signal capture_impact(id: StringName)
 signal capture_finished(id: StringName)
 
+enum CaptureMode {
+	OFF,
+	FAST,
+	FULL,
+}
+
 var busy := false
 var time_scale := 1.0
+var capture_mode := CaptureMode.FULL
 
 var arena: ArenaBuilder
 var registry := CaptureRegistry.new()
@@ -23,6 +30,23 @@ func signature_ids() -> Array[StringName]:
 
 func registry_size() -> int:
 	return registry.size()
+
+func set_capture_mode(value: int) -> void:
+	capture_mode = clampi(value, CaptureMode.OFF, CaptureMode.FULL)
+	match capture_mode:
+		CaptureMode.FAST:
+			time_scale = 0.58
+		_:
+			time_scale = 1.0
+
+func capture_mode_label() -> String:
+	match capture_mode:
+		CaptureMode.OFF:
+			return "Выкл"
+		CaptureMode.FAST:
+			return "Быстро"
+		_:
+			return "Полностью"
 
 func play_signature(id: StringName) -> void:
 	if busy or arena == null:
@@ -45,7 +69,47 @@ func play_board_capture(attacker: PieceView, victim: PieceView) -> void:
 	if id == &"":
 		push_warning("No signature capture for attacker %s" % String(attacker.piece_type))
 		return
+	if capture_mode == CaptureMode.OFF:
+		await _play_quick_board_capture(id, attacker, victim)
+		return
 	await _run_capture(id, attacker, victim, false)
+
+func _play_quick_board_capture(id: StringName, attacker: PieceView, victim: PieceView) -> void:
+	busy = true
+	capture_started.emit(id)
+	attacker.reset_visual()
+	victim.reset_visual()
+	attacker.set_battle_animation_active(true)
+	victim.set_battle_animation_active(true)
+
+	# Preserve signature identity, impact audio and a short readable board-space hit
+	# without switching away from the user's 3/4 gameplay camera.
+	var impact_color := Color("#ffd081")
+	match id:
+		&"queen_transform":
+			impact_color = Color("#e7a3ff")
+		&"king_trapdoor":
+			impact_color = Color("#d6b07b")
+		&"knight_double_kick":
+			impact_color = Color("#ffbd70")
+		&"bishop_ram":
+			impact_color = Color("#e8c080")
+		&"rook_crush":
+			impact_color = Color("#dfc39e")
+
+	victim.play_hit_pose()
+	_flash(victim.battle_target.global_position, impact_color, 0.24)
+	_impact_burst(victim.battle_target.global_position, impact_color, 0.72)
+	_capture_impact_layer(id, victim)
+	capture_impact.emit(id)
+	await get_tree().create_timer(0.12).timeout
+
+	attacker.reset_visual()
+	victim.reset_visual()
+	attacker.set_battle_animation_active(false)
+	victim.set_battle_animation_active(false)
+	busy = false
+	capture_finished.emit(id)
 
 func _run_capture(id: StringName, attacker: PieceView, victim: PieceView, restore_after: bool) -> void:
 	var data := registry.get_data(id)
@@ -130,7 +194,7 @@ func _pawn_toe_stab_authored(attacker: PieceView, victim: PieceView, data: Captu
 	var clip_length := attacker.authored_animation_length(&"ToeStab") / playback_speed
 	if clip_length <= 0.0:
 		clip_length = 1.35
-	attacker.play_authored_animation(&"ToeStab", playback_speed, 0.04)
+	attacker.play_authored_animation(&"ToeStab", _animation_speed(playback_speed), 0.04)
 
 	# Contact is authored around frame 14 of the 36-frame clip.
 	await _wait(clip_length * 0.39)
@@ -212,7 +276,7 @@ func _knight_double_kick_authored(attacker: PieceView, victim: PieceView, data: 
 	var clip_length := attacker.authored_animation_length(&"DoubleKick") / playback_speed
 	if clip_length <= 0.0:
 		clip_length = 1.20
-	attacker.play_authored_animation(&"DoubleKick", playback_speed, 0.05)
+	attacker.play_authored_animation(&"DoubleKick", _animation_speed(playback_speed), 0.05)
 
 	# Rear-hoof contact is authored near frame 21 of the 36-frame clip.
 	await _wait(clip_length * 0.57)
@@ -304,7 +368,7 @@ func _bishop_ram_authored(attacker: PieceView, victim: PieceView, data: CaptureA
 	var clip_length := attacker.authored_animation_length(&"RamCharge") / playback_speed
 	if clip_length <= 0.0:
 		clip_length = 1.55
-	attacker.play_authored_animation(&"RamCharge", playback_speed, 0.05)
+	attacker.play_authored_animation(&"RamCharge", _animation_speed(playback_speed), 0.05)
 
 	# Wind-up: body folds forward, trunk extends and the staff rolls back.
 	for i in range(3):
@@ -403,7 +467,7 @@ func _rook_crush_authored(attacker: PieceView, victim: PieceView, data: CaptureA
 	var clip_length := attacker.authored_animation_length(&"JumpCrush") / playback_speed
 	if clip_length <= 0.0:
 		clip_length = 1.45
-	attacker.play_authored_animation(&"JumpCrush", playback_speed, 0.05)
+	attacker.play_authored_animation(&"JumpCrush", _animation_speed(playback_speed), 0.05)
 
 	# Compress, then launch above the target while the authored body stretches.
 	await _wait(clip_length * 0.15)
@@ -499,7 +563,7 @@ func _queen_transform_authored(attacker: PieceView, victim: PieceView, data: Cap
 	var clip_length := attacker.authored_animation_length(&"TransformSpell") / playback_speed
 	if clip_length <= 0.0:
 		clip_length = 1.55
-	attacker.play_authored_animation(&"TransformSpell", playback_speed, 0.05)
+	attacker.play_authored_animation(&"TransformSpell", _animation_speed(playback_speed), 0.05)
 
 	# Wind-up: staff sweeps back and the authored orb grows.
 	await _wait(clip_length * 0.18)
@@ -571,7 +635,7 @@ func _king_trapdoor_authored(attacker: PieceView, victim: PieceView, data: Captu
 	var clip_length := attacker.authored_animation_length(&"TrapdoorCommand") / speed
 	if clip_length <= 0.0:
 		clip_length = 1.35
-	attacker.play_authored_animation(&"TrapdoorCommand", speed, 0.05)
+	attacker.play_authored_animation(&"TrapdoorCommand", _animation_speed(speed), 0.05)
 	var remote := _remote(attacker.global_position + Vector3(0.32, 0.92, 0))
 	await _wait(clip_length * 0.36)
 	_flash(remote.global_position + Vector3(0, 0.12, 0), Color("#ff3333"), 0.16)
@@ -941,6 +1005,9 @@ func _wait(seconds: float) -> void:
 
 func _d(seconds: float) -> float:
 	return maxf(seconds * time_scale, 0.001)
+
+func _animation_speed(base_speed: float) -> float:
+	return base_speed / maxf(time_scale, 0.10)
 
 func _fx_material(color: Color, emission: float = 1.0) -> StandardMaterial3D:
 	var mat := StandardMaterial3D.new()
