@@ -72,6 +72,20 @@ jobs:
           test -s battle-chess-revival/assets/models/black_king_rigged_v1.glb
           test -s battle-chess-revival/assets/models/cathedral_production_v1.glb
           rm -rf battle-chess-revival/.generated
+      - name: Build production audio assets
+        run: |
+          python3 battle-chess-revival/tools/audio/build_audio_v1.py --output battle-chess-revival/assets/audio
+          test -s battle-chess-revival/assets/audio/cathedral_ambience.wav
+          test -s battle-chess-revival/assets/audio/ui_select.wav
+          test -s battle-chess-revival/assets/audio/move.wav
+          test -s battle-chess-revival/assets/audio/check.wav
+          test -s battle-chess-revival/assets/audio/checkmate.wav
+          test -s battle-chess-revival/assets/audio/impact_pawn.wav
+          test -s battle-chess-revival/assets/audio/impact_knight.wav
+          test -s battle-chess-revival/assets/audio/impact_bishop.wav
+          test -s battle-chess-revival/assets/audio/impact_rook.wav
+          test -s battle-chess-revival/assets/audio/impact_queen.wav
+          test -s battle-chess-revival/assets/audio/impact_king.wav
       - name: Validate concept asset contracts
         run: python3 battle-chess-revival/tools/validate_asset_contracts.py
       - name: Download Godot 4.7.2 stable
@@ -84,6 +98,8 @@ jobs:
         run: ./Godot_v4.7.2-stable_linux.x86_64 --headless --rendering-method gl_compatibility --path battle-chess-revival --editor --quit-after 30
       - name: Validate production UI and pause flow
         run: xvfb-run -a ./Godot_v4.7.2-stable_linux.x86_64 --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/ui_smoke_test.gd
+      - name: Validate production audio routing
+        run: xvfb-run -a ./Godot_v4.7.2-stable_linux.x86_64 --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/audio_smoke_test.gd
       - name: Validate production cathedral asset
         run: ./Godot_v4.7.2-stable_linux.x86_64 --headless --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/cathedral_asset_test.gd
       - name: Validate authored Knight rig assets
