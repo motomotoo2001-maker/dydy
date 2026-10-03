@@ -199,21 +199,24 @@ Final checkpoint `d683952` verified:
 - gameplay/battle renders and Visual QA pass;
 - Drive checkpoint: `BattleChessRevival_CATHEDRAL_D1_FINAL_2026-10-03_d683952.zip`.
 
-## ACTIVE — Milestone D2: material + stained-glass lighting pass
+## VERIFIED — Milestone D2: material + stained-glass lighting pass
+
+Final checkpoint `546fa33` verified:
+- production cathedral receives runtime stone/gold/cloth/emissive-glass material overrides;
+- stone uses procedural albedo/roughness variation instead of a flat beige response;
+- stained-glass red/gold/blue lights softly shape the cathedral without recoloring pieces;
+- ambient/sun/fill balance was reduced for stronger depth and preserved black-side readability;
+- gameplay/battle renders and Visual QA remain green;
+- Drive checkpoint: `BattleChessRevival_CATHEDRAL_D2_MATERIAL_LIGHTING_FINAL_2026-10-03_546fa33.zip`.
+
+## ACTIVE — Milestone D3: camera/contact/final composition
 
 Current task:
-- apply richer runtime material overrides to the production cathedral: stone variation, metal/gold response, cloth and emissive stained glass;
-- add subtle red/gold/blue stained-glass light shaping around the board;
-- rebalance ambient/sun/fill levels to reduce the flat beige look;
-- preserve piece readability and avoid crushing black-side detail;
-- compare gameplay and battle renders before freezing D2.
-
-## NEXT + 1 — Milestone D3: camera/contact/final composition
-
-- gameplay-camera framing against the approved reference;
-- battle-camera exposure/DOF and action readability;
-- per-piece contact shadows;
-- final environment/capture composition regression gate.
+- lower and slightly open the gameplay camera so architecture reads without hiding board state;
+- tune battle-camera focal framing/DOF for authored capture poses;
+- strengthen SSAO/contact grounding at piece bases without dirtying white materials;
+- verify all six capture compositions after the camera change;
+- freeze the final visual-composition baseline before UI/audio work.
 
 ## AFTER D3 — Milestone E/F
 
