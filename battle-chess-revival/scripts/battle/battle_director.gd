@@ -504,6 +504,48 @@ func _queen_transform_fallback(attacker: PieceView, victim: PieceView, data: Cap
 	await _tween(attacker.visual_root, "rotation_degrees:z", 0.0, 0.18)
 
 func _king_trapdoor(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
+	if attacker.has_authored_animation(&"TrapdoorCommand"):
+		await _king_trapdoor_authored(attacker, victim, data)
+		return
+	await _king_trapdoor_fallback(attacker, victim, data)
+
+func _king_trapdoor_authored(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
+	var speed := 1.08
+	var clip_length := attacker.authored_animation_length(&"TrapdoorCommand") / speed
+	if clip_length <= 0.0:
+		clip_length = 1.35
+	attacker.play_authored_animation(&"TrapdoorCommand", speed, 0.05)
+	var remote := _remote(attacker.global_position + Vector3(0.32, 0.92, 0))
+	await _wait(clip_length * 0.36)
+	_flash(remote.global_position + Vector3(0, 0.12, 0), Color("#ff3333"), 0.16)
+	_comic_text("CLICK!", remote.global_position + Vector3(0, 0.45, 0), Color("#ff5b4d"))
+	await _wait(0.08)
+
+	var trap := _trapdoor(victim.global_position - Vector3(0, 0.35, 0))
+	var left: Node3D = trap.get_node("Left")
+	var right: Node3D = trap.get_node("Right")
+	var open := create_tween().set_parallel()
+	open.tween_property(left, "position:x", -0.72, _d(0.18))
+	open.tween_property(right, "position:x", 0.72, _d(0.18))
+	await open.finished
+	_camera_punch(0.09)
+	_shockwave(victim.global_position, Color("#7b5a48"), 0.65)
+	_comic_text("CLACK!", victim.battle_target.global_position + Vector3(0, 0.55, 0), Color("#d6a578"))
+	victim.play_hit_pose()
+	capture_impact.emit(data.id)
+	await _parallel(victim.visual_root, {"position": Vector3(0, -5.0, 0), "scale": Vector3(0.72, 0.72, 0.72)}, 0.38)
+	_flash(victim.global_position - Vector3(0, 1.6, 0), Color("#d5b07a"), 0.20)
+	await _wait(0.16)
+	var close := create_tween().set_parallel()
+	close.tween_property(left, "position:x", -0.34, _d(0.16))
+	close.tween_property(right, "position:x", 0.34, _d(0.16))
+	await close.finished
+	await _wait(maxf(clip_length * 0.30 - 0.30, 0.04))
+	attacker.stop_authored_animation()
+	remote.queue_free()
+	trap.queue_free()
+
+func _king_trapdoor_fallback(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
 	await _animate_part_prefix(attacker, "Arm_", Vector3(0, 0, -22), Vector3.ZERO, 0.12)
 	await _animate_part_prefix(attacker, "Scepter", Vector3(0, 0, -18), Vector3.ZERO, 0.12)
 	await _animate_part_prefix(attacker, "V3_CoatPanel", Vector3(0, 0, -4), Vector3(0, 0.02, 0.02), 0.12)

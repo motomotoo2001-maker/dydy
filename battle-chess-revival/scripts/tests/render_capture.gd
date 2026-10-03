@@ -338,7 +338,32 @@ func _run() -> void:
 	if white_queen_diag != null:
 		white_queen_diag.set_battle_animation_active(false)
 
-	print("RENDER_CAPTURE_PASS gameplay=", image.get_width(), "x", image.get_height(), " captures=", CAPTURES.size(), " lineups=2 reviews=19")
+	# Authored King state diagnostics.
+	_prepare_asset_review(arena, &"Black", &"King")
+	var black_king_diag := arena.find_piece(&"Black", &"King")
+	if black_king_diag != null:
+		black_king_diag.set_battle_animation_active(true)
+		black_king_diag.play_authored_animation(&"Hit", 1.0, 0.0)
+		await create_timer(maxf(black_king_diag.authored_animation_length(&"Hit") * 0.36, 0.12)).timeout
+	await process_frame
+	await RenderingServer.frame_post_draw
+	if get_root().get_texture().get_image().save_png("res://asset_review_black_king_hit.png") != OK:
+		push_error("RENDER_CAPTURE_FAIL: King Hit review"); quit(1); return
+	if black_king_diag != null: black_king_diag.set_battle_animation_active(false)
+
+	_prepare_asset_review(arena, &"White", &"King")
+	var white_king_diag := arena.find_piece(&"White", &"King")
+	if white_king_diag != null:
+		white_king_diag.set_battle_animation_active(true)
+		white_king_diag.play_authored_animation(&"TrapdoorCommand", 1.0, 0.0)
+		await create_timer(maxf(white_king_diag.authored_animation_length(&"TrapdoorCommand") * 0.43, 0.20)).timeout
+	await process_frame
+	await RenderingServer.frame_post_draw
+	if get_root().get_texture().get_image().save_png("res://asset_review_white_king_trapdoorcommand.png") != OK:
+		push_error("RENDER_CAPTURE_FAIL: King TrapdoorCommand review"); quit(1); return
+	if white_king_diag != null: white_king_diag.set_battle_animation_active(false)
+
+	print("RENDER_CAPTURE_PASS gameplay=", image.get_width(), "x", image.get_height(), " captures=", CAPTURES.size(), " lineups=2 reviews=21")
 	root.queue_free()
 	await process_frame
 	quit(0)
