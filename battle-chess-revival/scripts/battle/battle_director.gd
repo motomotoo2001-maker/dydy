@@ -75,6 +75,7 @@ func _run_capture(id: StringName, attacker: PieceView, victim: PieceView, restor
 	arena.set_battle_lighting(true)
 	_set_battle_camera(data.camera_profile)
 	arena.battle_camera.current = true
+	await _capture_intro_beat(attacker, victim, id)
 
 	match id:
 		&"pawn_toe_stab":
@@ -89,6 +90,8 @@ func _run_capture(id: StringName, attacker: PieceView, victim: PieceView, restor
 			await _queen_transform(attacker, victim, data)
 		&"king_trapdoor":
 			await _king_trapdoor(attacker, victim, data)
+
+	await _capture_recovery_beat(id)
 
 	if restore_after:
 		attacker.global_transform = attacker_transform
@@ -1044,6 +1047,68 @@ func _spawn_crowned_frog(p: Vector3) -> Node3D:
 	crown.position = Vector3(0, 0.52, 0)
 	root.add_child(crown)
 	return root
+
+
+func _capture_intro_beat(attacker: PieceView, victim: PieceView, id: StringName) -> void:
+	# Shared cinematic anticipation before every authored signature. The beat
+	# fully returns both visual roots to rest before the family clip starts, so
+	# authored animation contracts and deterministic impact timing stay intact.
+	if attacker == null or victim == null or arena == null or arena.battle_camera == null:
+		return
+	var attacker_root := attacker.visual_root
+	var victim_root := victim.visual_root
+	if attacker_root == null or victim_root == null:
+		return
+
+	var attacker_scale := attacker_root.scale
+	var victim_scale := victim_root.scale
+	var lean := 2.4
+	if id == &"rook_crush" or id == &"bishop_ram":
+		lean = 3.4
+	elif id == &"queen_transform" or id == &"king_trapdoor":
+		lean = 1.8
+
+	arena.battle_camera.position = _camera_rest_position + Vector3(0.14, 0.055, 0.30)
+	var settle := create_tween().set_parallel()
+	settle.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	settle.tween_property(arena.battle_camera, "position", _camera_rest_position, _d(0.16))
+	settle.tween_property(attacker_root, "position:y", 0.045, _d(0.10))
+	settle.tween_property(attacker_root, "scale", attacker_scale * 1.025, _d(0.10))
+	settle.tween_property(victim_root, "position:y", -0.018, _d(0.10))
+	settle.tween_property(victim_root, "rotation_degrees:z", lean, _d(0.10))
+	settle.tween_property(victim_root, "scale", victim_scale * 0.985, _d(0.10))
+	await settle.finished
+	await _wait(0.035)
+
+	var release := create_tween().set_parallel()
+	release.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	release.tween_property(attacker_root, "position", Vector3.ZERO, _d(0.09))
+	release.tween_property(attacker_root, "scale", attacker_scale, _d(0.09))
+	release.tween_property(victim_root, "position", Vector3.ZERO, _d(0.09))
+	release.tween_property(victim_root, "rotation_degrees", Vector3.ZERO, _d(0.09))
+	release.tween_property(victim_root, "scale", victim_scale, _d(0.09))
+	await release.finished
+
+
+func _capture_recovery_beat(id: StringName) -> void:
+	# Let the impact breathe for a few frames before returning to gameplay.
+	# Heavy signatures get a slightly longer camera pullback.
+	if arena == null or arena.battle_camera == null:
+		return
+	var hold := 0.085
+	var pullback := 0.18
+	if id == &"rook_crush" or id == &"king_trapdoor":
+		hold = 0.12
+		pullback = 0.24
+	await _wait(hold)
+	var camera := arena.battle_camera
+	var target_position := camera.position + Vector3(0.0, 0.055, pullback)
+	var target_fov := minf(camera.fov + 1.15, 48.0)
+	var tween := create_tween().set_parallel()
+	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(camera, "position", target_position, _d(0.12))
+	tween.tween_property(camera, "fov", target_fov, _d(0.12))
+	await tween.finished
 
 
 func _capture_separation(id: StringName) -> float:
