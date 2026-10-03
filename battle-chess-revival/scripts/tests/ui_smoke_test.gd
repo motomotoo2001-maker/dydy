@@ -28,6 +28,8 @@ func _run() -> void:
 	var hint_panel := controller.find_child("HintPanel", true, false) as Control
 	var alert_panel := controller.find_child("AlertPanel", true, false) as Control
 	var pause_overlay := controller.find_child("PauseOverlay", true, false) as Control
+	var promotion_overlay := controller.find_child("PromotionOverlay", true, false) as Control
+	var promotion_card := controller.find_child("PromotionCard", true, false) as Control
 	var settings_card := controller.find_child("SettingsCard", true, false) as Control
 	var slider := controller.find_child("MasterVolume", true, false) as HSlider
 	var ambience_slider := controller.find_child("AmbienceVolume", true, false) as HSlider
@@ -40,14 +42,17 @@ func _run() -> void:
 	if turn_panel == null or hint_panel == null or alert_panel == null:
 		_fail("production HUD controls missing")
 		return
-	if pause_overlay == null or settings_card == null or slider == null or ambience_slider == null or sfx_slider == null or ai_select == null or resume == null or undo == null or restart == null:
-		_fail("pause/settings/audio/AI/undo controls missing")
+	if pause_overlay == null or promotion_overlay == null or promotion_card == null or settings_card == null or slider == null or ambience_slider == null or sfx_slider == null or ai_select == null or resume == null or undo == null or restart == null:
+		_fail("pause/promotion/settings/audio/AI/undo controls missing")
 		return
 	if turn_panel.size.x > 380.0 or turn_panel.size.y > 90.0:
 		_fail("turn panel is too large and blocks gameplay")
 		return
 	if pause_overlay.visible:
 		_fail("pause overlay visible on startup")
+		return
+	if promotion_overlay.visible:
+		_fail("promotion overlay visible on startup")
 		return
 	if alert_panel.visible:
 		_fail("check/mate alert visible in ongoing game")
