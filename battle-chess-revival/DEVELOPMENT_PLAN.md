@@ -107,29 +107,31 @@ Pawn → Knight → Bishop → Rook → Queen → King.
 A complete verified source ZIP was saved to Google Drive as
 `BattleChessRevival_ALL_PRODUCTION_FAMILIES_V1_FINAL_2026-10-03_78fca9a.zip`.
 
-## ACTIVE — Milestone C1: Skeleton3D + authored Knight animation
+## VERIFIED — Milestone C1: Skeleton3D + authored Knight animation
 
-Start with Knight because it has the most demanding body hierarchy.
-
-Checkpoint `9b0a98a` verified:
-- White/Black Knight rigged GLBs generated beside the production-static source;
-- 13-bone Skeleton3D imported on both sides;
+Final checkpoint `41d4cea` verified:
+- White/Black Knight rigged GLBs use 13-bone Skeleton3D hierarchies;
 - seven authored clips imported on both sides: Idle, Selected, Move, Hit, Victory, Defeat, DoubleKick;
-- PieceView now loads the rigged Knight GLBs in normal rendering;
-- complete chess/battle/render/Visual-QA suite remains green;
-- Drive checkpoint saved as `BattleChessRevival_KNIGHT_RIGGED_V1_CHECKPOINT_2026-10-03_9b0a98a.zip`.
+- PieceView drives Idle / Selected / Move / Hit / Victory / Defeat through AnimationPlayer;
+- BattleDirector uses the authored DoubleKick clip with deterministic camera/VFX timing;
+- a short impact hit-stop keeps attacker and victim readable before launch;
+- an Xvfb runtime gate exercises PieceView clip switching on both sides;
+- dedicated rendered Hit and DoubleKick diagnostic poses were inspected;
+- chess rules, capture smoke, gameplay renders and Visual QA are green;
+- Drive checkpoint: `BattleChessRevival_KNIGHT_AUTHORED_C1_FINAL_2026-10-03_41d4cea.zip`.
+
+The old named-part Knight sequence remains only as a safe fallback if an authored clip is unavailable.
+
+## ACTIVE — Milestone C2: Bishop authored rig/animation
 
 Current task:
-- wire AnimationPlayer clips into selection, move, hit, victory and defeat states;
-- replace Knight double-kick named-part fallback with the authored DoubleKick clip while keeping impact/VFX/camera timing;
-- add a rendered authored-animation review gate;
-- only remove Knight fallback transforms after the authored capture is visually verified.
-
-## NEXT — Milestone C2: Bishop authored rig/animation
-
-- Skeleton3D mapping for head/trunk/staff/cape;
-- authored Idle / Move / Hit / Victory / Defeat;
-- authored ram-charge signature capture.
+- create White/Black Bishop rigged candidates beside the production-static GLBs;
+- Skeleton3D mapping for root/body/head/trunk/staff/cape/arms;
+- authored Idle, Selected, Move, Hit, Victory, Defeat and RamCharge clips;
+- validate the candidate in Godot before switching PieceView to it;
+- wire Bishop gameplay states and ram-charge through AnimationPlayer;
+- preserve the current named-part ram-charge as fallback;
+- add dedicated Bishop Hit/RamCharge rendered diagnostics before the checkpoint.
 
 ## NEXT + 1 — Milestone C3/C4: Rook and Queen authored rigs
 
