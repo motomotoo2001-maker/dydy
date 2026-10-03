@@ -264,6 +264,12 @@ def build_knight(side, output):
             f"Production_Plume_{i}", (x,0.02,2.25 + 0.025*(1-abs(x)/0.09)),
             0.045, 0.006, 0.30, P["accent"], rot=(0,math.radians(8*x/0.09),0), vertices=24
         ))
+    # G6 silhouette V2: wider plume fan and stronger helmet/pauldron profile.
+    objects.append(cone("PlumeFan_L",(-0.14,0.03,2.26),0.050,0.006,0.34,P["accent"],rot=(0,math.radians(-12),math.radians(-20)),vertices=26))
+    objects.append(cone("PlumeFan_R",(0.14,0.03,2.26),0.050,0.006,0.34,P["accent"],rot=(0,math.radians(12),math.radians(20)),vertices=26))
+    objects.append(cone("HelmetCrest",(0,0.04,2.14),0.060,0.008,0.28,P["metal"],vertices=28))
+    objects.append(rounded_box("Pauldron_L_Wing",(-0.34,0.02,1.68),(0.09,0.15,0.07),P["metal"],rot=(0,0,math.radians(-12)),bevel=0.035))
+    objects.append(rounded_box("Pauldron_R_Wing",(0.34,0.02,1.68),(0.09,0.15,0.07),P["metal"],rot=(0,0,math.radians(12)),bevel=0.035))
 
     # Shield and compact lance keep neighboring board pieces readable.
     shield_mat = P["cloth"] if side == "white" else P["cloth_hi"]
@@ -273,6 +279,8 @@ def build_knight(side, output):
     objects.append(rounded_box("ShieldMarkH", (-0.36,-0.257,1.50), (0.11,0.018,0.025), P["metal"], bevel=0.01))
     objects.append(cyl("LanceShaft", (0.38,-0.03,1.56), 0.025, 1.18, P["leather"], rot=(0,math.radians(-9),0), vertices=32))
     objects.append(cone("LanceTip", (0.38,-0.22,2.16), 0.085, 0.0, 0.26, P["steel"], rot=(0,math.radians(-9),0), vertices=32))
+    objects.append(torus("KnightShieldBoss",(-0.36,-0.255,1.48),0.085,0.022,P["metal"],rot=(math.radians(90),0,0)))
+    objects.append(rounded_box("LanceGuard",(0.38,-0.05,1.72),(0.055,0.05,0.035),P["metal"],rot=(0,math.radians(-9),0),bevel=0.018))
 
     if side == "black":
         # Menacing silhouette cues without increasing the board footprint.
