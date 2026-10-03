@@ -178,7 +178,7 @@ def main():
     bpy.ops.export_scene.gltf(
         filepath=str(out),export_format="GLB",use_selection=True,
         export_cameras=False,export_lights=False,export_animations=True,
-        export_nla_strips=True,export_all_actions=True,export_apply=False
+        export_nla_strips=True,export_apply=False
     )
     print("KNIGHT_RIG_EXPORT_PASS",a.side,out,"meshes=",len(meshes),"actions=",len(bpy.data.actions))
 
