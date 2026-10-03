@@ -177,7 +177,27 @@ func _run() -> void:
 		quit(1)
 		return
 
-	print("RENDER_CAPTURE_PASS gameplay=", image.get_width(), "x", image.get_height(), " captures=", CAPTURES.size(), " lineups=2 reviews=9")
+	_prepare_asset_review(arena, &"White", &"King")
+	await process_frame
+	await RenderingServer.frame_post_draw
+	var white_king_review := get_root().get_texture().get_image()
+	var white_king_review_error := white_king_review.save_png("res://asset_review_white_king.png")
+	if white_king_review_error != OK:
+		push_error("RENDER_CAPTURE_FAIL: white king review save_png error %s" % white_king_review_error)
+		quit(1)
+		return
+
+	_prepare_asset_review(arena, &"Black", &"King")
+	await process_frame
+	await RenderingServer.frame_post_draw
+	var black_king_review := get_root().get_texture().get_image()
+	var black_king_review_error := black_king_review.save_png("res://asset_review_black_king.png")
+	if black_king_review_error != OK:
+		push_error("RENDER_CAPTURE_FAIL: black king review save_png error %s" % black_king_review_error)
+		quit(1)
+		return
+
+	print("RENDER_CAPTURE_PASS gameplay=", image.get_width(), "x", image.get_height(), " captures=", CAPTURES.size(), " lineups=2 reviews=11")
 	root.queue_free()
 	await process_frame
 	quit(0)

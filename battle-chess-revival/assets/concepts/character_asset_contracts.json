@@ -1,6 +1,6 @@
 {
-  "version": "production-pawns-v2+production-knights-v1+production-bishops-v1+production-rooks-v1+production-queens-v1+concept-v3",
-  "source": "approved character sheets; Pawn, Knight, Bishop, Rook and Queen production families authored in Blender 5.2.2; King remains concept-v3",
+  "version": "production-all-families-v1",
+  "source": "approved character sheets; all six families now authored as production Blender assets",
   "assets": {
     "white_pawn_production_v1.glb": {
       "family": "Pawn",
@@ -35,40 +35,6 @@
         "EyeWL",
         "Ear_L",
         "ShieldSlash"
-      ]
-    },
-    "white_king_concept_v3.glb": {
-      "family": "King",
-      "side": "White",
-      "min_parts": 34,
-      "required_parts": [
-        "Head",
-        "Beard",
-        "CrownBand",
-        "Scepter",
-        "Concept_FurCollar",
-        "Concept_Cape",
-        "Concept_CrownBlueGem",
-        "V3_EyeWhite_L",
-        "V3_Moustache_L",
-        "V3_CoatPanel"
-      ]
-    },
-    "black_king_concept_v3.glb": {
-      "family": "King",
-      "side": "Black",
-      "min_parts": 33,
-      "required_parts": [
-        "Head",
-        "CrownBand",
-        "Scepter",
-        "Concept_FurCollar",
-        "Concept_Cape",
-        "Concept_CrownRedGem",
-        "Concept_ScepterCrystal",
-        "V3_EyeWhite_L",
-        "V3_Moustache_L",
-        "V3_CoatPanel"
       ]
     },
     "white_knight_production_v1.glb": {
@@ -235,6 +201,49 @@
         "CrownGem",
         "CrownHorn_L",
         "CrownHorn_R"
+      ]
+    },
+    "white_king_production_v1.glb": {
+      "family": "King",
+      "side": "White",
+      "min_parts": 58,
+      "required_parts": [
+        "Head",
+        "Beard",
+        "Moustache_L",
+        "Moustache_R",
+        "CrownBand",
+        "CrownGem",
+        "Scepter",
+        "ScepterGem",
+        "Arm_L",
+        "Arm_R",
+        "V3_CoatPanel",
+        "Cape",
+        "FurCollar"
+      ]
+    },
+    "black_king_production_v1.glb": {
+      "family": "King",
+      "side": "Black",
+      "min_parts": 62,
+      "required_parts": [
+        "Head",
+        "Beard",
+        "Moustache_L",
+        "Moustache_R",
+        "CrownBand",
+        "CrownGem",
+        "Scepter",
+        "ScepterGem",
+        "Arm_L",
+        "Arm_R",
+        "V3_CoatPanel",
+        "Cape",
+        "FurCollar",
+        "CrownHorn_L",
+        "CrownHorn_R",
+        "ChestSkull"
       ]
     }
   }
