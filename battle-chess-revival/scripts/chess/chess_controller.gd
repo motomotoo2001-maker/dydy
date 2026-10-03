@@ -92,9 +92,14 @@ func _execute_move(move: Dictionary, allow_ai_reply: bool) -> void:
 	if original_type == &"Pawn" and not resulting_piece.is_empty() and resulting_piece["type"] != &"Pawn":
 		attacker.change_type(resulting_piece["type"])
 
-	input_locked = false
 	_refresh_hud()
 	var status := state.get_game_status()
+	if status == &"check":
+		await arena.play_check_reaction(state.turn)
+	elif status == &"checkmate":
+		var winner_side := ChessState.BLACK if state.turn == ChessState.WHITE else ChessState.WHITE
+		await arena.play_checkmate_presentation(winner_side, state.turn)
+	input_locked = false
 	if allow_ai_reply and ai_enabled and state.turn == ChessState.BLACK and status in [&"ongoing", &"check"]:
 		input_locked = true
 		await get_tree().create_timer(0.35).timeout
