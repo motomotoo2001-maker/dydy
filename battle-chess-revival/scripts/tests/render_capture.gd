@@ -268,7 +268,42 @@ func _run() -> void:
 	if white_bishop != null:
 		white_bishop.set_battle_animation_active(false)
 
-	print("RENDER_CAPTURE_PASS gameplay=", image.get_width(), "x", image.get_height(), " captures=", CAPTURES.size(), " lineups=2 reviews=15")
+	# Authored Rook state diagnostics.
+	_prepare_asset_review(arena, &"Black", &"Rook")
+	var black_rook := arena.find_piece(&"Black", &"Rook")
+	if black_rook != null:
+		black_rook.set_battle_animation_active(true)
+		black_rook.play_authored_animation(&"Hit", 1.0, 0.0)
+		await create_timer(maxf(black_rook.authored_animation_length(&"Hit") * 0.36, 0.12)).timeout
+	await process_frame
+	await RenderingServer.frame_post_draw
+	var rook_hit_review := get_root().get_texture().get_image()
+	var rook_hit_error := rook_hit_review.save_png("res://asset_review_black_rook_hit.png")
+	if rook_hit_error != OK:
+		push_error("RENDER_CAPTURE_FAIL: Rook Hit review save_png error %s" % rook_hit_error)
+		quit(1)
+		return
+	if black_rook != null:
+		black_rook.set_battle_animation_active(false)
+
+	_prepare_asset_review(arena, &"White", &"Rook")
+	var white_rook := arena.find_piece(&"White", &"Rook")
+	if white_rook != null:
+		white_rook.set_battle_animation_active(true)
+		white_rook.play_authored_animation(&"JumpCrush", 1.0, 0.0)
+		await create_timer(maxf(white_rook.authored_animation_length(&"JumpCrush") * 0.64, 0.20)).timeout
+	await process_frame
+	await RenderingServer.frame_post_draw
+	var rook_crush_review := get_root().get_texture().get_image()
+	var rook_crush_error := rook_crush_review.save_png("res://asset_review_white_rook_jumpcrush.png")
+	if rook_crush_error != OK:
+		push_error("RENDER_CAPTURE_FAIL: Rook JumpCrush review save_png error %s" % rook_crush_error)
+		quit(1)
+		return
+	if white_rook != null:
+		white_rook.set_battle_animation_active(false)
+
+	print("RENDER_CAPTURE_PASS gameplay=", image.get_width(), "x", image.get_height(), " captures=", CAPTURES.size(), " lineups=2 reviews=17")
 	root.queue_free()
 	await process_frame
 	quit(0)

@@ -338,6 +338,61 @@ func _bishop_ram_fallback(attacker: PieceView, victim: PieceView, data: CaptureA
 	await _tween(attacker.visual_root, "rotation_degrees:y", 0.0, 0.10)
 
 func _rook_crush(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
+	if attacker.has_authored_animation(&"JumpCrush"):
+		await _rook_crush_authored(attacker, victim, data)
+		return
+	await _rook_crush_fallback(attacker, victim, data)
+
+func _rook_crush_authored(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
+	# Skeleton animation owns compression, arm/fist wind-up and slam pose.
+	# BattleDirector keeps world-space jump, shadow, victim squash and VFX timing.
+	var playback_speed := 1.12
+	var clip_length := attacker.authored_animation_length(&"JumpCrush") / playback_speed
+	if clip_length <= 0.0:
+		clip_length = 1.45
+	attacker.play_authored_animation(&"JumpCrush", playback_speed, 0.05)
+
+	# Compress, then launch above the target while the authored body stretches.
+	await _wait(clip_length * 0.15)
+	var launch := create_tween().set_parallel()
+	launch.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	launch.tween_property(attacker, "global_position", victim.global_position + Vector3(0, 6.5, 0), _d(clip_length * 0.20))
+	await launch.finished
+
+	var shadow := _shadow(victim.global_position)
+	await _tween(shadow, "scale", Vector3(2.8, 1.0, 2.8), clip_length * 0.18)
+	await _tween(victim.visual_root, "rotation_degrees:x", -10.0, 0.06)
+
+	# Frame ~27/42 is the authored slam/contact pose.
+	var drop := create_tween()
+	drop.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	drop.tween_property(attacker, "global_position", victim.global_position, _d(clip_length * 0.15))
+	await drop.finished
+
+	_camera_punch(0.30)
+	_impact_burst(victim.battle_target.global_position, Color("#f1d1a2"), 1.70)
+	_shockwave(victim.global_position, Color("#d0b28a"), 1.18)
+	_flash(victim.battle_target.global_position, Color("#f1d1a2"), 0.44)
+	_comic_text("SPLOTCH!", victim.battle_target.global_position + Vector3(0, 0.8, 0), Color("#f3d8a6"))
+	victim.play_hit_pose()
+	capture_impact.emit(data.id)
+	_dust(victim.global_position)
+	_dust(victim.global_position + Vector3(0.35, 0, 0.15))
+	_dust(victim.global_position + Vector3(-0.35, 0, -0.15))
+	_stone_debris(victim.global_position, Color("#8d725f"), 12)
+	await _wait(0.12)
+
+	await _tween(victim.visual_root, "scale", Vector3(1.80, 0.04, 1.80), 0.08)
+	await _tween(attacker.visual_root, "position", Vector3(0, 0.22, 0), 0.09)
+	await _tween(attacker.visual_root, "position", Vector3.ZERO, 0.11)
+	shadow.queue_free()
+
+	var remaining := maxf(clip_length * 0.32 - 0.30, 0.04)
+	await _wait(remaining)
+	attacker.stop_authored_animation()
+	await _wait(0.06)
+
+func _rook_crush_fallback(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
 	await _animate_part_prefix(attacker, "Arm_", Vector3(0, 0, 28), Vector3.ZERO, 0.14)
 	await _animate_part_prefix(attacker, "Fist_", Vector3(0, 0, 36), Vector3.ZERO, 0.14)
 	await _animate_part_prefix(attacker, "V3_FistKnuckle", Vector3(0, 0, 40), Vector3.ZERO, 0.14)
