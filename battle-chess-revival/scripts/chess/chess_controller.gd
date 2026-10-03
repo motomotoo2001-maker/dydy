@@ -24,6 +24,7 @@ var help_label: Label
 var side_chip: Label
 var state_badge: Label
 var last_move_label: Label
+var move_history_label: RichTextLabel
 var alert_panel: PanelContainer
 var alert_label: Label
 var pause_overlay: Control
@@ -645,6 +646,48 @@ func _build_pause_overlay() -> void:
 	tip.add_theme_color_override("font_color", Color("#9e8b77"))
 	column.add_child(tip)
 
+	var history_panel := PanelContainer.new()
+	history_panel.name = "MoveHistoryPanel"
+	history_panel.set_anchors_preset(Control.PRESET_CENTER)
+	history_panel.position = Vector2(230, -245)
+	history_panel.size = Vector2(300, 490)
+	history_panel.add_theme_stylebox_override("panel", _panel_style(Color(0.045, 0.038, 0.048, 0.96), Color("#80653f"), 14, 1))
+	pause_overlay.add_child(history_panel)
+
+	var history_margin := MarginContainer.new()
+	history_margin.add_theme_constant_override("margin_left", 18)
+	history_margin.add_theme_constant_override("margin_right", 18)
+	history_margin.add_theme_constant_override("margin_top", 18)
+	history_margin.add_theme_constant_override("margin_bottom", 18)
+	history_panel.add_child(history_margin)
+
+	var history_column := VBoxContainer.new()
+	history_column.add_theme_constant_override("separation", 10)
+	history_margin.add_child(history_column)
+
+	var history_title := Label.new()
+	history_title.text = "ИСТОРИЯ ПАРТИИ"
+	history_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	history_title.add_theme_font_size_override("font_size", 17)
+	history_title.add_theme_color_override("font_color", Color("#e8c98f"))
+	history_column.add_child(history_title)
+
+	var history_scroll := ScrollContainer.new()
+	history_scroll.name = "MoveHistoryScroll"
+	history_scroll.custom_minimum_size = Vector2(260, 405)
+	history_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	history_column.add_child(history_scroll)
+
+	move_history_label = RichTextLabel.new()
+	move_history_label.name = "MoveHistoryLabel"
+	move_history_label.bbcode_enabled = true
+	move_history_label.fit_content = true
+	move_history_label.custom_minimum_size = Vector2(250, 390)
+	move_history_label.add_theme_font_size_override("normal_font_size", 14)
+	move_history_label.add_theme_color_override("default_color", Color("#d6c6b0"))
+	history_scroll.add_child(move_history_label)
+	_refresh_move_history()
+
 
 func _panel_style(fill: Color, border: Color, radius: int, border_width: int) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
@@ -666,6 +709,8 @@ func _toggle_pause() -> void:
 	var paused := not get_tree().paused
 	get_tree().paused = paused
 	pause_overlay.visible = paused
+	if paused:
+		_refresh_move_history()
 
 
 func _restart_from_pause() -> void:
@@ -793,6 +838,29 @@ func restart_game() -> void:
 	_refresh_hud()
 	game_restarted.emit()
 
+func _refresh_move_history() -> void:
+	if move_history_label == null:
+		return
+	if move_log.is_empty():
+		move_history_label.text = "[center][color=#8f7d70]Ходов пока нет[/color][/center]"
+		return
+
+	var lines: Array[String] = []
+	var move_number := 1
+	var i := 0
+	while i < move_log.size():
+		var white_move := move_log[i]
+		var black_move := move_log[i + 1] if i + 1 < move_log.size() else ""
+		lines.append("[color=#d6b97b]%d.[/color]  %s%s" % [
+			move_number,
+			white_move,
+			("    " + black_move) if not black_move.is_empty() else ""
+		])
+		move_number += 1
+		i += 2
+	move_history_label.text = "\n".join(lines)
+
+
 func _refresh_hud() -> void:
 	if status_label == null:
 		return
@@ -829,6 +897,7 @@ func _refresh_hud() -> void:
 
 	if last_move_label != null:
 		last_move_label.text = "Последний: %s" % (move_log[-1] if not move_log.is_empty() else "—")
+	_refresh_move_history()
 
 	if alert_panel != null:
 		alert_panel.visible = status == &"check"
