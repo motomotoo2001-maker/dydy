@@ -209,18 +209,50 @@ Final checkpoint `546fa33` verified:
 - gameplay/battle renders and Visual QA remain green;
 - Drive checkpoint: `BattleChessRevival_CATHEDRAL_D2_MATERIAL_LIGHTING_FINAL_2026-10-03_546fa33.zip`.
 
-## ACTIVE — Milestone D3: camera/contact/final composition
+## VERIFIED — Milestone D3: camera/contact/final composition
+
+Final checkpoint `e7c9382` verified:
+- gameplay camera lowered/opened to show cathedral depth while keeping the complete board readable;
+- battle camera tightened with lighter DOF for authored capture clarity;
+- SSAO/shadow-distance tuning improves piece-base grounding without dirtying white materials;
+- all six capture compositions were reviewed after the camera change;
+- full Godot 4.7.2 CI, gameplay/battle renders and Visual QA are green;
+- Drive checkpoint: `BattleChessRevival_FINAL_VISUAL_D3_2026-10-03_e7c9382.zip`.
+
+### Final visual-composition baseline complete
+
+Production characters, authored animations, cathedral architecture, materials, stained-glass lighting and final camera/contact composition are now under one verified baseline.
+
+## ACTIVE — Milestone E1: UX / HUD / settings
 
 Current task:
-- lower and slightly open the gameplay camera so architecture reads without hiding board state;
-- tune battle-camera focal framing/DOF for authored capture poses;
-- strengthen SSAO/contact grounding at piece bases without dirtying white materials;
-- verify all six capture compositions after the camera change;
-- freeze the final visual-composition baseline before UI/audio work.
+- replace the debug-looking top-left HUD with a production-styled compact turn/status panel;
+- add pause/settings overlay with audio sliders and restart/return controls;
+- add check/checkmate banners and short onboarding hints without obscuring the board;
+- preserve keyboard shortcuts and deterministic test controls;
+- add UI smoke coverage and render inspection.
 
-## AFTER D3 — Milestone E/F
+## NEXT — Milestone E2: audio and feedback
 
-UX/audio polish, then optimization, Windows release candidate and final versioned Drive backup.
+- ambient cathedral bed;
+- selection/move/check/checkmate SFX;
+- unique impact sounds for Pawn/Knight/Bishop/Rook/Queen/King captures;
+- audio bus volume controls wired to settings.
+
+## NEXT + 1 — Milestone E3: final presentation polish
+
+- title/intro presentation;
+- restart/rematch flow;
+- check/checkmate winner/loser presentation;
+- final UX regression review.
+
+## AFTER E — Milestone F: optimization and release candidate
+
+- LOD/material/draw-call review;
+- final missing-reference validation;
+- Windows export/package;
+- release-candidate smoke/render gate;
+- final versioned source ZIP + Google Drive checkpoint + PROJECT STATE update.
 
 Knight B1 verified at `26e07749`: production White/Black Knight GLBs are generated in Blender, contracts pass (72/78 parts), gameplay/capture tests pass, close front review renders verified, and Visual QA regression gate passes.
 
