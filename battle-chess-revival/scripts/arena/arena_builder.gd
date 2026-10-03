@@ -166,13 +166,13 @@ func set_battle_lighting(active: bool) -> void:
 	var cool := lighting.get_node_or_null("CoolRim") as OmniLight3D
 	var window := lighting.get_node_or_null("WindowSunFill") as OmniLight3D
 	if sun:
-		sun.light_energy = 0.50 if active else 0.92
+		sun.light_energy = 0.50 if active else 0.96
 	if warm:
-		warm.light_energy = 0.28 if active else 0.92
+		warm.light_energy = 0.28 if active else 1.05
 	if cool:
-		cool.light_energy = 0.82 if active else 1.05
+		cool.light_energy = 0.82 if active else 0.94
 	if window:
-		window.light_energy = 0.30 if active else 1.20
+		window.light_energy = 0.30 if active else 1.32
 
 func _build_environment() -> void:
 	var world := WorldEnvironment.new()
@@ -181,8 +181,8 @@ func _build_environment() -> void:
 	env.background_mode = Environment.BG_COLOR
 	env.background_color = Color("#171214")
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color("#c6b7aa")
-	env.ambient_light_energy = 0.25
+	env.ambient_light_color = Color("#d0bba7")
+	env.ambient_light_energy = 0.27
 	env.tonemap_mode = Environment.TONE_MAPPER_AGX
 	env.tonemap_agx_contrast = 1.24
 	env.tonemap_agx_white = 8.0
@@ -364,8 +364,8 @@ func _build_lighting() -> void:
 
 	var sun := DirectionalLight3D.new()
 	sun.name = "SunWarm"
-	sun.light_color = Color("#ffe7bd")
-	sun.light_energy = 0.92
+	sun.light_color = Color("#ffe0ad")
+	sun.light_energy = 0.96
 	sun.shadow_enabled = true
 	sun.directional_shadow_max_distance = 36.0
 	sun.directional_shadow_fade_start = 0.82
@@ -375,8 +375,8 @@ func _build_lighting() -> void:
 	var warm := OmniLight3D.new()
 	warm.name = "WarmFill"
 	warm.position = Vector3(-6.5, 6.8, -4.0)
-	warm.light_color = Color("#f6c898")
-	warm.light_energy = 0.92
+	warm.light_color = Color("#ffc789")
+	warm.light_energy = 1.05
 	warm.omni_range = 15.0
 	warm.shadow_enabled = true
 	root.add_child(warm)
@@ -384,16 +384,16 @@ func _build_lighting() -> void:
 	var cool := OmniLight3D.new()
 	cool.name = "CoolRim"
 	cool.position = Vector3(6.5, 5.0, -2.0)
-	cool.light_color = Color("#755cff")
-	cool.light_energy = 1.05
+	cool.light_color = Color("#7f6fd2")
+	cool.light_energy = 0.94
 	cool.omni_range = 12.0
 	root.add_child(cool)
 
 	var window_key := OmniLight3D.new()
 	window_key.name = "WindowSunFill"
 	window_key.position = Vector3(-4.8, 7.8, -10.5)
-	window_key.light_color = Color("#ffe2ac")
-	window_key.light_energy = 1.20
+	window_key.light_color = Color("#ffd895")
+	window_key.light_energy = 1.32
 	window_key.omni_range = 16.0
 	window_key.shadow_enabled = true
 	root.add_child(window_key)
@@ -412,7 +412,7 @@ func _build_lighting() -> void:
 	stained_gold.name = "StainedGold"
 	stained_gold.position = Vector3(0.0, 6.0, -10.4)
 	stained_gold.light_color = Color("#ffcf73")
-	stained_gold.light_energy = 0.48
+	stained_gold.light_energy = 0.54
 	stained_gold.omni_range = 10.5
 	root.add_child(stained_gold)
 
@@ -420,7 +420,7 @@ func _build_lighting() -> void:
 	stained_blue.name = "StainedBlue"
 	stained_blue.position = Vector3(5.6, 5.0, -9.0)
 	stained_blue.light_color = Color("#6e8fe0")
-	stained_blue.light_energy = 0.42
+	stained_blue.light_energy = 0.36
 	stained_blue.omni_range = 9.0
 	root.add_child(stained_blue)
 
