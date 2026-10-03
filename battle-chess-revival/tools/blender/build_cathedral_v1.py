@@ -308,6 +308,74 @@ def main():
             objs.append(box(f"Pilaster_{'L' if side < 0 else 'R'}_{idx}", (10.30 * side, 6.2, z), (0.55, 7.8, 0.72), stone_hi, 0.06))
             objs.append(box(f"PilasterCap_{'L' if side < 0 else 'R'}_{idx}", (10.20 * side, 10.05, z), (0.80, 0.35, 0.95), gold, 0.04))
 
+    # G1 authored-detail pass: increase readable architectural edge density
+    # without adding geometry over the chess board itself.
+
+    # Thin stone courses break up the large flat nave/back-wall masses.
+    for idx, y in enumerate((2.5, 4.2, 5.9, 7.6, 9.3, 11.0, 12.7)):
+        objs.append(box(
+            f"BackWallCourse_{idx}",
+            (0, y, -13.47),
+            (21.0, 0.10, 0.12),
+            stone_hi if idx % 2 == 0 else stone,
+            0.018,
+        ))
+        for side in (-1.0, 1.0):
+            objs.append(box(
+                f"SideWallCourse_{'L' if side < 0 else 'R'}_{idx}",
+                (10.52 * side, y, 0),
+                (0.12, 0.10, 27.0),
+                stone_hi if idx % 2 == 0 else stone,
+                0.018,
+            ))
+
+    # Column fluting/ribs: four subtle vertical strips per shaft.
+    for side in (-1.0, 1.0):
+        x = 8.55 * side
+        for idx, z in enumerate((-10.0, -5.0, 0.0, 5.0, 10.0)):
+            tag = f"{'L' if side < 0 else 'R'}_{idx}"
+            objs.append(box(f"ColumnFlute_{tag}_Outer", (x + 0.47 * side, 5.25, z), (0.07, 8.9, 0.10), stone_dark, 0.018))
+            objs.append(box(f"ColumnFlute_{tag}_Inner", (x - 0.47 * side, 5.25, z), (0.07, 8.9, 0.10), stone_dark, 0.018))
+            objs.append(box(f"ColumnFlute_{tag}_Front", (x, 5.25, z - 0.47), (0.10, 8.9, 0.07), stone_dark, 0.018))
+            objs.append(box(f"ColumnFlute_{tag}_Back", (x, 5.25, z + 0.47), (0.10, 8.9, 0.07), stone_dark, 0.018))
+
+    # Extra stained-glass tracery creates smaller panes and richer highlights.
+    for side in (-1.0, 1.0):
+        x = 10.50 * side
+        for idx, z in enumerate((5.2, 0.0, -5.2)):
+            side_tag = f"{'L' if side < 0 else 'R'}_{idx}"
+            for j, y in enumerate((5.10, 7.15)):
+                objs.append(box(
+                    f"SideGlass_{side_tag}_TraceryH_{j}",
+                    (x, y, z),
+                    (0.16, 0.075, 2.45),
+                    gold,
+                    0.012,
+                ))
+            for j, dz in enumerate((-0.78, 0.78)):
+                objs.append(box(
+                    f"SideGlass_{side_tag}_TraceryV_{j}",
+                    (x, 6.10, z + dz),
+                    (0.16, 4.55, 0.075),
+                    gold,
+                    0.012,
+                ))
+
+    # Decorative inlay frame around (not on) the chess board.
+    inlay_y = 0.025
+    objs.append(box("FloorGoldInlayNorth", (0, inlay_y, -6.25), (13.1, 0.025, 0.09), gold, 0.012))
+    objs.append(box("FloorGoldInlaySouth", (0, inlay_y, 6.25), (13.1, 0.025, 0.09), gold, 0.012))
+    objs.append(box("FloorGoldInlayWest", (-6.25, inlay_y, 0), (0.09, 0.025, 12.4), gold, 0.012))
+    objs.append(box("FloorGoldInlayEast", (6.25, inlay_y, 0), (0.09, 0.025, 12.4), gold, 0.012))
+    for corner_idx, (x, z) in enumerate(((-6.25, -6.25), (6.25, -6.25), (-6.25, 6.25), (6.25, 6.25))):
+        objs.append(cylinder(f"FloorInlayMedallion_{corner_idx}", (x, 0.035, z), 0.19, 0.035, gold, 32))
+
+    # Altar face relief and back-wall vertical ribs.
+    for idx, x in enumerate((-2.35, -1.55, -0.78, 0.0, 0.78, 1.55, 2.35)):
+        objs.append(box(f"AltarRelief_{idx}", (x, 1.72, -11.18), (0.075, 0.88, 0.08), gold if idx in (0, 3, 6) else stone_dark, 0.014))
+    for idx, x in enumerate((-8.1, -4.0, 4.0, 8.1)):
+        objs.append(box(f"BackWallVerticalRib_{idx}", (x, 7.9, -13.40), (0.16, 10.5, 0.15), stone_hi, 0.025))
+
     for o in objs:
         o.parent = root
 
