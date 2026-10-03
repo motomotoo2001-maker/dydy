@@ -37,6 +37,9 @@ func _run() -> void:
 	if controller.state_history.size() != 1 or controller.move_log.size() != 1:
 		_fail("local history was not recorded")
 		return
+	if arena.last_move_root == null or arena.last_move_root.get_child_count() != 2:
+		_fail("last-move board highlights missing")
+		return
 	controller.undo_last_turn()
 	await process_frame
 	if not controller.state.has_piece(&"E2") or controller.state.has_piece(&"E4"):
@@ -47,6 +50,9 @@ func _run() -> void:
 		return
 	if not controller.state_history.is_empty() or not controller.move_log.is_empty():
 		_fail("local undo did not consume history")
+		return
+	if arena.last_move_root != null and arena.last_move_root.get_child_count() != 0:
+		_fail("undo did not clear last-move highlights")
 		return
 
 	# AI mode semantics: one Undo returns both player and reply plies.
