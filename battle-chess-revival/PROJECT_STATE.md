@@ -1,8 +1,8 @@
 # Battle Chess Revival — Project State
 
-Last verified release candidate: **G4 visual-fidelity checkpoint**
+Last verified release candidate: **G5 cinematic checkpoint**
 Verified branch: `battle-chess-revival`
-Latest verified post-public checkpoint: `90ca30a`
+Latest verified post-public checkpoint: `e991c34`
 Stable release rollback: `cd20018` (RC2)
 Engine: **Godot 4.7.2 stable**
 Target release: **Windows x86_64**
@@ -19,6 +19,16 @@ Target release: **Windows x86_64**
 - Production HUD, pause/settings, onboarding hints, check/checkmate/endgame/rematch presentation.
 - Cathedral ambience and gameplay/capture SFX.
 - Windows export validated in CI.
+
+## Verified G5 cinematic artifacts
+
+Windows:
+`BattleChessRevival_G5_Cinematic_Windows_2026-10-04_e991c34.zip`
+
+Source:
+`BattleChessRevival_G5_Cinematic_Source_2026-10-04_e991c34.zip`
+
+G5 adds battle-camera push-in/recovery motion while preserving the verified G4 palette metrics and all authored capture timings.
 
 ## Verified G4 visual-fidelity artifacts
 
@@ -85,6 +95,6 @@ G1 additionally includes strategic AI difficulty levels, move history/Undo, thre
 
 ## Next milestone
 
-**G5 — authored animation + cinematic transition polish**
+**G6 — character secondary motion + silhouette fidelity**
 
-Improve camera transitions and capture presentation without changing authored impact timings, G4 battle palette, or the locked full-board gameplay camera.
+Layer richer per-family secondary motion over authored Skeleton3D clips, then add targeted silhouette/detail improvements without changing gameplay or capture contracts.
