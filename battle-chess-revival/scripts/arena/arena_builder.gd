@@ -342,26 +342,53 @@ func set_battle_lighting(active: bool) -> void:
 	var stained_gold := lighting.get_node_or_null("StainedGold") as OmniLight3D
 	var stained_blue := lighting.get_node_or_null("StainedBlue") as OmniLight3D
 	var neutral := lighting.get_node_or_null("BattleNeutralFill") as OmniLight3D
+	var amber := lighting.get_node_or_null("BattleAmberKey") as OmniLight3D
+	var rose := lighting.get_node_or_null("BattleRoseRim") as OmniLight3D
+
+	# G4 battle-only palette target: slightly brighter, warmer and less
+	# contrasty than gameplay while keeping both armies readable.
 	if sun:
-		sun.light_energy = 0.74 if active else 0.96
-		sun.light_color = Color("#f1eee9") if active else Color("#ffe0ad")
+		sun.light_energy = 0.82 if active else 0.96
+		sun.light_color = Color("#ffe2bd") if active else Color("#ffe0ad")
 	if warm:
-		warm.light_energy = 0.12 if active else 1.05
-		warm.light_color = Color("#e8ddd2") if active else Color("#ffc789")
+		warm.light_energy = 0.34 if active else 1.05
+		warm.light_color = Color("#ffd09c") if active else Color("#ffc789")
 	if cool:
-		cool.light_energy = 0.46 if active else 0.94
-		cool.light_color = Color("#bbc5d7") if active else Color("#7f6fd2")
+		cool.light_energy = 0.26 if active else 0.94
+		cool.light_color = Color("#9aa9c9") if active else Color("#7f6fd2")
 	if window:
-		window.light_energy = 0.62 if active else 1.32
-		window.light_color = Color("#eef1f4") if active else Color("#ffd895")
+		window.light_energy = 0.76 if active else 1.32
+		window.light_color = Color("#ffe1b7") if active else Color("#ffd895")
 	if stained_red:
-		stained_red.light_energy = 0.05 if active else 0.52
+		stained_red.light_energy = 0.10 if active else 0.52
 	if stained_gold:
-		stained_gold.light_energy = 0.08 if active else 0.54
+		stained_gold.light_energy = 0.18 if active else 0.54
 	if stained_blue:
-		stained_blue.light_energy = 0.10 if active else 0.36
+		stained_blue.light_energy = 0.05 if active else 0.36
 	if neutral:
-		neutral.light_energy = 0.72 if active else 0.0
+		neutral.light_energy = 0.62 if active else 0.0
+		neutral.light_color = Color("#f4e9dc")
+	if amber:
+		amber.light_energy = 0.52 if active else 0.0
+	if rose:
+		rose.light_energy = 0.28 if active else 0.0
+
+	var world := generated.get_node_or_null("WorldEnvironment") as WorldEnvironment
+	if world != null and world.environment != null:
+		var env := world.environment
+		if active:
+			env.background_color = Color("#211713")
+			env.ambient_light_color = Color("#e2c6a8")
+			env.ambient_light_energy = 0.35
+			env.tonemap_agx_contrast = 1.12
+			if env.glow_enabled:
+				env.glow_intensity = 0.24
+		else:
+			env.background_color = Color("#171214")
+			env.ambient_light_color = Color("#d0bba7")
+			env.ambient_light_energy = 0.27
+			env.tonemap_agx_contrast = 1.24
+			apply_quality_preset(quality_preset)
 
 func _build_environment() -> void:
 	var world := WorldEnvironment.new()
@@ -679,6 +706,25 @@ func _build_lighting() -> void:
 	battle_neutral.omni_range = 13.5
 	battle_neutral.shadow_enabled = false
 	root.add_child(battle_neutral)
+
+	# G4 capture-stage palette lights. They remain disabled during gameplay.
+	var battle_amber := OmniLight3D.new()
+	battle_amber.name = "BattleAmberKey"
+	battle_amber.position = Vector3(-3.4, 3.8, 3.2)
+	battle_amber.light_color = Color("#ffb86c")
+	battle_amber.light_energy = 0.0
+	battle_amber.omni_range = 9.0
+	battle_amber.shadow_enabled = false
+	root.add_child(battle_amber)
+
+	var battle_rose := OmniLight3D.new()
+	battle_rose.name = "BattleRoseRim"
+	battle_rose.position = Vector3(3.8, 3.1, 1.8)
+	battle_rose.light_color = Color("#d86f66")
+	battle_rose.light_energy = 0.0
+	battle_rose.omni_range = 7.5
+	battle_rose.shadow_enabled = false
+	root.add_child(battle_rose)
 
 func _build_selection_root() -> void:
 	selection_root = Node3D.new()
