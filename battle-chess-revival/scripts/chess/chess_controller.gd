@@ -28,6 +28,7 @@ var pause_overlay: Control
 var volume_slider: HSlider
 var ambience_slider: HSlider
 var sfx_slider: HSlider
+var game_mode_select: OptionButton
 var ai_difficulty_select: OptionButton
 var hud_layer: CanvasLayer
 var intro_banner: PanelContainer
@@ -71,6 +72,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 		if event.keycode == KEY_A:
 			ai_enabled = not ai_enabled
+			_sync_game_mode_controls()
 			_refresh_hud()
 			return
 	if ai_enabled and state.turn == ChessState.BLACK:
@@ -578,6 +580,19 @@ func _build_pause_overlay() -> void:
 	var separator := HSeparator.new()
 	column.add_child(separator)
 
+	var mode_title := Label.new()
+	mode_title.text = "Режим игры"
+	mode_title.add_theme_font_size_override("font_size", 13)
+	column.add_child(mode_title)
+
+	game_mode_select = OptionButton.new()
+	game_mode_select.name = "GameMode"
+	game_mode_select.custom_minimum_size.y = 36
+	game_mode_select.add_item("Против AI", 1)
+	game_mode_select.add_item("Локально • 2 игрока", 0)
+	game_mode_select.item_selected.connect(_on_game_mode_selected)
+	column.add_child(game_mode_select)
+
 	var ai_title := Label.new()
 	ai_title.text = "Сложность AI"
 	ai_title.add_theme_font_size_override("font_size", 13)
@@ -592,6 +607,7 @@ func _build_pause_overlay() -> void:
 	ai_difficulty_select.select(ai.difficulty)
 	ai_difficulty_select.item_selected.connect(_on_ai_difficulty_selected)
 	column.add_child(ai_difficulty_select)
+	_sync_game_mode_controls()
 
 	volume_slider = _add_volume_slider(column, "Общая громкость", &"Master", "MasterVolume")
 	ambience_slider = _add_volume_slider(column, "Окружение", &"Ambience", "AmbienceVolume")
@@ -660,6 +676,21 @@ func _undo_from_pause() -> void:
 	if pause_overlay != null:
 		pause_overlay.visible = false
 	undo_last_turn()
+
+
+func _on_game_mode_selected(index: int) -> void:
+	if game_mode_select == null:
+		return
+	ai_enabled = game_mode_select.get_item_id(index) == 1
+	_sync_game_mode_controls()
+	_refresh_hud()
+
+
+func _sync_game_mode_controls() -> void:
+	if game_mode_select != null:
+		game_mode_select.select(0 if ai_enabled else 1)
+	if ai_difficulty_select != null:
+		ai_difficulty_select.disabled = not ai_enabled
 
 
 func _on_ai_difficulty_selected(index: int) -> void:
