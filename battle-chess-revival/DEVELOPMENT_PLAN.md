@@ -324,20 +324,27 @@ Verified checkpoint `4f5ca10`:
   - `BattleChessRevival_G2_Windows_2026-10-03_4f5ca10.zip`
   - `BattleChessRevival_G2_Source_2026-10-03_4f5ca10.zip`.
 
-## ACTIVE — Milestone G3: final public release freeze
+## VERIFIED — Milestone G3: final public release freeze
+
+Verified public build `ed1aca0`:
+- Low / Medium / High graphics-quality presets are exposed, persistent and covered by runtime tests;
+- High remains the locked reference-quality look;
+- final release audit, UI/audio/rules/rig/capture/render/Visual-QA and Windows export are green;
+- Windows package contains `BattleChessRevival.exe` + release README;
+- source package contains the Godot 4.7.2 project/tooling with generated QA PNGs excluded;
+- public README/settings/control documentation refreshed;
+- Drive backups:
+  - `BattleChessRevival_G3_PUBLIC_Windows_x86_64_2026-10-04_ed1aca0.zip`
+  - `BattleChessRevival_G3_PUBLIC_Source_Godot_4.7.2_2026-10-04_ed1aca0.zip`.
+
+## ACTIVE — Milestone G4: battle palette + visual fidelity
 
 Current task:
-- graphics-quality/performance preset without changing the locked High-quality reference look;
-- draw-call/material/asset-size review;
-- final release README/control/settings refresh;
-- final missing-reference and exported-package validation;
-- freeze final public Windows/source artifacts only after the full visual and gameplay gate stays green.
-
-- draw-call/material/asset-size review;
-- final missing-reference validation;
-- Windows export/package;
-- release-candidate smoke/render gate;
-- final source/project ZIP + Drive backup + project-state handoff.
+- improve battle-only palette similarity without changing gameplay camera/board look;
+- increase battle brightness and warm saturation while reducing excess contrast;
+- preserve authored capture timing, aura colors and black/white character readability;
+- compare Visual-QA palette/temperature metrics before accepting the pass;
+- keep G3 public build as rollback.
 
 ## AFTER E — Milestone F: optimization and release candidate
 
