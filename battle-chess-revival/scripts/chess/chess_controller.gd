@@ -20,6 +20,7 @@ var input_locked := false
 var game_over := false
 var ai_enabled := true
 var graphics_quality := ArenaBuilder.QUALITY_HIGH
+var capture_mode := BattleDirector.CaptureMode.FULL
 var status_label: Label
 var help_label: Label
 var side_chip: Label
@@ -35,6 +36,7 @@ var sfx_slider: HSlider
 var game_mode_select: OptionButton
 var ai_difficulty_select: OptionButton
 var graphics_quality_select: OptionButton
+var capture_mode_select: OptionButton
 var hud_layer: CanvasLayer
 var intro_banner: PanelContainer
 var endgame_overlay: Control
@@ -49,6 +51,7 @@ func setup(p_arena: ArenaBuilder, p_battle_director: BattleDirector) -> void:
 	battle_director = p_battle_director
 	_load_settings()
 	arena.apply_quality_preset(graphics_quality)
+	battle_director.set_capture_mode(capture_mode)
 	_build_hud()
 	_refresh_hud()
 	call_deferred("_maybe_play_intro")
@@ -371,7 +374,7 @@ func _build_endgame_overlay() -> void:
 	card.add_child(margin)
 
 	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 14)
+	column.add_theme_constant_override("separation", 9)
 	margin.add_child(column)
 
 	endgame_title = Label.new()
@@ -632,6 +635,21 @@ func _build_pause_overlay() -> void:
 	graphics_quality_select.item_selected.connect(_on_graphics_quality_selected)
 	column.add_child(graphics_quality_select)
 
+	var capture_title := Label.new()
+	capture_title.text = "Кинематографические взятия"
+	capture_title.add_theme_font_size_override("font_size", 13)
+	column.add_child(capture_title)
+
+	capture_mode_select = OptionButton.new()
+	capture_mode_select.name = "CaptureMode"
+	capture_mode_select.custom_minimum_size.y = 34
+	capture_mode_select.add_item("Выкл", BattleDirector.CaptureMode.OFF)
+	capture_mode_select.add_item("Быстро", BattleDirector.CaptureMode.FAST)
+	capture_mode_select.add_item("Полностью", BattleDirector.CaptureMode.FULL)
+	capture_mode_select.select(capture_mode)
+	capture_mode_select.item_selected.connect(_on_capture_mode_selected)
+	column.add_child(capture_mode_select)
+
 	volume_slider = _add_volume_slider(column, "Общая громкость", &"Master", "MasterVolume")
 	ambience_slider = _add_volume_slider(column, "Окружение", &"Ambience", "AmbienceVolume")
 	sfx_slider = _add_volume_slider(column, "Эффекты", &"SFX", "SFXVolume")
@@ -778,6 +796,16 @@ func _on_graphics_quality_selected(index: int) -> void:
 	_save_settings()
 
 
+func _on_capture_mode_selected(index: int) -> void:
+	if capture_mode_select == null:
+		return
+	capture_mode = capture_mode_select.get_item_id(index)
+	if battle_director != null:
+		battle_director.set_capture_mode(capture_mode)
+	_refresh_hud()
+	_save_settings()
+
+
 func _add_volume_slider(column: VBoxContainer, title_text: String, bus_name: StringName, node_name: String) -> HSlider:
 	var title := Label.new()
 	title.text = title_text
@@ -809,6 +837,7 @@ func _save_settings() -> void:
 	config.set_value("gameplay", "ai_enabled", ai_enabled)
 	config.set_value("gameplay", "ai_difficulty", ai.difficulty)
 	config.set_value("graphics", "quality", graphics_quality)
+	config.set_value("gameplay", "capture_mode", capture_mode)
 	config.set_value("audio", "master", _current_bus_volume_linear(&"Master"))
 	config.set_value("audio", "ambience", _current_bus_volume_linear(&"Ambience"))
 	config.set_value("audio", "sfx", _current_bus_volume_linear(&"SFX"))
@@ -824,6 +853,7 @@ func _load_settings() -> void:
 	ai_enabled = bool(config.get_value("gameplay", "ai_enabled", true))
 	ai.set_difficulty(int(config.get_value("gameplay", "ai_difficulty", ChessAI.Difficulty.NORMAL)))
 	graphics_quality = clampi(int(config.get_value("graphics", "quality", ArenaBuilder.QUALITY_HIGH)), ArenaBuilder.QUALITY_LOW, ArenaBuilder.QUALITY_HIGH)
+	capture_mode = clampi(int(config.get_value("gameplay", "capture_mode", BattleDirector.CaptureMode.FULL)), BattleDirector.CaptureMode.OFF, BattleDirector.CaptureMode.FULL)
 	_apply_saved_bus_volume(&"Master", float(config.get_value("audio", "master", _current_bus_volume_linear(&"Master"))))
 	_apply_saved_bus_volume(&"Ambience", float(config.get_value("audio", "ambience", _current_bus_volume_linear(&"Ambience"))))
 	_apply_saved_bus_volume(&"SFX", float(config.get_value("audio", "sfx", _current_bus_volume_linear(&"SFX"))))
@@ -918,9 +948,10 @@ func _refresh_hud() -> void:
 		help_label.text = "ЛКМ ход  •  U отмена  •  Esc меню  •  R новая игра  •  A AI %s" % ("ON" if ai_enabled else "OFF")
 
 	if state_badge != null:
-		state_badge.text = "AI: %s/%s   •   %s" % [
+		state_badge.text = "AI: %s/%s  •  Бой: %s  •  %s" % [
 			("ON" if ai_enabled else "OFF"),
 			ai.difficulty_label(),
+			battle_director.capture_mode_label() if battle_director != null else "—",
 			_material_summary()
 		]
 
