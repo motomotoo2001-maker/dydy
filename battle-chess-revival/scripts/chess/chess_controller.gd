@@ -34,6 +34,8 @@ var intro_banner: PanelContainer
 var endgame_overlay: Control
 var endgame_title: Label
 var endgame_subtitle: Label
+var promotion_overlay: Control
+var pending_promotion_moves: Array[Dictionary] = []
 
 func setup(p_arena: ArenaBuilder, p_battle_director: BattleDirector) -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -46,7 +48,10 @@ func setup(p_arena: ArenaBuilder, p_battle_director: BattleDirector) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_ESCAPE:
-			_toggle_pause()
+			if promotion_overlay != null and promotion_overlay.visible:
+				_cancel_promotion()
+			else:
+				_toggle_pause()
 			get_viewport().set_input_as_handled()
 			return
 
@@ -84,12 +89,20 @@ func _handle_square_click(square: StringName) -> void:
 	if not piece.is_empty() and piece["side"] == state.turn:
 		_select(square)
 		return
+
+	var candidates: Array[Dictionary] = []
 	for move in selected_moves:
 		if move["to"] == square:
-			_clear_selection()
-			await _execute_move(move, true)
-			return
+			candidates.append(move)
+	if candidates.size() > 1 and candidates[0].has("promotion"):
+		_show_promotion_choice(candidates)
+		return
+	if candidates.size() == 1:
+		_clear_selection()
+		await _execute_move(candidates[0], true)
+		return
 	_clear_selection()
+
 
 func _select(square: StringName) -> void:
 	selected_square = square
@@ -292,6 +305,7 @@ func _build_hud() -> void:
 	_build_pause_overlay()
 	_build_intro_banner()
 	_build_endgame_overlay()
+	_build_promotion_overlay()
 
 
 func _build_intro_banner() -> void:
@@ -420,6 +434,96 @@ func _restart_from_endgame() -> void:
 	if endgame_overlay != null:
 		endgame_overlay.visible = false
 	restart_game()
+
+
+func _build_promotion_overlay() -> void:
+	promotion_overlay = Control.new()
+	promotion_overlay.name = "PromotionOverlay"
+	promotion_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	promotion_overlay.visible = false
+	promotion_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	promotion_overlay.process_mode = Node.PROCESS_MODE_ALWAYS
+	hud_layer.add_child(promotion_overlay)
+
+	var dim := ColorRect.new()
+	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	dim.color = Color(0.015, 0.012, 0.018, 0.42)
+	dim.mouse_filter = Control.MOUSE_FILTER_STOP
+	promotion_overlay.add_child(dim)
+
+	var card := PanelContainer.new()
+	card.name = "PromotionCard"
+	card.set_anchors_preset(Control.PRESET_CENTER)
+	card.position = Vector2(-280, -82)
+	card.size = Vector2(560, 164)
+	card.add_theme_stylebox_override("panel", _panel_style(Color(0.055, 0.043, 0.05, 0.98), Color("#d0a052"), 16, 2))
+	promotion_overlay.add_child(card)
+
+	var margin := MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 24)
+	margin.add_theme_constant_override("margin_right", 24)
+	margin.add_theme_constant_override("margin_top", 18)
+	margin.add_theme_constant_override("margin_bottom", 18)
+	card.add_child(margin)
+
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 12)
+	margin.add_child(column)
+
+	var title := Label.new()
+	title.text = "ПРЕВРАЩЕНИЕ ПЕШКИ"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 20)
+	title.add_theme_color_override("font_color", Color("#f4dba8"))
+	column.add_child(title)
+
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	column.add_child(row)
+	for spec in [
+		[&"Queen", "♕  ФЕРЗЬ"],
+		[&"Rook", "♖  ЛАДЬЯ"],
+		[&"Bishop", "♗  СЛОН"],
+		[&"Knight", "♘  КОНЬ"],
+	]:
+		var button := Button.new()
+		button.name = "Promote%s" % String(spec[0])
+		button.text = spec[1]
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button.custom_minimum_size.y = 48
+		button.pressed.connect(_choose_promotion.bind(spec[0]))
+		row.add_child(button)
+
+
+func _show_promotion_choice(moves: Array[Dictionary]) -> void:
+	pending_promotion_moves.clear()
+	for move in moves:
+		pending_promotion_moves.append(move.duplicate(true))
+	_clear_selection()
+	input_locked = true
+	if promotion_overlay != null:
+		promotion_overlay.visible = true
+
+
+func _cancel_promotion() -> void:
+	pending_promotion_moves.clear()
+	input_locked = false
+	if promotion_overlay != null:
+		promotion_overlay.visible = false
+
+
+func _choose_promotion(piece_type: StringName) -> void:
+	var chosen: Dictionary = {}
+	for move in pending_promotion_moves:
+		if move.get("promotion", &"") == piece_type:
+			chosen = move
+			break
+	pending_promotion_moves.clear()
+	if promotion_overlay != null:
+		promotion_overlay.visible = false
+	input_locked = false
+	if not chosen.is_empty():
+		await _execute_move(chosen, true)
 
 
 func _build_pause_overlay() -> void:
@@ -605,6 +709,9 @@ func restart_game() -> void:
 	input_locked = false
 	state_history.clear()
 	move_log.clear()
+	pending_promotion_moves.clear()
+	if promotion_overlay != null:
+		promotion_overlay.visible = false
 	if endgame_overlay != null:
 		endgame_overlay.visible = false
 	state.reset()
