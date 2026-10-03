@@ -1,34 +1,221 @@
 {
-  "version": "production-pawns-v2+concept-v3",
-  "source": "approved character sheets; White/Black Pawns authored and rigged in Blender 5.2.2; remaining army concept-v3",
+  "version": "production-pawns-v2+production-knights-v1+concept-v3",
+  "source": "approved character sheets; White/Black Pawns and Knight pair authored in Blender 5.2.2; remaining army concept-v3",
   "assets": {
     "white_pawn_production_v1.glb": {
       "family": "Pawn",
       "side": "White",
       "min_parts": 65,
-      "required_parts": ["Head","Helmet_Dome","Spear_Shaft","Shield","TabardFront","Production_Plume_0","Boot_L","EyeWL","Belt","Buckle"]
+      "required_parts": [
+        "Head",
+        "Helmet_Dome",
+        "Spear_Shaft",
+        "Shield",
+        "TabardFront",
+        "Production_Plume_0",
+        "Boot_L",
+        "EyeWL",
+        "Belt",
+        "Buckle"
+      ]
     },
     "black_pawn_concept_v3.glb": {
       "family": "Pawn",
       "side": "Black",
       "min_parts": 68,
-      "required_parts": ["Head","Helmet","Knife_Grip","Knife_Blade","Shield","Production_Cape","Production_Plume_0","Boot_L","EyeWL","Ear_L","ShieldSlash"]
+      "required_parts": [
+        "Head",
+        "Helmet",
+        "Knife_Grip",
+        "Knife_Blade",
+        "Shield",
+        "Production_Cape",
+        "Production_Plume_0",
+        "Boot_L",
+        "EyeWL",
+        "Ear_L",
+        "ShieldSlash"
+      ]
     },
-    "white_knight_concept_v3.glb": {
-      "family": "Knight","side":"White","min_parts":48,
-      "required_parts":["HorseBody","HorseHead","RiderTorso","KnightShield","Lance","Concept_HorseBardingFront","Concept_RiderTabard","Concept_Plume_0","V3Horse_EyeWhite_L","V3Rider_EyeWhite_L","V3_RiderCape"]
+    "white_bishop_concept_v3.glb": {
+      "family": "Bishop",
+      "side": "White",
+      "min_parts": 32,
+      "required_parts": [
+        "Head",
+        "Trunk",
+        "Staff",
+        "MitreTall",
+        "Concept_RobeFront",
+        "Concept_Cape",
+        "Concept_InnerEar_L",
+        "Concept_ChestGem",
+        "V3_EyeWhite_L",
+        "V3_MitreGem",
+        "V3_StaffOuterHalo"
+      ]
     },
-    "black_knight_concept_v3.glb": {
-      "family":"Knight","side":"Black","min_parts":52,
-      "required_parts":["HorseBody","HorseHead","RiderTorso","KnightShield","Lance","Concept_HorseArmorFront","Concept_RiderTabard","Concept_RedPlume_0","V3Horse_EyeWhite_L","V3Rider_EyeWhite_L","V3_RiderCape"]
+    "black_bishop_concept_v3.glb": {
+      "family": "Bishop",
+      "side": "Black",
+      "min_parts": 33,
+      "required_parts": [
+        "Head",
+        "Snout",
+        "HornL",
+        "Staff",
+        "Concept_RobeFront",
+        "Concept_Cape",
+        "Concept_Skull",
+        "Concept_OrbHalo",
+        "V3_EyeWhite_L",
+        "V3_MitreGem",
+        "V3_StaffOuterHalo"
+      ]
     },
-    "white_bishop_concept_v3.glb":{"family":"Bishop","side":"White","min_parts":32,"required_parts":["Head","Trunk","Staff","MitreTall","Concept_RobeFront","Concept_Cape","Concept_InnerEar_L","Concept_ChestGem","V3_EyeWhite_L","V3_MitreGem","V3_StaffOuterHalo"]},
-    "black_bishop_concept_v3.glb":{"family":"Bishop","side":"Black","min_parts":33,"required_parts":["Head","Snout","HornL","Staff","Concept_RobeFront","Concept_Cape","Concept_Skull","Concept_OrbHalo","V3_EyeWhite_L","V3_MitreGem","V3_StaffOuterHalo"]},
-    "white_rook_concept_v3.glb":{"family":"Rook","side":"White","min_parts":33,"required_parts":["TowerCore","CrownBase","EyeL","Concept_Tabard","Concept_ShoulderGold_L","Concept_Brow_L","V3_EyeWhite_L","V3_FistKnuckleA_-1","V3_CrownGoldBand"]},
-    "black_rook_concept_v3.glb":{"family":"Rook","side":"Black","min_parts":33,"required_parts":["TowerCore","CrownBase","EyeL","Concept_Tabard","Concept_LavaCrack_-0.18_0.74","Concept_ShoulderSpike_L","V3_EyeWhite_L","V3_FistKnuckleA_-1","V3_CrownBronzeBand"]},
-    "white_queen_concept_v3.glb":{"family":"Queen","side":"White","min_parts":33,"required_parts":["Head","Hair","CrownBand","Staff","MagicOrb","Concept_SkirtBlue","Concept_Cape_L","Concept_CrownGem","V3_EyeWhite_L","V3_HairCurl_-1_0","V3_SkirtLayerFront"]},
-    "black_queen_concept_v3.glb":{"family":"Queen","side":"Black","min_parts":33,"required_parts":["Head","Hair","CrownBand","Staff","MagicOrb","Concept_SkirtMagenta","Concept_Cape_L","Concept_CrownGem","V3_EyeWhite_L","V3_HairCurl_-1_0","V3_SkirtLayerFront"]},
-    "white_king_concept_v3.glb":{"family":"King","side":"White","min_parts":34,"required_parts":["Head","Beard","CrownBand","Scepter","Concept_FurCollar","Concept_Cape","Concept_CrownBlueGem","V3_EyeWhite_L","V3_Moustache_L","V3_CoatPanel"]},
-    "black_king_concept_v3.glb":{"family":"King","side":"Black","min_parts":33,"required_parts":["Head","CrownBand","Scepter","Concept_FurCollar","Concept_Cape","Concept_CrownRedGem","Concept_ScepterCrystal","V3_EyeWhite_L","V3_Moustache_L","V3_CoatPanel"]}
+    "white_rook_concept_v3.glb": {
+      "family": "Rook",
+      "side": "White",
+      "min_parts": 33,
+      "required_parts": [
+        "TowerCore",
+        "CrownBase",
+        "EyeL",
+        "Concept_Tabard",
+        "Concept_ShoulderGold_L",
+        "Concept_Brow_L",
+        "V3_EyeWhite_L",
+        "V3_FistKnuckleA_-1",
+        "V3_CrownGoldBand"
+      ]
+    },
+    "black_rook_concept_v3.glb": {
+      "family": "Rook",
+      "side": "Black",
+      "min_parts": 33,
+      "required_parts": [
+        "TowerCore",
+        "CrownBase",
+        "EyeL",
+        "Concept_Tabard",
+        "Concept_LavaCrack_-0.18_0.74",
+        "Concept_ShoulderSpike_L",
+        "V3_EyeWhite_L",
+        "V3_FistKnuckleA_-1",
+        "V3_CrownBronzeBand"
+      ]
+    },
+    "white_queen_concept_v3.glb": {
+      "family": "Queen",
+      "side": "White",
+      "min_parts": 33,
+      "required_parts": [
+        "Head",
+        "Hair",
+        "CrownBand",
+        "Staff",
+        "MagicOrb",
+        "Concept_SkirtBlue",
+        "Concept_Cape_L",
+        "Concept_CrownGem",
+        "V3_EyeWhite_L",
+        "V3_HairCurl_-1_0",
+        "V3_SkirtLayerFront"
+      ]
+    },
+    "black_queen_concept_v3.glb": {
+      "family": "Queen",
+      "side": "Black",
+      "min_parts": 33,
+      "required_parts": [
+        "Head",
+        "Hair",
+        "CrownBand",
+        "Staff",
+        "MagicOrb",
+        "Concept_SkirtMagenta",
+        "Concept_Cape_L",
+        "Concept_CrownGem",
+        "V3_EyeWhite_L",
+        "V3_HairCurl_-1_0",
+        "V3_SkirtLayerFront"
+      ]
+    },
+    "white_king_concept_v3.glb": {
+      "family": "King",
+      "side": "White",
+      "min_parts": 34,
+      "required_parts": [
+        "Head",
+        "Beard",
+        "CrownBand",
+        "Scepter",
+        "Concept_FurCollar",
+        "Concept_Cape",
+        "Concept_CrownBlueGem",
+        "V3_EyeWhite_L",
+        "V3_Moustache_L",
+        "V3_CoatPanel"
+      ]
+    },
+    "black_king_concept_v3.glb": {
+      "family": "King",
+      "side": "Black",
+      "min_parts": 33,
+      "required_parts": [
+        "Head",
+        "CrownBand",
+        "Scepter",
+        "Concept_FurCollar",
+        "Concept_Cape",
+        "Concept_CrownRedGem",
+        "Concept_ScepterCrystal",
+        "V3_EyeWhite_L",
+        "V3_Moustache_L",
+        "V3_CoatPanel"
+      ]
+    },
+    "white_knight_production_v1.glb": {
+      "family": "Knight",
+      "side": "White",
+      "min_parts": 60,
+      "required_parts": [
+        "HorseBody",
+        "HorseHead",
+        "Mane",
+        "RiderTorso",
+        "RiderHead",
+        "Plume",
+        "Leg_FL",
+        "Leg_FR",
+        "Leg_RL",
+        "Leg_RR",
+        "KnightShield",
+        "LanceShaft",
+        "Production_Plume_0"
+      ]
+    },
+    "black_knight_production_v1.glb": {
+      "family": "Knight",
+      "side": "Black",
+      "min_parts": 64,
+      "required_parts": [
+        "HorseBody",
+        "HorseHead",
+        "Mane",
+        "RiderTorso",
+        "RiderHead",
+        "Plume",
+        "Leg_FL",
+        "Leg_FR",
+        "Leg_RL",
+        "Leg_RR",
+        "KnightShield",
+        "LanceShaft",
+        "Production_Plume_0",
+        "HelmetHorn_L",
+        "Cape"
+      ]
+    }
   }
 }
