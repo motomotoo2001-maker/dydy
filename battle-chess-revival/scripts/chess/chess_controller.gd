@@ -820,7 +820,13 @@ func _format_move_notation(move: Dictionary, piece_type: StringName, capture: bo
 		String(move.get("to", &""))
 	]
 	if move.has("promotion"):
-		text += "=Q"
+		var promotion_symbols := {
+			&"Queen": "Q",
+			&"Rook": "R",
+			&"Bishop": "B",
+			&"Knight": "N",
+		}
+		text += "=%s" % promotion_symbols.get(move.get("promotion", &"Queen"), "Q")
 	if status == &"checkmate":
 		text += "#"
 	elif status == &"check":
