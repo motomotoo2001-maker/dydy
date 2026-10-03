@@ -70,14 +70,31 @@ Verified at `d3a39e8`:
 - Godot 4.7.2 import, chess rules, battle smoke and Visual QA all green;
 - front close-up reviews inspected after axis correction.
 
-## ACTIVE — Milestone B3: Rook production pair
+## VERIFIED — Milestone B3: Rook production pair
+
+Verified at `42ece51`:
+- White Rook production V1: 63 named parts;
+- Black Rook production V1: 68 named parts;
+- TowerCore / CrownBase / Arm_* / Fist_* / V3_FistKnuckle* / V3_TabardPoint hooks preserved;
+- jump-crush smoke/capture render verified;
+- close White/Black Rook reviews inspected;
+- Godot 4.7.2 import, chess rules, battle smoke and Visual QA all green.
+
+## ACTIVE — Milestone B4: Queen production pair
 
 Current task:
-- author White and Black Rook production GLBs as massive fortress/bruiser characters;
-- preserve TowerCore / CrownBase / Arm_* / Fist_* animation targets;
-- keep jump-crush capture compatibility;
-- add close Rook review renders and inspect them before checkpoint;
-- pass the full Godot 4.7.2 CI and Visual QA gate.
+- author White/Black Queen production GLBs with face, hair, crown, cape, staff and readable MagicOrb;
+- preserve Staff / MagicOrb / V3_HairCurl* / V3_Cape* animation targets;
+- keep magic-transformation capture compatibility;
+- add close Queen review renders;
+- pass full Godot 4.7.2 CI and Visual QA before checkpoint.
+
+## NEXT — Milestone B5: King production pair
+
+- expressive royal White King and dark-lord Black King;
+- preserve Head / Crown / Scepter / Arm_* / V3_CoatPanel animation targets;
+- keep trapdoor capture compatibility;
+- final production-character lineup review after King is verified.
 
 Knight B1 verified at `26e07749`: production White/Black Knight GLBs are generated in Blender, contracts pass (72/78 parts), gameplay/capture tests pass, close front review renders verified, and Visual QA regression gate passes.
 
