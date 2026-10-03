@@ -38,6 +38,7 @@ func _run() -> void:
 	var sfx_slider := controller.find_child("SFXVolume", true, false) as HSlider
 	var mode_select := controller.find_child("GameMode", true, false) as OptionButton
 	var ai_select := controller.find_child("AIDifficulty", true, false) as OptionButton
+	var graphics_select := controller.find_child("GraphicsQuality", true, false) as OptionButton
 	var resume := controller.find_child("ResumeButton", true, false) as Button
 	var undo := controller.find_child("UndoButton", true, false) as Button
 	var restart := controller.find_child("RestartButton", true, false) as Button
@@ -93,6 +94,25 @@ func _run() -> void:
 	controller.call("_on_ai_difficulty_selected", ChessAI.Difficulty.HARD)
 	if controller.ai.difficulty != ChessAI.Difficulty.HARD:
 		_fail("AI difficulty selector not wired")
+		return
+
+	graphics_select.select(ArenaBuilder.QUALITY_LOW)
+	controller.call("_on_graphics_quality_selected", ArenaBuilder.QUALITY_LOW)
+	if controller.arena.quality_preset != ArenaBuilder.QUALITY_LOW:
+		_fail("graphics quality selector not wired")
+		return
+	var world := controller.arena.generated.get_node_or_null("WorldEnvironment") as WorldEnvironment
+	if world == null or world.environment == null or world.environment.ssao_enabled or world.environment.glow_enabled:
+		_fail("low graphics preset did not disable expensive effects")
+		return
+
+	graphics_select.select(ArenaBuilder.QUALITY_HIGH)
+	controller.call("_on_graphics_quality_selected", ArenaBuilder.QUALITY_HIGH)
+	if controller.arena.quality_preset != ArenaBuilder.QUALITY_HIGH:
+		_fail("high graphics preset did not restore")
+		return
+	if world == null or world.environment == null or not world.environment.ssao_enabled or not world.environment.glow_enabled:
+		_fail("high graphics preset did not restore approved effects")
 		return
 
 	mode_select.select(1)
