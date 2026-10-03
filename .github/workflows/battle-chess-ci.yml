@@ -31,7 +31,7 @@ jobs:
           mkdir -p battle-chess-revival/.generated
           ./blender-5.2.2/blender --background --python battle-chess-revival/tools/blender/build_pawns_v2_source.py -- --output battle-chess-revival/.generated/pawns_v2_source.blend
           ./blender-5.2.2/blender --background battle-chess-revival/.generated/pawns_v2_source.blend --python battle-chess-revival/tools/blender/rig_pawn_v2.py -- --side white --output battle-chess-revival/assets/models/white_pawn_production_v1.glb
-          ./blender-5.2.2/blender --background battle-chess-revival/.generated/pawns_v2_source.blend --python battle-chess-revival/tools/blender/rig_pawn_v2.py -- --side black --output battle-chess-revival/assets/models/black_pawn_concept_v3.glb
+          ./blender-5.2.2/blender --background battle-chess-revival/.generated/pawns_v2_source.blend --python battle-chess-revival/tools/blender/rig_pawn_v2.py -- --side black --output battle-chess-revival/assets/models/black_pawn_production_v1.glb
           ./blender-5.2.2/blender --background --python battle-chess-revival/tools/blender/build_knights_v1.py -- --white-output battle-chess-revival/assets/models/white_knight_production_v1.glb --black-output battle-chess-revival/assets/models/black_knight_production_v1.glb
           ./blender-5.2.2/blender --background --python battle-chess-revival/tools/blender/rig_knights_v1.py -- --side white --input battle-chess-revival/assets/models/white_knight_production_v1.glb --output battle-chess-revival/assets/models/white_knight_rigged_v1.glb
           ./blender-5.2.2/blender --background --python battle-chess-revival/tools/blender/rig_knights_v1.py -- --side black --input battle-chess-revival/assets/models/black_knight_production_v1.glb --output battle-chess-revival/assets/models/black_knight_rigged_v1.glb
@@ -48,7 +48,7 @@ jobs:
           ./blender-5.2.2/blender --background --python battle-chess-revival/tools/blender/rig_kings_v1.py -- --side white --input battle-chess-revival/assets/models/white_king_production_v1.glb --output battle-chess-revival/assets/models/white_king_rigged_v1.glb
           ./blender-5.2.2/blender --background --python battle-chess-revival/tools/blender/rig_kings_v1.py -- --side black --input battle-chess-revival/assets/models/black_king_production_v1.glb --output battle-chess-revival/assets/models/black_king_rigged_v1.glb
           test -s battle-chess-revival/assets/models/white_pawn_production_v1.glb
-          test -s battle-chess-revival/assets/models/black_pawn_concept_v3.glb
+          test -s battle-chess-revival/assets/models/black_pawn_production_v1.glb
           test -s battle-chess-revival/assets/models/white_knight_production_v1.glb
           test -s battle-chess-revival/assets/models/black_knight_production_v1.glb
           test -s battle-chess-revival/assets/models/white_knight_rigged_v1.glb
@@ -100,6 +100,10 @@ jobs:
         run: ./Godot_v4.7.2-stable_linux.x86_64 --headless --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/king_rig_test.gd
       - name: Validate King runtime authored animation wiring
         run: xvfb-run -a ./Godot_v4.7.2-stable_linux.x86_64 --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/king_runtime_animation_test.gd
+      - name: Validate unified Pawn rig assets
+        run: ./Godot_v4.7.2-stable_linux.x86_64 --headless --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/pawn_rig_test.gd
+      - name: Validate Pawn runtime authored animation wiring
+        run: xvfb-run -a ./Godot_v4.7.2-stable_linux.x86_64 --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/pawn_runtime_animation_test.gd
       - name: Run chess rules tests
         run: ./Godot_v4.7.2-stable_linux.x86_64 --headless --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/chess_rules_test.gd
       - name: Run capture smoke tests

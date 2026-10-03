@@ -111,6 +111,46 @@ func _run_capture(id: StringName, attacker: PieceView, victim: PieceView, restor
 	capture_finished.emit(id)
 
 func _pawn_toe_stab(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
+	if attacker.has_authored_animation(&"ToeStab"):
+		await _pawn_toe_stab_authored(attacker, victim, data)
+		return
+	await _pawn_toe_stab_fallback(attacker, victim, data)
+
+func _pawn_toe_stab_authored(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
+	# Skeleton clip owns Pawn body/weapon mechanics. BattleDirector preserves
+	# victim bounce, camera punch, impact VFX and deterministic board staging.
+	var playback_speed := 1.12
+	var clip_length := attacker.authored_animation_length(&"ToeStab") / playback_speed
+	if clip_length <= 0.0:
+		clip_length = 1.35
+	attacker.play_authored_animation(&"ToeStab", playback_speed, 0.04)
+
+	# Contact is authored around frame 14 of the 36-frame clip.
+	await _wait(clip_length * 0.39)
+	_camera_punch(0.11)
+	_impact_burst(victim.foot_target.global_position + Vector3(0.10, 0.28, 0.28), Color("#ffd35c"), 1.18)
+	_flash(victim.foot_target.global_position, Color("#ffd35c"), 0.28)
+	_comic_text("BAM!", victim.battle_target.global_position + Vector3(0, 0.65, 0), Color("#ffd84f"))
+	victim.play_hit_pose()
+	capture_impact.emit(data.id)
+	await _wait(0.10)
+
+	await _parallel(victim.visual_root, {
+		"scale": Vector3(1.18, 0.82, 1.18),
+		"position": Vector3(0, 0.22, 0)
+	}, 0.10)
+
+	await _tween(victim.visual_root, "position", Vector3(0.10, 0.70, 0), 0.16)
+	await _tween(victim.visual_root, "position", Vector3(-0.10, 0.12, 0), 0.14)
+	await _tween(victim.visual_root, "position", Vector3(0.10, 0.82, 0), 0.16)
+	await _tween(victim.visual_root, "position", Vector3(0, 5.8, 0), 0.28)
+
+	var remaining := maxf(clip_length * 0.61 - 0.74, 0.04)
+	await _wait(remaining)
+	attacker.stop_authored_animation()
+	await _wait(0.06)
+
+func _pawn_toe_stab_fallback(attacker: PieceView, victim: PieceView, data: CaptureAnimationData) -> void:
 	await _animate_part_prefix(attacker, "Spear", Vector3(0, 0, -24), Vector3.ZERO, 0.14)
 	await _animate_part_prefix(attacker, "Concept_Plume", Vector3(0, 0, -12), Vector3.ZERO, 0.14)
 	await _animate_part_prefix(attacker, "V3_Plume", Vector3(0, 0, -18), Vector3.ZERO, 0.14)

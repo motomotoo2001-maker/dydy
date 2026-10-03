@@ -1,6 +1,6 @@
 {
-  "version": "production-all-families-v1",
-  "source": "approved character sheets; all six families now authored as production Blender assets",
+  "version": "production-all-families-v1+authored-all-families-c6",
+  "source": "approved character sheets; all six families production-authored in Blender, with unified Pawn production naming and authored animation contract",
   "assets": {
     "white_pawn_production_v1.glb": {
       "family": "Pawn",
@@ -17,24 +17,6 @@
         "EyeWL",
         "Belt",
         "Buckle"
-      ]
-    },
-    "black_pawn_concept_v3.glb": {
-      "family": "Pawn",
-      "side": "Black",
-      "min_parts": 68,
-      "required_parts": [
-        "Head",
-        "Helmet",
-        "Knife_Grip",
-        "Knife_Blade",
-        "Shield",
-        "Production_Cape",
-        "Production_Plume_0",
-        "Boot_L",
-        "EyeWL",
-        "Ear_L",
-        "ShieldSlash"
       ]
     },
     "white_knight_production_v1.glb": {
@@ -244,6 +226,24 @@
         "CrownHorn_L",
         "CrownHorn_R",
         "ChestSkull"
+      ]
+    },
+    "black_pawn_production_v1.glb": {
+      "family": "Pawn",
+      "side": "Black",
+      "min_parts": 68,
+      "required_parts": [
+        "Head",
+        "Helmet",
+        "Knife_Grip",
+        "Knife_Blade",
+        "Shield",
+        "Production_Cape",
+        "Production_Plume_0",
+        "Boot_L",
+        "EyeWL",
+        "Ear_L",
+        "ShieldSlash"
       ]
     }
   }

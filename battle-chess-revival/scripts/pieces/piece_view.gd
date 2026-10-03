@@ -2,7 +2,7 @@ class_name PieceView
 extends Node3D
 
 const WHITE_PAWN_ASSET_PATH := "res://assets/models/white_pawn_production_v1.glb"
-const BLACK_PAWN_ASSET_PATH := "res://assets/models/black_pawn_concept_v3.glb"
+const BLACK_PAWN_ASSET_PATH := "res://assets/models/black_pawn_production_v1.glb"
 const WHITE_KNIGHT_ASSET_PATH := "res://assets/models/white_knight_rigged_v1.glb"
 const BLACK_KNIGHT_ASSET_PATH := "res://assets/models/black_knight_rigged_v1.glb"
 const WHITE_BISHOP_ASSET_PATH := "res://assets/models/white_bishop_rigged_v1.glb"

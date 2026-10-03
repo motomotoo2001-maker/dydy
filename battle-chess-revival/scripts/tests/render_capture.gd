@@ -363,7 +363,32 @@ func _run() -> void:
 		push_error("RENDER_CAPTURE_FAIL: King TrapdoorCommand review"); quit(1); return
 	if white_king_diag != null: white_king_diag.set_battle_animation_active(false)
 
-	print("RENDER_CAPTURE_PASS gameplay=", image.get_width(), "x", image.get_height(), " captures=", CAPTURES.size(), " lineups=2 reviews=21")
+	# Unified authored Pawn diagnostics.
+	_prepare_asset_review(arena, &"Black", &"Pawn")
+	var black_pawn_diag := arena.find_piece(&"Black", &"Pawn")
+	if black_pawn_diag != null:
+		black_pawn_diag.set_battle_animation_active(true)
+		black_pawn_diag.play_authored_animation(&"Hit", 1.0, 0.0)
+		await create_timer(maxf(black_pawn_diag.authored_animation_length(&"Hit") * 0.36, 0.12)).timeout
+	await process_frame
+	await RenderingServer.frame_post_draw
+	if get_root().get_texture().get_image().save_png("res://asset_review_black_pawn_hit.png") != OK:
+		push_error("RENDER_CAPTURE_FAIL: Pawn Hit review"); quit(1); return
+	if black_pawn_diag != null: black_pawn_diag.set_battle_animation_active(false)
+
+	_prepare_asset_review(arena, &"White", &"Pawn")
+	var white_pawn_diag := arena.find_piece(&"White", &"Pawn")
+	if white_pawn_diag != null:
+		white_pawn_diag.set_battle_animation_active(true)
+		white_pawn_diag.play_authored_animation(&"ToeStab", 1.0, 0.0)
+		await create_timer(maxf(white_pawn_diag.authored_animation_length(&"ToeStab") * 0.39, 0.20)).timeout
+	await process_frame
+	await RenderingServer.frame_post_draw
+	if get_root().get_texture().get_image().save_png("res://asset_review_white_pawn_toestab.png") != OK:
+		push_error("RENDER_CAPTURE_FAIL: Pawn ToeStab review"); quit(1); return
+	if white_pawn_diag != null: white_pawn_diag.set_battle_animation_active(false)
+
+	print("RENDER_CAPTURE_PASS gameplay=", image.get_width(), "x", image.get_height(), " captures=", CAPTURES.size(), " lineups=2 reviews=23")
 	root.queue_free()
 	await process_frame
 	quit(0)
