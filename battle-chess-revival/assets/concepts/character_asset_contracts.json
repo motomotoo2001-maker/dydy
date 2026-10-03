@@ -1,5 +1,5 @@
 {
-  "version": "production-all-families-v1+queen-king-silhouette-g6",
+  "version": "production-all-families-v1+silhouette-fidelity-g6",
   "source": "approved character sheets; all six families production-authored in Blender, with unified Pawn production naming and authored animation contract",
   "assets": {
     "white_pawn_production_v1.glb": {
@@ -22,7 +22,7 @@
     "white_knight_production_v1.glb": {
       "family": "Knight",
       "side": "White",
-      "min_parts": 60,
+      "min_parts": 65,
       "required_parts": [
         "HorseBody",
         "HorseHead",
@@ -36,13 +36,18 @@
         "Leg_RR",
         "KnightShield",
         "LanceShaft",
-        "Production_Plume_0"
+        "Production_Plume_0",
+        "PlumeFan_L",
+        "PlumeFan_R",
+        "HelmetCrest",
+        "KnightShieldBoss",
+        "LanceGuard"
       ]
     },
     "black_knight_production_v1.glb": {
       "family": "Knight",
       "side": "Black",
-      "min_parts": 64,
+      "min_parts": 69,
       "required_parts": [
         "HorseBody",
         "HorseHead",
@@ -58,13 +63,18 @@
         "LanceShaft",
         "Production_Plume_0",
         "HelmetHorn_L",
-        "Cape"
+        "Cape",
+        "PlumeFan_L",
+        "PlumeFan_R",
+        "HelmetCrest",
+        "KnightShieldBoss",
+        "LanceGuard"
       ]
     },
     "white_bishop_production_v1.glb": {
       "family": "Bishop",
       "side": "White",
-      "min_parts": 60,
+      "min_parts": 66,
       "required_parts": [
         "Head",
         "Trunk",
@@ -79,13 +89,19 @@
         "Tusk_R",
         "ChestGem",
         "StaffHalo",
-        "StaffOuterHalo"
+        "StaffOuterHalo",
+        "MitreWing_L",
+        "MitreWing_R",
+        "TrunkRing",
+        "StaffHaloOuter2",
+        "V3_CapeLayerShoulder_L",
+        "V3_CapeLayerShoulder_R"
       ]
     },
     "black_bishop_production_v1.glb": {
       "family": "Bishop",
       "side": "Black",
-      "min_parts": 64,
+      "min_parts": 70,
       "required_parts": [
         "Head",
         "Trunk",
@@ -99,13 +115,19 @@
         "SkullCharm",
         "ChestGem",
         "StaffHalo",
-        "StaffOuterHalo"
+        "StaffOuterHalo",
+        "MitreWing_L",
+        "MitreWing_R",
+        "TrunkRing",
+        "StaffHaloOuter2",
+        "V3_CapeLayerShoulder_L",
+        "V3_CapeLayerShoulder_R"
       ]
     },
     "white_rook_production_v1.glb": {
       "family": "Rook",
       "side": "White",
-      "min_parts": 60,
+      "min_parts": 66,
       "required_parts": [
         "TowerCore",
         "CrownBase",
@@ -119,13 +141,19 @@
         "Tabard",
         "EyeL",
         "EyeR",
-        "CrownGoldBand"
+        "CrownGoldBand",
+        "CrownOuterMerlon_L",
+        "CrownOuterMerlon_R",
+        "Fist_L_OuterPlate",
+        "Fist_R_OuterPlate",
+        "TowerButtress_L",
+        "TowerButtress_R"
       ]
     },
     "black_rook_production_v1.glb": {
       "family": "Rook",
       "side": "Black",
-      "min_parts": 64,
+      "min_parts": 70,
       "required_parts": [
         "TowerCore",
         "CrownBase",
@@ -140,7 +168,13 @@
         "EyeL",
         "EyeR",
         "ShoulderSpike_L",
-        "ShoulderSpike_R"
+        "ShoulderSpike_R",
+        "CrownOuterMerlon_L",
+        "CrownOuterMerlon_R",
+        "Fist_L_OuterPlate",
+        "Fist_R_OuterPlate",
+        "TowerButtress_L",
+        "TowerButtress_R"
       ]
     },
     "white_queen_production_v1.glb": {
