@@ -1,8 +1,8 @@
 # Battle Chess Revival — Project State
 
-Last verified release candidate: **G3 public build**
+Last verified release candidate: **G4 visual-fidelity checkpoint**
 Verified branch: `battle-chess-revival`
-Latest verified public checkpoint: `ed1aca0`
+Latest verified post-public checkpoint: `90ca30a`
 Stable release rollback: `cd20018` (RC2)
 Engine: **Godot 4.7.2 stable**
 Target release: **Windows x86_64**
@@ -19,6 +19,16 @@ Target release: **Windows x86_64**
 - Production HUD, pause/settings, onboarding hints, check/checkmate/endgame/rematch presentation.
 - Cathedral ambience and gameplay/capture SFX.
 - Windows export validated in CI.
+
+## Verified G4 visual-fidelity artifacts
+
+Windows:
+`BattleChessRevival_G4_BattlePalette_Windows_2026-10-04_90ca30a.zip`
+
+Source:
+`BattleChessRevival_G4_BattlePalette_Source_2026-10-04_90ca30a.zip`
+
+G4 improves the battle-only palette to 83.3% overall reference similarity while leaving gameplay at the locked 79.0% baseline.
 
 ## Verified G3 public artifacts
 
@@ -75,6 +85,6 @@ G1 additionally includes strategic AI difficulty levels, move history/Undo, thre
 
 ## Next milestone
 
-**G4 — battle palette + visual fidelity**
+**G5 — authored animation + cinematic transition polish**
 
-Improve the battle-only rendered palette/lighting against the reference while preserving the G3 public build as rollback and keeping gameplay camera/board visuals locked.
+Improve camera transitions and capture presentation without changing authored impact timings, G4 battle palette, or the locked full-board gameplay camera.
