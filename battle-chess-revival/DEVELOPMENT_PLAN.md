@@ -111,14 +111,19 @@ A complete verified source ZIP was saved to Google Drive as
 
 Start with Knight because it has the most demanding body hierarchy.
 
-Deliverables:
-- production Skeleton3D and skin/bone ownership for rider + horse motion groups;
-- authored Idle, Selected and Move clips;
-- authored Hit, Victory and Defeat clips;
-- authored double-hind-kick signature capture clip;
-- animation event timing hooks for camera/VFX impact;
-- preserve current named-part transform animation as fallback until the authored clip is verified;
-- gameplay/battle render review + full CI gate.
+Checkpoint `9b0a98a` verified:
+- White/Black Knight rigged GLBs generated beside the production-static source;
+- 13-bone Skeleton3D imported on both sides;
+- seven authored clips imported on both sides: Idle, Selected, Move, Hit, Victory, Defeat, DoubleKick;
+- PieceView now loads the rigged Knight GLBs in normal rendering;
+- complete chess/battle/render/Visual-QA suite remains green;
+- Drive checkpoint saved as `BattleChessRevival_KNIGHT_RIGGED_V1_CHECKPOINT_2026-10-03_9b0a98a.zip`.
+
+Current task:
+- wire AnimationPlayer clips into selection, move, hit, victory and defeat states;
+- replace Knight double-kick named-part fallback with the authored DoubleKick clip while keeping impact/VFX/camera timing;
+- add a rendered authored-animation review gate;
+- only remove Knight fallback transforms after the authored capture is visually verified.
 
 ## NEXT — Milestone C2: Bishop authored rig/animation
 
