@@ -18,6 +18,7 @@ var _sockets: Dictionary = {}
 var _piece_by_square: Dictionary = {}
 var selection_root: Node3D
 var last_move_root: Node3D
+var danger_root: Node3D
 var _selected_piece: PieceView
 var _cathedral_material_cache: Dictionary = {}
 
@@ -39,6 +40,7 @@ func build() -> void:
 	_build_pieces()
 	_build_selection_root()
 	_build_last_move_root()
+	_build_danger_root()
 
 func get_square_count() -> int:
 	return _sockets.size()
@@ -612,6 +614,48 @@ func _build_last_move_root() -> void:
 	last_move_root = Node3D.new()
 	last_move_root.name = "LastMoveOverlay"
 	generated.add_child(last_move_root)
+
+
+func _build_danger_root() -> void:
+	danger_root = Node3D.new()
+	danger_root.name = "DangerOverlay"
+	generated.add_child(danger_root)
+
+
+func clear_danger() -> void:
+	if danger_root == null:
+		return
+	for child in danger_root.get_children():
+		child.queue_free()
+
+
+func show_check_danger(square: StringName) -> void:
+	clear_danger()
+	if danger_root == null or square == &"":
+		return
+	_add_overlay_to(danger_root, square, Color(1.0, 0.12, 0.10, 0.34), 0.060, 0.94)
+	var marker := get_socket(square)
+	if marker == null:
+		return
+	var ring_mesh := TorusMesh.new()
+	ring_mesh.inner_radius = CELL_SIZE * 0.39
+	ring_mesh.outer_radius = CELL_SIZE * 0.43
+	ring_mesh.rings = 32
+	ring_mesh.ring_segments = 8
+	var ring := MeshInstance3D.new()
+	ring.name = "CheckDangerRing"
+	ring.mesh = ring_mesh
+	var mat := StandardMaterial3D.new()
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.albedo_color = Color(1.0, 0.15, 0.08, 0.60)
+	mat.emission_enabled = true
+	mat.emission = Color("#ff3828")
+	mat.emission_energy_multiplier = 2.4
+	ring.material_override = mat
+	ring.rotation_degrees.x = 90.0
+	danger_root.add_child(ring)
+	ring.global_position = marker.global_position + Vector3(0, 0.072, 0)
 
 
 func clear_last_move() -> void:
