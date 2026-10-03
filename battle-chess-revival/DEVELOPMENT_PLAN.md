@@ -171,16 +171,49 @@ Final checkpoint `2d909c2` verified:
 - chess rules, capture smoke, gameplay renders and Visual QA are green;
 - Drive checkpoint: `BattleChessRevival_KING_AUTHORED_C5_FINAL_2026-10-03_2d909c2.zip`.
 
-## ACTIVE — Milestone C6: Pawn final authored-animation unification
+## VERIFIED — Milestone C6: Pawn final authored-animation unification
 
-- normalize White/Black pawn asset naming and animation contract;
-- authored Idle / Selected / Move / Hit / Victory / Defeat;
-- keep/refine ToeStab signature animation;
-- final full-army authored-animation lineup and capture review.
+Final checkpoint `0fa17ca` verified:
+- White/Black Pawn assets use unified production naming;
+- both Pawn sides import full Skeleton3D + authored animation contracts;
+- authored Idle, Selected, Move, Hit, Victory, Defeat and ToeStab are available on both sides;
+- PieceView drives Pawn gameplay presentation through the same authored-animation runtime as every other family;
+- BattleDirector uses authored ToeStab while preserving deterministic BAM/VFX/victim bounce timing;
+- dedicated Pawn Hit/ToeStab diagnostics and full capture suite were visually inspected;
+- all six families pass one combined rig/runtime/chess/capture/render/Visual-QA workflow;
+- Drive checkpoint: `BattleChessRevival_ALL_AUTHORED_CHARACTERS_C6_FINAL_2026-10-03_0fa17ca.zip`.
 
-## AFTER C6 — Milestone D
+### Authored character-animation milestone complete
 
-Environment/material final pass, followed by UX/audio polish and release-candidate optimization.
+Every family now has a verified production model + Skeleton3D + gameplay/capture clips:
+Pawn → Knight → Bishop → Rook → Queen → King.
+
+## ACTIVE — Milestone D1: Production cathedral architecture
+
+Current task:
+- replace the blockout-only cathedral shell with a Blender-authored production GLB;
+- preserve board/battle staging and gameplay-camera clearance;
+- add layered columns, arches, altar architecture, side aisles and visible ceiling/vault structure;
+- keep the existing procedural cathedral as a safe fallback;
+- validate external cathedral import in Godot and inspect gameplay/battle renders before checkpoint.
+
+## NEXT — Milestone D2: material + stained-glass lighting pass
+
+- higher-frequency stone/marble/wood/gold surfaces;
+- stained-glass color shaping and warm/cool light separation;
+- reduce flat gray/brown wall reads;
+- improve board/piece contact contrast without crushing shadows.
+
+## NEXT + 1 — Milestone D3: camera/contact/final composition
+
+- gameplay-camera framing against the approved reference;
+- battle-camera exposure/DOF and action readability;
+- per-piece contact shadows;
+- final environment/capture composition regression gate.
+
+## AFTER D3 — Milestone E/F
+
+UX/audio polish, then optimization, Windows release candidate and final versioned Drive backup.
 
 Knight B1 verified at `26e07749`: production White/Black Knight GLBs are generated in Blender, contracts pass (72/78 parts), gameplay/capture tests pass, close front review renders verified, and Visual QA regression gate passes.
 
