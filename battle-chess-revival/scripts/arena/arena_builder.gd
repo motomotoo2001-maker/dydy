@@ -325,11 +325,14 @@ func _build_cameras() -> void:
 
 	gameplay_camera = Camera3D.new()
 	gameplay_camera.name = "GameplayCamera"
-	gameplay_camera.position = Vector3(0, 8.55, 13.15)
-	gameplay_camera.fov = 39.5
+	# User-approved gameplay composition: 3/4 side angle from the White-right
+	# corner. Keep the complete board frame in view while still showing enough
+	# cathedral depth to preserve the production environment.
+	gameplay_camera.position = Vector3(12.0, 10.8, 12.8)
+	gameplay_camera.fov = 43.0
 	gameplay_camera.current = true
 	root.add_child(gameplay_camera)
-	gameplay_camera.look_at(Vector3(0, 0.95, -0.55), Vector3.UP)
+	gameplay_camera.look_at(Vector3(0, 0.78, -0.15), Vector3.UP)
 
 	battle_camera = Camera3D.new()
 	battle_camera.name = "BattleCamera"
