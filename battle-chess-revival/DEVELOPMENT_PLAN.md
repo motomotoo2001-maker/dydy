@@ -337,14 +337,27 @@ Verified public build `ed1aca0`:
   - `BattleChessRevival_G3_PUBLIC_Windows_x86_64_2026-10-04_ed1aca0.zip`
   - `BattleChessRevival_G3_PUBLIC_Source_Godot_4.7.2_2026-10-04_ed1aca0.zip`.
 
-## ACTIVE — Milestone G4: battle palette + visual fidelity
+## VERIFIED — Milestone G4: battle palette + visual fidelity
+
+Verified checkpoint `90ca30a`:
+- battle-only environment/light palette tuned without changing gameplay visuals;
+- battle reference similarity improved from 79.3% to 83.3%;
+- battle palette similarity improved from 65.6% to 73.4%;
+- battle temperature similarity reached 98.0% and brightness 99.2%;
+- gameplay reference remains stable at 79.0%;
+- full UI/settings/rig/AI/history/promotion/rules/capture/render/Visual-QA/Windows-export pipeline is green;
+- Drive backups:
+  - `BattleChessRevival_G4_BattlePalette_Windows_2026-10-04_90ca30a.zip`
+  - `BattleChessRevival_G4_BattlePalette_Source_2026-10-04_90ca30a.zip`.
+
+## ACTIVE — Milestone G5: authored animation + cinematic transition polish
 
 Current task:
-- improve battle-only palette similarity without changing gameplay camera/board look;
-- increase battle brightness and warm saturation while reducing excess contrast;
-- preserve authored capture timing, aura colors and black/white character readability;
-- compare Visual-QA palette/temperature metrics before accepting the pass;
-- keep G3 public build as rollback.
+- soften the hard gameplay→battle camera switch with a short authored push-in;
+- add a controlled recovery pull-out before returning to gameplay;
+- preserve all signature impact timings and authored Skeleton3D clips;
+- keep G4 battle palette metrics and G3 gameplay camera locked;
+- validate capture smoke + rendered contact sheet before checkpoint.
 
 ## AFTER E — Milestone F: optimization and release candidate
 
