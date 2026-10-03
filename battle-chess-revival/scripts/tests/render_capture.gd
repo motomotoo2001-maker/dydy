@@ -173,10 +173,7 @@ func _prepare_asset_review(arena: ArenaBuilder, side: StringName, piece_type: St
 		piece.visible = true
 		piece.reset_visual()
 		piece.global_position = Vector3(0, 0.54, 0)
-		# Knight meshes face away from this review camera in their gameplay rest
-		# orientation. Turn only the close-up review so we inspect the character
-		# face, horse head, shield and chest materials instead of the saddle back.
-		piece.rotation_degrees = Vector3(0, 180.0 if piece_type == &"Knight" else 0.0, 0)
+		piece.rotation_degrees = Vector3.ZERO
 
 	arena.gameplay_camera.current = false
 	arena.battle_camera.current = true

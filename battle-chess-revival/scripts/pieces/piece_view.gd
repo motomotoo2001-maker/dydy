@@ -416,25 +416,25 @@ func _build_visual() -> void:
 		return
 	if piece_type == &"Knight" and side == &"White":
 		if DisplayServer.get_name() != "headless":
-			if _build_external_asset(WHITE_KNIGHT_ASSET_PATH, "WhiteKnightRefinedMeshV1"):
+			if _build_external_asset(WHITE_KNIGHT_ASSET_PATH, "WhiteKnightRefinedMeshV1", 180.0):
 				return
 		_build_white_knight_production_blockout()
 		return
 	if piece_type == &"Knight" and side == &"Black":
 		if DisplayServer.get_name() != "headless":
-			if _build_external_asset(BLACK_KNIGHT_ASSET_PATH, "BlackKnightRefinedMeshV1"):
+			if _build_external_asset(BLACK_KNIGHT_ASSET_PATH, "BlackKnightRefinedMeshV1", 180.0):
 				return
 		_build_black_knight_production_blockout()
 		return
 	if piece_type == &"Bishop" and side == &"White":
 		if DisplayServer.get_name() != "headless":
-			if _build_external_asset(WHITE_BISHOP_ASSET_PATH, "WhiteBishopRefinedMeshV1"):
+			if _build_external_asset(WHITE_BISHOP_ASSET_PATH, "WhiteBishopRefinedMeshV1", 180.0):
 				return
 		_build_white_bishop_production_blockout()
 		return
 	if piece_type == &"Bishop" and side == &"Black":
 		if DisplayServer.get_name() != "headless":
-			if _build_external_asset(BLACK_BISHOP_ASSET_PATH, "BlackBishopRefinedMeshV1"):
+			if _build_external_asset(BLACK_BISHOP_ASSET_PATH, "BlackBishopRefinedMeshV1", 180.0):
 				return
 		_build_black_bishop_production_blockout()
 		return
@@ -508,7 +508,7 @@ func _build_visual() -> void:
 		_:
 			_add_capsule_color("Body", 0.25, height * 0.70, Vector3(0, height * 0.45, 0), main_color)
 
-func _build_external_asset(path: String, asset_name: String) -> bool:
+func _build_external_asset(path: String, asset_name: String, asset_yaw_degrees: float = 0.0) -> bool:
 	if not ResourceLoader.exists(path):
 		return false
 	var packed := load(path) as PackedScene
@@ -521,6 +521,10 @@ func _build_external_asset(path: String, asset_name: String) -> bool:
 		return false
 	visual_root.name = "VisualRoot_%s" % asset_name
 	instance.name = asset_name
+	# Blender-authored static Knight/Bishop GLBs use the opposite canonical
+	# forward axis from the older generated assets. Normalize that once here so
+	# gameplay, lineup, battle camera and close reviews all see the same front.
+	instance.rotation_degrees.y = asset_yaw_degrees
 	visual_root.add_child(instance)
 	return true
 
