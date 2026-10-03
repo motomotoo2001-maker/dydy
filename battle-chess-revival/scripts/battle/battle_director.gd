@@ -12,6 +12,7 @@ var arena: ArenaBuilder
 var registry := CaptureRegistry.new()
 var _camera_rest_position := Vector3.ZERO
 var _camera_rest_rotation := Vector3.ZERO
+var _camera_rest_fov := 40.0
 var _battle_aura_root: Node3D
 
 func setup(p_arena: ArenaBuilder) -> void:
@@ -838,12 +839,25 @@ func _camera_punch(strength: float = 0.12) -> void:
 	if arena == null or arena.battle_camera == null:
 		return
 	var camera := arena.battle_camera
+	var fov_kick := clampf(strength * 10.0, 0.8, 3.4)
 	camera.position = _camera_rest_position + Vector3(strength * 0.55, strength * 0.28, -strength)
 	camera.rotation_degrees = _camera_rest_rotation + Vector3(-strength * 18.0, strength * 11.0, strength * 8.0)
-	var tween := create_tween().set_parallel()
-	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tween.tween_property(camera, "position", _camera_rest_position, _d(0.12))
-	tween.tween_property(camera, "rotation_degrees", _camera_rest_rotation, _d(0.12))
+	camera.fov = _camera_rest_fov - fov_kick
+
+	# Contact snap, then a tiny recovery overshoot so heavy captures feel less
+	# like a static tween and more like a camera operator absorbing the hit.
+	var snap := create_tween().set_parallel()
+	snap.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	snap.tween_property(camera, "position", _camera_rest_position + Vector3(-strength * 0.10, strength * 0.05, strength * 0.12), _d(0.075))
+	snap.tween_property(camera, "rotation_degrees", _camera_rest_rotation + Vector3(strength * 3.5, -strength * 2.0, -strength * 2.5), _d(0.075))
+	snap.tween_property(camera, "fov", _camera_rest_fov + fov_kick * 0.28, _d(0.075))
+
+	var settle := create_tween().set_parallel()
+	settle.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	settle.tween_interval(_d(0.075))
+	settle.tween_property(camera, "position", _camera_rest_position, _d(0.11))
+	settle.tween_property(camera, "rotation_degrees", _camera_rest_rotation, _d(0.11))
+	settle.tween_property(camera, "fov", _camera_rest_fov, _d(0.11))
 
 func _impact_burst(p: Vector3, color: Color, size: float = 1.0) -> void:
 	var root := Node3D.new()
@@ -1275,6 +1289,7 @@ func _set_battle_camera(profile: StringName) -> void:
 	arena.battle_camera.look_at(focus, Vector3.UP)
 	_camera_rest_position = arena.battle_camera.position
 	_camera_rest_rotation = arena.battle_camera.rotation_degrees
+	_camera_rest_fov = arena.battle_camera.fov
 
 func _comic_text(text_value: String, p: Vector3, color: Color) -> void:
 	var label := Label3D.new()
