@@ -717,6 +717,8 @@ func restart_game() -> void:
 		endgame_overlay.visible = false
 	state.reset()
 	arena.reset_pieces()
+	arena.clear_last_move()
+	arena.clear_danger()
 	_clear_selection()
 	_refresh_hud()
 	game_restarted.emit()
@@ -726,6 +728,10 @@ func _refresh_hud() -> void:
 		return
 
 	var status := state.get_game_status()
+	if arena != null:
+		arena.clear_danger()
+		if status in [&"check", &"checkmate"]:
+			arena.show_check_danger(state.get_king_square(state.turn))
 	var white_turn := state.turn == ChessState.WHITE
 	var side_text := "Белые" if white_turn else "Чёрные"
 	if side_chip != null:
@@ -742,7 +748,7 @@ func _refresh_hud() -> void:
 		)
 
 	if help_label != null:
-		help_label.text = "ЛКМ ход  •  Esc меню  •  R новая игра  •  A AI %s" % ("ON" if ai_enabled else "OFF")
+		help_label.text = "ЛКМ ход  •  U отмена  •  Esc меню  •  R новая игра  •  A AI %s" % ("ON" if ai_enabled else "OFF")
 
 	if state_badge != null:
 		state_badge.text = "AI: %s/%s   •   %s" % [
@@ -798,6 +804,10 @@ func undo_last_turn() -> void:
 	if endgame_overlay != null:
 		endgame_overlay.visible = false
 	arena.sync_pieces_from_state(state)
+	arena.clear_last_move()
+	if not move_log.is_empty() and state_history.size() < move_log.size():
+		# Defensive guard; history/log are normally kept in lockstep.
+		move_log.resize(state_history.size())
 	_clear_selection()
 	_refresh_hud()
 	game_status_changed.emit(state.get_game_status())
