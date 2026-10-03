@@ -150,6 +150,7 @@ func _execute_move(move: Dictionary, allow_ai_reply: bool) -> void:
 	if original_type == &"Pawn" and not resulting_piece.is_empty() and resulting_piece["type"] != &"Pawn":
 		attacker.change_type(resulting_piece["type"])
 
+	arena.show_last_move(from_square, to_square)
 	move_committed.emit(original_type, victim != null)
 	var status := state.get_game_status()
 	move_log.append(_format_move_notation(move, original_type, victim != null, status))
