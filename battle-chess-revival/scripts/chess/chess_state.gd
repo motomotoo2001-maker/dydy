@@ -191,8 +191,9 @@ func _pawn_moves(square: StringName, piece: Dictionary) -> Array[Dictionary]:
 	if _inside(one) and not board.has(coord_to_square(one)):
 		var move := _move(square, coord_to_square(one))
 		if one.y == promotion_rank:
-			move["promotion"] = &"Queen"
-		result.append(move)
+			_append_promotion_variants(result, move)
+		else:
+			result.append(move)
 		var two := from + Vector2i(0, dir * 2)
 		if from.y == start_rank and not board.has(coord_to_square(two)):
 			result.append(_move(square, coord_to_square(two)))
@@ -207,8 +208,9 @@ func _pawn_moves(square: StringName, piece: Dictionary) -> Array[Dictionary]:
 			var capture := _move(square, target_square)
 			capture["capture"] = true
 			if target.y == promotion_rank:
-				capture["promotion"] = &"Queen"
-			result.append(capture)
+				_append_promotion_variants(result, capture)
+			else:
+				result.append(capture)
 		elif target_square == en_passant_square:
 			var captured_square := coord_to_square(from + Vector2i(dx, 0))
 			var captured_piece := get_piece(captured_square)
@@ -219,6 +221,15 @@ func _pawn_moves(square: StringName, piece: Dictionary) -> Array[Dictionary]:
 				ep["captured_square"] = captured_square
 				result.append(ep)
 	return result
+
+func _append_promotion_variants(result: Array[Dictionary], base_move: Dictionary) -> void:
+	# Queen remains first to preserve the old find_legal_move()/AI default when
+	# no explicit promotion choice is requested.
+	for promotion_type in [&"Queen", &"Rook", &"Bishop", &"Knight"]:
+		var promoted := base_move.duplicate(true)
+		promoted["promotion"] = promotion_type
+		result.append(promoted)
+
 
 func _jump_moves(square: StringName, piece: Dictionary, offsets: Array) -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
