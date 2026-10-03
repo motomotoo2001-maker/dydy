@@ -1,5 +1,9 @@
 name: Battle Chess Godot 4.7.2
 
+concurrency:
+  group: battle-chess-revival-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: [ "battle-chess-revival" ]
@@ -102,6 +106,8 @@ jobs:
         run: xvfb-run -a ./Godot_v4.7.2-stable_linux.x86_64 --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/audio_smoke_test.gd
       - name: Validate final presentation and rematch flow
         run: xvfb-run -a ./Godot_v4.7.2-stable_linux.x86_64 --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/presentation_smoke_test.gd
+      - name: Validate release candidate audit
+        run: xvfb-run -a ./Godot_v4.7.2-stable_linux.x86_64 --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/release_audit.gd
       - name: Validate production cathedral asset
         run: ./Godot_v4.7.2-stable_linux.x86_64 --headless --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/cathedral_asset_test.gd
       - name: Validate authored Knight rig assets
@@ -149,6 +155,35 @@ jobs:
         with:
           name: BattleChessRevival-Godot-4.7.2
           path: BattleChessRevival-Godot-4.7.2.zip
+          if-no-files-found: error
+      - name: Install Windows export templates
+        run: |
+          wget -q https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_export_templates.tpz -O export_templates.tpz
+          rm -rf /tmp/godot_export_templates
+          mkdir -p /tmp/godot_export_templates
+          unzip -q export_templates.tpz -d /tmp/godot_export_templates
+          mkdir -p "$HOME/.local/share/godot/export_templates/4.7.2.stable"
+          cp -a /tmp/godot_export_templates/templates/. "$HOME/.local/share/godot/export_templates/4.7.2.stable/"
+          test -s "$HOME/.local/share/godot/export_templates/4.7.2.stable/windows_release_x86_64.exe"
+      - name: Export Windows x86_64 release candidate
+        run: |
+          mkdir -p battle-chess-revival/build/windows
+          ./Godot_v4.7.2-stable_linux.x86_64 --headless --path battle-chess-revival --export-release "Windows Desktop" build/windows/BattleChessRevival.exe
+          test -s battle-chess-revival/build/windows/BattleChessRevival.exe
+          python3 - <<'PY'
+          from pathlib import Path
+          exe = Path("battle-chess-revival/build/windows/BattleChessRevival.exe")
+          size = exe.stat().st_size
+          print("WINDOWS_EXPORT_PASS bytes=", size)
+          if size < 10_000_000 or size > 250_000_000:
+              raise SystemExit("unexpected Windows executable size")
+          PY
+          (cd battle-chess-revival/build/windows && zip -q ../../../BattleChessRevival-Windows-x86_64.zip BattleChessRevival.exe)
+      - name: Upload Windows release candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: BattleChessRevival-Windows-x86_64
+          path: BattleChessRevival-Windows-x86_64.zip
           if-no-files-found: error
       - name: Upload gameplay render
         if: always()
