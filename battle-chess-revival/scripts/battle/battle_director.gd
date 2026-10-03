@@ -167,7 +167,6 @@ func _knight_double_kick_authored(attacker: PieceView, victim: PieceView, data: 
 
 	# Rear-hoof contact is authored near frame 21 of the 36-frame clip.
 	await _wait(clip_length * 0.57)
-	victim.play_hit_pose()
 	_camera_punch(0.18)
 	_impact_burst(victim.battle_target.global_position, Color("#ffcc72"), 1.20)
 	_flash(victim.battle_target.global_position, Color("#fff0c2"), 0.30)
