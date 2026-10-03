@@ -10,6 +10,7 @@ var castling_rights := {"K": true, "Q": true, "k": true, "q": true}
 var en_passant_square: StringName = &""
 var halfmove_clock := 0
 var fullmove_number := 1
+var position_history: Array[String] = []
 
 func _init(setup_position: bool = true) -> void:
 	if setup_position:
@@ -29,6 +30,8 @@ func reset() -> void:
 		board[StringName("%s2" % file)] = _piece(WHITE, &"Pawn")
 		board[StringName("%s7" % file)] = _piece(BLACK, &"Pawn")
 		board[StringName("%s8" % file)] = _piece(BLACK, back[file_idx])
+	position_history.clear()
+	position_history.append(_position_key())
 
 func clone() -> ChessState:
 	var copy := ChessState.new(false)
@@ -38,6 +41,7 @@ func clone() -> ChessState:
 	copy.en_passant_square = en_passant_square
 	copy.halfmove_clock = halfmove_clock
 	copy.fullmove_number = fullmove_number
+	copy.position_history = position_history.duplicate()
 	return copy
 
 func preview_move(move: Dictionary) -> ChessState:
@@ -134,6 +138,8 @@ func get_game_status() -> StringName:
 		return &"check"
 	if halfmove_clock >= 100:
 		return &"draw_50_move"
+	if _repetition_count() >= 3:
+		return &"draw_repetition"
 	if _insufficient_material():
 		return &"draw_insufficient"
 	return &"ongoing"
@@ -328,6 +334,7 @@ func _apply_move_unchecked(move: Dictionary) -> void:
 	if moving_side == BLACK:
 		fullmove_number += 1
 	turn = _opposite(turn)
+	position_history.append(_position_key())
 
 func _apply_castle_rook(side: StringName, kind: StringName) -> void:
 	var rook_from: StringName
@@ -388,6 +395,41 @@ func _inside(coord: Vector2i) -> bool:
 
 func _opposite(side: StringName) -> StringName:
 	return BLACK if side == WHITE else WHITE
+
+func _repetition_count() -> int:
+	var key := _position_key()
+	var count := 0
+	for historic in position_history:
+		if historic == key:
+			count += 1
+	return count
+
+
+func _position_key() -> String:
+	var squares: Array = board.keys()
+	squares.sort()
+	var parts: Array[String] = []
+	for square_variant in squares:
+		var square: StringName = square_variant
+		var piece: Dictionary = board[square]
+		parts.append("%s:%s:%s" % [
+			String(square),
+			String(piece.get("side", &"")),
+			String(piece.get("type", &""))
+		])
+	var castle := ""
+	for right in ["K", "Q", "k", "q"]:
+		if castling_rights.get(right, false):
+			castle += right
+	if castle.is_empty():
+		castle = "-"
+	return "%s|%s|%s|%s" % [
+		String(turn),
+		castle,
+		String(en_passant_square) if en_passant_square != &"" else "-",
+		";".join(parts)
+	]
+
 
 func _insufficient_material() -> bool:
 	var non_kings: Array = []
