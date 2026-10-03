@@ -190,6 +190,9 @@ def build_bishop(side, output):
 
     # Cape has an exact capture-animation prefix plus layered tails.
     objects.append(rounded_box("V3_CapeLayer", (0,0.19,1.11), (0.31,0.045,0.43), P["blue_hi"], rot=(math.radians(-7),0,0), bevel=0.055))
+    # G6 silhouette V2: broader cape shoulders and ritual profile.
+    objects.append(rounded_box("V3_CapeLayerShoulder_L", (-0.28,0.19,1.22), (0.15,0.040,0.12), P["blue_hi"], rot=(math.radians(-7),0,math.radians(-10)), bevel=0.045))
+    objects.append(rounded_box("V3_CapeLayerShoulder_R", (0.28,0.19,1.22), (0.15,0.040,0.12), P["blue_hi"], rot=(math.radians(-7),0,math.radians(10)), bevel=0.045))
     for i, x in enumerate((-0.20,0,0.20)):
         objects.append(rounded_box(
             f"V3_CapeLayerDetail_{i}", (x,0.225,0.86), (0.11,0.025,0.28),
@@ -228,6 +231,9 @@ def build_bishop(side, output):
     objects.append(cone("MitreTall", (0,0.00,1.83), 0.22, 0.045, 0.52, P["ivory"], vertices=64))
     objects.append(rounded_box("MitreFrontBand", (0,-0.155,1.78), (0.075,0.028,0.19), P["gold"], bevel=0.018))
     objects.append(sphere("MitreGem", (0,-0.193,1.83), (0.055,0.030,0.070), P["gem"], 32, 16))
+    objects.append(cone("MitreWing_L", (-0.18,0.01,1.88), 0.050, 0.006, 0.32, P["gold"], rot=(0,math.radians(-16),math.radians(-23)), vertices=28))
+    objects.append(cone("MitreWing_R", (0.18,0.01,1.88), 0.050, 0.006, 0.32, P["gold"], rot=(0,math.radians(16),math.radians(23)), vertices=28))
+    objects.append(torus("TrunkRing", (0.02,-0.34,1.12), 0.085, 0.012, P["gold"], rot=(math.radians(90),0,0)))
     if side == "black":
         objects.append(cone("HornL", (-0.15,0.0,1.92), 0.060, 0.008, 0.34, P["ivory"], rot=(0,math.radians(-24),math.radians(-20)), vertices=32))
         objects.append(cone("HornR", (0.15,0.0,1.92), 0.060, 0.008, 0.34, P["ivory"], rot=(0,math.radians(24),math.radians(20)), vertices=32))
@@ -244,6 +250,7 @@ def build_bishop(side, output):
     objects.append(cyl("Staff", (sx,-0.02,1.22), 0.028, 1.55, P["leather"], rot=(0,0,math.radians(-3)), vertices=32))
     objects.append(torus("StaffHalo", (sx,-0.02,1.95), 0.17, 0.028, P["gold"], rot=(math.radians(90),0,0)))
     objects.append(torus("StaffOuterHalo", (sx,-0.02,1.95), 0.225, 0.018, P["gold"], rot=(math.radians(90),0,0)))
+    objects.append(torus("StaffHaloOuter2", (sx,-0.02,1.95), 0.285, 0.011, P["gold"], rot=(math.radians(90),0,0)))
     objects.append(sphere("StaffGem", (sx,-0.04,1.95), (0.075,0.050,0.075), P["gem"], 32, 16))
     for i, angle in enumerate((0,90,180,270)):
         a = math.radians(angle)
