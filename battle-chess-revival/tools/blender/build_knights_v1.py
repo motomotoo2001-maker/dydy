@@ -310,6 +310,16 @@ def build_knight(side, output):
     if root.name in bpy.data.objects:
         bpy.data.objects.remove(root, do_unlink=True)
 
+    # Blender keeps orphan mesh datablocks after deleting the White Knight.
+    # Purge them before building Black so exact contract names do not become
+    # HorseHead.001 / RiderTorso.001 / etc.
+    for mesh in list(bpy.data.meshes):
+        if mesh.users == 0:
+            bpy.data.meshes.remove(mesh)
+    for curve in list(bpy.data.curves):
+        if curve.users == 0:
+            bpy.data.curves.remove(curve)
+
 
 def main():
     args = parse_args()
