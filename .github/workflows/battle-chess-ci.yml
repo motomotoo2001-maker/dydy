@@ -36,6 +36,8 @@ jobs:
           ./blender-5.2.2/blender --background --python battle-chess-revival/tools/blender/rig_knights_v1.py -- --side white --input battle-chess-revival/assets/models/white_knight_production_v1.glb --output battle-chess-revival/assets/models/white_knight_rigged_v1.glb
           ./blender-5.2.2/blender --background --python battle-chess-revival/tools/blender/rig_knights_v1.py -- --side black --input battle-chess-revival/assets/models/black_knight_production_v1.glb --output battle-chess-revival/assets/models/black_knight_rigged_v1.glb
           ./blender-5.2.2/blender --background --python battle-chess-revival/tools/blender/build_bishops_v1.py -- --white-output battle-chess-revival/assets/models/white_bishop_production_v1.glb --black-output battle-chess-revival/assets/models/black_bishop_production_v1.glb
+          ./blender-5.2.2/blender --background --python battle-chess-revival/tools/blender/rig_bishops_v1.py -- --side white --input battle-chess-revival/assets/models/white_bishop_production_v1.glb --output battle-chess-revival/assets/models/white_bishop_rigged_v1.glb
+          ./blender-5.2.2/blender --background --python battle-chess-revival/tools/blender/rig_bishops_v1.py -- --side black --input battle-chess-revival/assets/models/black_bishop_production_v1.glb --output battle-chess-revival/assets/models/black_bishop_rigged_v1.glb
           ./blender-5.2.2/blender --background --python battle-chess-revival/tools/blender/build_rooks_v1.py -- --white-output battle-chess-revival/assets/models/white_rook_production_v1.glb --black-output battle-chess-revival/assets/models/black_rook_production_v1.glb
           ./blender-5.2.2/blender --background --python battle-chess-revival/tools/blender/build_queens_v1.py -- --white-output battle-chess-revival/assets/models/white_queen_production_v1.glb --black-output battle-chess-revival/assets/models/black_queen_production_v1.glb
           ./blender-5.2.2/blender --background --python battle-chess-revival/tools/blender/build_kings_v1.py -- --white-output battle-chess-revival/assets/models/white_king_production_v1.glb --black-output battle-chess-revival/assets/models/black_king_production_v1.glb
@@ -47,6 +49,8 @@ jobs:
           test -s battle-chess-revival/assets/models/black_knight_rigged_v1.glb
           test -s battle-chess-revival/assets/models/white_bishop_production_v1.glb
           test -s battle-chess-revival/assets/models/black_bishop_production_v1.glb
+          test -s battle-chess-revival/assets/models/white_bishop_rigged_v1.glb
+          test -s battle-chess-revival/assets/models/black_bishop_rigged_v1.glb
           test -s battle-chess-revival/assets/models/white_rook_production_v1.glb
           test -s battle-chess-revival/assets/models/black_rook_production_v1.glb
           test -s battle-chess-revival/assets/models/white_queen_production_v1.glb
@@ -68,6 +72,8 @@ jobs:
         run: ./Godot_v4.7.2-stable_linux.x86_64 --headless --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/knight_rig_test.gd
       - name: Validate Knight runtime authored animation wiring
         run: xvfb-run -a ./Godot_v4.7.2-stable_linux.x86_64 --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/knight_runtime_animation_test.gd
+      - name: Validate authored Bishop rig assets
+        run: ./Godot_v4.7.2-stable_linux.x86_64 --headless --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/bishop_rig_test.gd
       - name: Run chess rules tests
         run: ./Godot_v4.7.2-stable_linux.x86_64 --headless --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/chess_rules_test.gd
       - name: Run capture smoke tests
