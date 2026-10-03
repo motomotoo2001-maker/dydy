@@ -398,6 +398,33 @@ func _build_board() -> void:
 	_box(board_root, "FrameWest", Vector3(0.42, 0.34, 10.45), Vector3(-5.42, 0.43, 0), rail_mat)
 	_box(board_root, "FrameEast", Vector3(0.42, 0.34, 10.45), Vector3(5.42, 0.43, 0), rail_mat)
 
+	# G2 board luxury/detail pass: thin inlays and hardware add edge density
+	# around the play field without changing square geometry or click math.
+	var dark_gold := _mat(Color("#8d6129"), 0.30, 0.78)
+	_box(board_root, "InnerRailNorth", Vector3(10.02, 0.055, 0.055), Vector3(0, 0.505, -4.91), gold)
+	_box(board_root, "InnerRailSouth", Vector3(10.02, 0.055, 0.055), Vector3(0, 0.505, 4.91), gold)
+	_box(board_root, "InnerRailWest", Vector3(0.055, 0.055, 10.02), Vector3(-4.91, 0.505, 0), gold)
+	_box(board_root, "InnerRailEast", Vector3(0.055, 0.055, 10.02), Vector3(4.91, 0.505, 0), gold)
+
+	_box(board_root, "OuterInlayNorth", Vector3(10.72, 0.045, 0.075), Vector3(0, 0.585, -5.18), dark_gold)
+	_box(board_root, "OuterInlaySouth", Vector3(10.72, 0.045, 0.075), Vector3(0, 0.585, 5.18), dark_gold)
+	_box(board_root, "OuterInlayWest", Vector3(0.075, 0.045, 10.18), Vector3(-5.18, 0.585, 0), dark_gold)
+	_box(board_root, "OuterInlayEast", Vector3(0.075, 0.045, 10.18), Vector3(5.18, 0.585, 0), dark_gold)
+
+	for corner_idx in range(4):
+		var sx := -1.0 if corner_idx in [0, 2] else 1.0
+		var sz := -1.0 if corner_idx in [0, 1] else 1.0
+		_cylinder(
+			board_root,
+			"CornerMedallion_%d" % corner_idx,
+			0.18,
+			0.07,
+			Vector3(5.18 * sx, 0.61, 5.18 * sz),
+			gold
+		)
+
+	_add_board_coordinate_labels()
+
 	for rank_idx in range(8):
 		for file_idx in range(8):
 			var x := (float(file_idx) - 3.5) * CELL_SIZE
@@ -411,6 +438,35 @@ func _build_board() -> void:
 			marker.position = Vector3(x, BOARD_Y + 0.08, z)
 			sockets_root.add_child(marker)
 			_sockets[square] = marker
+
+func _add_board_coordinate_labels() -> void:
+	var label_color := Color("#e0bd79")
+	for file_idx in range(8):
+		var label := Label3D.new()
+		label.name = "FileLabel_%d" % file_idx
+		label.text = String.chr(65 + file_idx)
+		label.font_size = 64
+		label.pixel_size = 0.006
+		label.modulate = label_color
+		label.outline_modulate = Color(0.05, 0.03, 0.02, 0.92)
+		label.outline_size = 10
+		label.rotation_degrees.x = -90.0
+		label.position = Vector3((float(file_idx) - 3.5) * CELL_SIZE, 0.625, 5.18)
+		board_root.add_child(label)
+
+	for rank_idx in range(8):
+		var label := Label3D.new()
+		label.name = "RankLabel_%d" % rank_idx
+		label.text = str(rank_idx + 1)
+		label.font_size = 64
+		label.pixel_size = 0.006
+		label.modulate = label_color
+		label.outline_modulate = Color(0.05, 0.03, 0.02, 0.92)
+		label.outline_size = 10
+		label.rotation_degrees.x = -90.0
+		label.position = Vector3(5.18, 0.625, (3.5 - float(rank_idx)) * CELL_SIZE)
+		board_root.add_child(label)
+
 
 func _build_battle_stage() -> void:
 	battle_stage = Node3D.new()
