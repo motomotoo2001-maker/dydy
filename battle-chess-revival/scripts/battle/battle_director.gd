@@ -12,6 +12,7 @@ var arena: ArenaBuilder
 var registry := CaptureRegistry.new()
 var _camera_rest_position := Vector3.ZERO
 var _camera_rest_rotation := Vector3.ZERO
+var _battle_aura_root: Node3D
 
 func setup(p_arena: ArenaBuilder) -> void:
 	arena = p_arena
@@ -75,6 +76,7 @@ func _run_capture(id: StringName, attacker: PieceView, victim: PieceView, restor
 	arena.set_battle_lighting(true)
 	_set_battle_camera(data.camera_profile)
 	arena.battle_camera.current = true
+	_spawn_battle_aura(id, stage_center)
 	await _capture_intro_beat(attacker, victim, id)
 
 	match id:
@@ -107,6 +109,7 @@ func _run_capture(id: StringName, attacker: PieceView, victim: PieceView, restor
 
 	attacker.set_battle_animation_active(false)
 	victim.set_battle_animation_active(false)
+	_clear_battle_aura()
 	arena.battle_camera.current = false
 	arena.set_battle_lighting(false)
 	arena.gameplay_camera.current = true
@@ -720,6 +723,60 @@ func _animate_part_prefix(
 		if position_offset != Vector3.ZERO:
 			tween.tween_property(part, "position", rest_position + position_offset, _d(seconds))
 	await tween.finished
+
+
+func _spawn_battle_aura(id: StringName, center: Vector3) -> void:
+	_clear_battle_aura()
+	var color := Color("#d5aa5f")
+	match id:
+		&"pawn_toe_stab": color = Color("#e5b85f")
+		&"knight_double_kick": color = Color("#df8c52")
+		&"bishop_ram": color = Color("#d7c3a5")
+		&"rook_crush": color = Color("#df6248")
+		&"queen_transform": color = Color("#c868ea")
+		&"king_trapdoor": color = Color("#d9aa45")
+
+	_battle_aura_root = Node3D.new()
+	_battle_aura_root.name = "BattleAura"
+	add_child(_battle_aura_root)
+	_battle_aura_root.global_position = Vector3(center.x, ArenaBuilder.BOARD_Y + 0.035, center.z)
+
+	for ring_index in range(2):
+		var mesh := TorusMesh.new()
+		mesh.inner_radius = 1.12 + float(ring_index) * 0.30
+		mesh.outer_radius = 1.16 + float(ring_index) * 0.30
+		mesh.rings = 48
+		mesh.ring_segments = 10
+		var ring := MeshInstance3D.new()
+		ring.name = "AuraRing_%d" % ring_index
+		ring.mesh = mesh
+		ring.material_override = _fx_material(color.lightened(0.08 * ring_index), 1.65 - 0.25 * ring_index)
+		ring.rotation_degrees.x = 90.0
+		_battle_aura_root.add_child(ring)
+
+	for i in range(8):
+		var angle := TAU * float(i) / 8.0
+		var glyph_mesh := BoxMesh.new()
+		glyph_mesh.size = Vector3(0.34, 0.018, 0.045)
+		var glyph := MeshInstance3D.new()
+		glyph.name = "AuraGlyph_%02d" % i
+		glyph.mesh = glyph_mesh
+		glyph.material_override = _fx_material(color, 1.35)
+		glyph.position = Vector3(cos(angle) * 1.32, 0.01, sin(angle) * 1.32)
+		glyph.rotation_degrees.y = -rad_to_deg(angle)
+		_battle_aura_root.add_child(glyph)
+
+	_battle_aura_root.scale = Vector3.ONE * 0.86
+	var tween := create_tween().set_parallel()
+	tween.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(_battle_aura_root, "scale", Vector3.ONE, _d(0.18))
+	tween.tween_property(_battle_aura_root, "rotation_degrees:y", 8.0, _d(0.40))
+
+
+func _clear_battle_aura() -> void:
+	if _battle_aura_root != null and is_instance_valid(_battle_aura_root):
+		_battle_aura_root.queue_free()
+	_battle_aura_root = null
 
 
 func _capture_impact_layer(id: StringName, victim: PieceView) -> void:
