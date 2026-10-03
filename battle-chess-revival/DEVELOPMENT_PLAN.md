@@ -258,17 +258,36 @@ Final checkpoint `4ec32ce` verified:
 - complete rig/rules/capture/render/Visual-QA workflow remains green;
 - Drive checkpoint: `BattleChessRevival_E2_AUDIO_FINAL_2026-10-03_4ec32ce.zip`.
 
-## ACTIVE — Milestone E3: final presentation polish
+## VERIFIED — Milestone E3: final presentation polish
+
+Final presentation verified:
+- short title/intro presentation integrated for normal gameplay;
+- terminal-state overlay covers checkmate/draw outcomes;
+- rematch button + keyboard rematch flow are covered by smoke tests;
+- terminal game states lock further board input correctly;
+- production HUD/audio/camera baselines remain green.
+
+## ACTIVE — Milestone F: optimization and release candidate
+
+### RC1 verified at `e404dbc`
+
+- release audit validates resources, cameras and shared runtime materials;
+- cathedral runtime materials are shared to reduce duplicate material instances;
+- Windows x86_64 export preset is present and validated in CI;
+- Windows artifact contains a runnable `BattleChessRevival.exe` (157,582,344 bytes inside the packaged artifact);
+- source artifact contains the Godot 4.7.2 project, asset generators, tests and visual references;
+- full CI including UI, audio, all authored rigs, chess rules, capture smoke, render and Visual QA is green;
+- Google Drive backups:
+  - `BattleChessRevival_RC1_Windows_x86_64_2026-10-03_e404dbc.zip`
+  - `BattleChessRevival_RC1_Source_Godot_4.7.2_2026-10-03_e404dbc.zip`
 
 Current task:
-- short title/intro presentation in normal gameplay only;
-- dedicated checkmate/draw endgame overlay;
-- rematch button and keyboard rematch flow;
-- lock further board input after a terminal game state;
-- preserve automated render baselines;
-- pass presentation smoke + full Visual QA before freezing Milestone E.
+- final RC hardening: startup/runtime smoke on exported package where possible;
+- reduce source-package debug/render leftovers not required by players;
+- add a concise release README/control guide;
+- freeze RC2 only if no gameplay/visual regression is introduced.
 
-## NEXT — Milestone F: optimization and release candidate
+## NEXT — RC2 / release freeze
 
 - draw-call/material/asset-size review;
 - final missing-reference validation;
