@@ -47,6 +47,26 @@ func _run() -> void:
 		_fail("AI returned an illegal opening move")
 		return
 
+	# Hard mode must continue into a bounded tactical/quiescence layer.
+	var tactical := ChessState.new(false)
+	tactical.board = {
+		&"A1": {"side": ChessState.WHITE, "type": &"King", "has_moved": true},
+		&"D4": {"side": ChessState.WHITE, "type": &"Pawn", "has_moved": true},
+		&"H8": {"side": ChessState.BLACK, "type": &"King", "has_moved": true},
+		&"E5": {"side": ChessState.BLACK, "type": &"Pawn", "has_moved": true},
+	}
+	tactical.turn = ChessState.BLACK
+	tactical.castling_rights = {"K": false, "Q": false, "k": false, "q": false}
+	tactical.en_passant_square = &""
+	ai.set_difficulty(ChessAI.Difficulty.HARD)
+	var tactical_move := ai.choose_move(tactical)
+	if tactical_move.is_empty():
+		_fail("Hard AI returned no move in tactical probe")
+		return
+	if ai.quiescence_nodes <= 0:
+		_fail("Hard AI did not enter quiescence search")
+		return
+
 	# Black has Qg2# in one: Kg3, Qh3 vs Kg1.
 	var mate := ChessState.new(false)
 	mate.board = {
@@ -73,5 +93,5 @@ func _run() -> void:
 		_fail("selected tactical move is not checkmate")
 		return
 
-	print("AI_STRATEGY_PASS opening=", first, " mate=", mating_move, " nodes=", ai.nodes_searched)
+	print("AI_STRATEGY_PASS opening=", first, " mate=", mating_move, " nodes=", ai.nodes_searched, " qnodes=", ai.quiescence_nodes)
 	quit(0)
