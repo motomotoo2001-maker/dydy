@@ -350,14 +350,26 @@ Verified checkpoint `90ca30a`:
   - `BattleChessRevival_G4_BattlePalette_Windows_2026-10-04_90ca30a.zip`
   - `BattleChessRevival_G4_BattlePalette_Source_2026-10-04_90ca30a.zip`.
 
-## ACTIVE — Milestone G5: authored animation + cinematic transition polish
+## VERIFIED — Milestone G5: authored animation + cinematic transition polish
+
+Verified checkpoint `e991c34`:
+- battle camera now starts from a wider/farther authored push-in pose and settles into the signature framing;
+- recovery beat adds controlled position/rotation/FOV pull-out after impact;
+- signature clip timing and deterministic impact events remain unchanged;
+- battle Visual QA remains 83.3% overall / 73.4% palette;
+- all capture smoke, contact-sheet, UI/settings/rules/rig/render/Windows-export gates are green;
+- Drive backups:
+  - `BattleChessRevival_G5_Cinematic_Windows_2026-10-04_e991c34.zip`
+  - `BattleChessRevival_G5_Cinematic_Source_2026-10-04_e991c34.zip`.
+
+## ACTIVE — Milestone G6: character secondary motion + silhouette fidelity
 
 Current task:
-- soften the hard gameplay→battle camera switch with a short authored push-in;
-- add a controlled recovery pull-out before returning to gameplay;
-- preserve all signature impact timings and authored Skeleton3D clips;
-- keep G4 battle palette metrics and G3 gameplay camera locked;
-- validate capture smoke + rendered contact sheet before checkpoint.
+- layer per-family secondary root motion over authored Skeleton3D Idle clips;
+- improve breathing/weight shift/selection presence without fighting bone animation;
+- keep movement/capture timing deterministic;
+- then target additional silhouette detail on the most visible production characters;
+- preserve G5/G4 checkpoints as rollback.
 
 ## AFTER E — Milestone F: optimization and release candidate
 
