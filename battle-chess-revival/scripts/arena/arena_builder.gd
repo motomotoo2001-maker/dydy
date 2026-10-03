@@ -268,25 +268,25 @@ func set_battle_lighting(active: bool) -> void:
 	var stained_blue := lighting.get_node_or_null("StainedBlue") as OmniLight3D
 	var neutral := lighting.get_node_or_null("BattleNeutralFill") as OmniLight3D
 	if sun:
-		sun.light_energy = 0.68 if active else 0.96
-		sun.light_color = Color("#ffe4bf") if active else Color("#ffe0ad")
+		sun.light_energy = 0.74 if active else 0.96
+		sun.light_color = Color("#f1eee9") if active else Color("#ffe0ad")
 	if warm:
-		warm.light_energy = 0.34 if active else 1.05
-		warm.light_color = Color("#f2c49a") if active else Color("#ffc789")
+		warm.light_energy = 0.12 if active else 1.05
+		warm.light_color = Color("#e8ddd2") if active else Color("#ffc789")
 	if cool:
-		cool.light_energy = 0.54 if active else 0.94
-		cool.light_color = Color("#9ea8c7") if active else Color("#7f6fd2")
+		cool.light_energy = 0.46 if active else 0.94
+		cool.light_color = Color("#bbc5d7") if active else Color("#7f6fd2")
 	if window:
-		window.light_energy = 0.56 if active else 1.32
-		window.light_color = Color("#f4d6ad") if active else Color("#ffd895")
+		window.light_energy = 0.62 if active else 1.32
+		window.light_color = Color("#eef1f4") if active else Color("#ffd895")
 	if stained_red:
-		stained_red.light_energy = 0.10 if active else 0.52
+		stained_red.light_energy = 0.05 if active else 0.52
 	if stained_gold:
-		stained_gold.light_energy = 0.20 if active else 0.54
+		stained_gold.light_energy = 0.08 if active else 0.54
 	if stained_blue:
-		stained_blue.light_energy = 0.08 if active else 0.36
+		stained_blue.light_energy = 0.10 if active else 0.36
 	if neutral:
-		neutral.light_energy = 0.46 if active else 0.0
+		neutral.light_energy = 0.72 if active else 0.0
 
 func _build_environment() -> void:
 	var world := WorldEnvironment.new()
@@ -599,7 +599,7 @@ func _build_lighting() -> void:
 	var battle_neutral := OmniLight3D.new()
 	battle_neutral.name = "BattleNeutralFill"
 	battle_neutral.position = Vector3(0.0, 4.8, 5.8)
-	battle_neutral.light_color = Color("#f4eee6")
+	battle_neutral.light_color = Color("#e9edf2")
 	battle_neutral.light_energy = 0.0
 	battle_neutral.omni_range = 13.5
 	battle_neutral.shadow_enabled = false
