@@ -65,22 +65,90 @@ func animate_piece_move(piece: PieceView, square: StringName) -> void:
 	piece.current_square = square
 	_piece_by_square[square] = piece
 	var target := get_socket(square).global_position
+	var origin := piece.global_position
 	await piece.begin_move_presentation()
-	if piece.piece_type == &"Knight":
-		var midpoint := (piece.global_position + target) * 0.5
-		midpoint.y += 0.62
-		var tween := create_tween()
-		tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-		tween.tween_property(piece, "global_position", midpoint, 0.18)
-		tween.set_ease(Tween.EASE_IN)
-		tween.tween_property(piece, "global_position", target, 0.18)
-		await tween.finished
-	else:
-		var tween := create_tween()
-		tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
-		tween.tween_property(piece, "global_position", target, 0.28)
-		await tween.finished
+
+	match piece.piece_type:
+		&"Pawn":
+			await _arc_piece_to(piece, origin, target, 0.16, 0.11, 0.11)
+		&"Knight":
+			await _arc_piece_to(piece, origin, target, 0.72, 0.18, 0.18)
+		&"Bishop":
+			await _arc_piece_to(piece, origin, target, 0.26, 0.14, 0.14)
+		&"Queen":
+			await _arc_piece_to(piece, origin, target, 0.34, 0.15, 0.15)
+		&"King":
+			await _arc_piece_to(piece, origin, target, 0.20, 0.18, 0.18)
+		&"Rook":
+			var tween := create_tween()
+			tween.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+			tween.tween_property(piece, "global_position", target, 0.32)
+			await tween.finished
+		_:
+			var tween := create_tween()
+			tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+			tween.tween_property(piece, "global_position", target, 0.28)
+			await tween.finished
+
+	_spawn_move_landing_fx(target, piece)
 	await piece.end_move_presentation()
+
+
+func _arc_piece_to(
+	piece: PieceView,
+	origin: Vector3,
+	target: Vector3,
+	height: float,
+	out_time: float,
+	in_time: float
+) -> void:
+	var midpoint := (origin + target) * 0.5
+	midpoint.y = maxf(origin.y, target.y) + height
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(piece, "global_position", midpoint, out_time)
+	tween.set_ease(Tween.EASE_IN)
+	tween.tween_property(piece, "global_position", target, in_time)
+	await tween.finished
+
+
+func _spawn_move_landing_fx(target: Vector3, piece: PieceView) -> void:
+	if generated == null or piece == null:
+		return
+	var ring := MeshInstance3D.new()
+	ring.name = "MoveLandingFX"
+	var mesh := CylinderMesh.new()
+	mesh.top_radius = 0.30
+	mesh.bottom_radius = 0.30
+	mesh.height = 0.018
+	mesh.radial_segments = 40
+	ring.mesh = mesh
+
+	var color := Color("#7bd8ff") if piece.side == &"White" else Color("#ff795f")
+	if piece.piece_type == &"Queen":
+		color = Color("#e3b6ff") if piece.side == &"White" else Color("#e56cff")
+	elif piece.piece_type == &"Rook":
+		color = Color("#ffd596") if piece.side == &"White" else Color("#ff9a5f")
+
+	var material := StandardMaterial3D.new()
+	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.albedo_color = Color(color.r, color.g, color.b, 0.34)
+	material.emission_enabled = true
+	material.emission = color
+	material.emission_energy_multiplier = 0.65
+	ring.material_override = material
+	ring.global_position = target + Vector3(0, 0.025, 0)
+	var strength := 1.22 if piece.piece_type == &"Rook" else (1.10 if piece.piece_type == &"King" else 1.0)
+	ring.scale = Vector3(0.45, 1.0, 0.45) * strength
+	generated.add_child(ring)
+
+	var tween := create_tween().set_parallel()
+	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(ring, "scale", Vector3(1.65, 1.0, 1.65) * strength, 0.24)
+	tween.tween_property(ring, "transparency", 1.0, 0.24)
+	tween.chain().tween_callback(ring.queue_free)
+
 
 func reset_pieces() -> void:
 	clear_selection()
