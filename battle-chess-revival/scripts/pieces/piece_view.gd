@@ -33,19 +33,24 @@ var _named_parts: Dictionary = {}
 var _idle_clock := 0.0
 var _idle_phase := 0.0
 var _battle_animation_active := false
+var _presentation_animation_active := false
+var _selected := false
 
 func _ready() -> void:
 	set_process(DisplayServer.get_name() != "headless")
 
 func _process(delta: float) -> void:
-	if visual_root == null or _battle_animation_active:
+	if visual_root == null or _battle_animation_active or _presentation_animation_active:
 		return
 	_idle_clock += delta
 	var profile := _idle_profile(piece_type)
 	var wave := sin(_idle_clock * profile.x + _idle_phase)
 	var slow_wave := sin(_idle_clock * profile.x * 0.47 + _idle_phase * 0.7)
-	visual_root.position.y = wave * profile.y
+	var selected_lift := 0.045 if _selected else 0.0
+	var selected_scale := 1.035 if _selected else 1.0
+	visual_root.position.y = selected_lift + wave * profile.y
 	visual_root.rotation_degrees.z = slow_wave * profile.z
+	visual_root.scale = Vector3.ONE * _design_scale(piece_type) * selected_scale
 	_apply_secondary_idle(wave, slow_wave)
 
 func setup(
@@ -68,6 +73,8 @@ func setup(
 	_apply_rest_pose()
 
 func reset_visual() -> void:
+	_presentation_animation_active = false
+	_selected = false
 	if visual_root == null:
 		return
 	visual_root.position = Vector3.ZERO
@@ -104,6 +111,94 @@ func set_battle_animation_active(active: bool) -> void:
 		visual_root.position = Vector3.ZERO
 		visual_root.rotation = Vector3.ZERO
 
+func set_selected(active: bool) -> void:
+	_selected = active
+	if visual_root == null or _battle_animation_active or _presentation_animation_active:
+		return
+	if not active:
+		visual_root.position = Vector3.ZERO
+		visual_root.rotation = Vector3.ZERO
+		_apply_rest_pose()
+
+func is_selected() -> bool:
+	return _selected
+
+func begin_move_presentation() -> void:
+	if visual_root == null:
+		return
+	_presentation_animation_active = true
+	_restore_visual_part_rest()
+	var base_scale := Vector3.ONE * _design_scale(piece_type)
+	_apply_move_part_pose(true)
+	var tween := create_tween().set_parallel()
+	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(visual_root, "scale", base_scale * Vector3(1.045, 0.94, 1.045), 0.10)
+	tween.tween_property(visual_root, "rotation_degrees:x", -4.5, 0.10)
+	await tween.finished
+
+func end_move_presentation() -> void:
+	if visual_root == null:
+		_presentation_animation_active = false
+		return
+	var base_scale := Vector3.ONE * _design_scale(piece_type)
+	var tween := create_tween().set_parallel()
+	tween.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(visual_root, "scale", base_scale, 0.14)
+	tween.tween_property(visual_root, "rotation_degrees", Vector3.ZERO, 0.14)
+	tween.tween_property(visual_root, "position", Vector3.ZERO, 0.14)
+	await tween.finished
+	_restore_visual_part_rest()
+	_presentation_animation_active = false
+
+func play_check_reaction() -> void:
+	if visual_root == null:
+		return
+	_presentation_animation_active = true
+	_restore_visual_part_rest()
+	_pose_named(["Head", "RiderHead"], Vector3(-5.0, 0.0, 0.0), Vector3(0.0, -0.02, 0.0))
+	var base_scale := Vector3.ONE * _design_scale(piece_type)
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(visual_root, "rotation_degrees:z", -7.0, 0.07)
+	tween.tween_property(visual_root, "rotation_degrees:z", 8.0, 0.09)
+	tween.tween_property(visual_root, "rotation_degrees:z", -4.0, 0.07)
+	tween.tween_property(visual_root, "rotation_degrees:z", 0.0, 0.10)
+	var squash := create_tween()
+	squash.tween_property(visual_root, "scale", base_scale * Vector3(1.06, 0.90, 1.06), 0.10)
+	squash.tween_property(visual_root, "scale", base_scale, 0.18)
+	await tween.finished
+	visual_root.scale = base_scale
+	_restore_visual_part_rest()
+	_presentation_animation_active = false
+
+func play_victory_pose() -> void:
+	if visual_root == null:
+		return
+	_presentation_animation_active = true
+	_restore_visual_part_rest()
+	_apply_victory_part_pose()
+	var base_scale := Vector3.ONE * _design_scale(piece_type)
+	var tween := create_tween().set_parallel()
+	tween.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(visual_root, "position:y", 0.085, 0.24)
+	tween.tween_property(visual_root, "rotation_degrees:z", -3.5 if side == &"White" else 3.5, 0.24)
+	tween.tween_property(visual_root, "scale", base_scale * 1.055, 0.24)
+	await tween.finished
+
+func play_defeat_pose() -> void:
+	if visual_root == null:
+		return
+	_presentation_animation_active = true
+	_restore_visual_part_rest()
+	_pose_named(["Head", "RiderHead", "HorseHead"], Vector3(12.0, 0.0, 0.0), Vector3(0.0, -0.04, 0.0))
+	var base_scale := Vector3.ONE * _design_scale(piece_type)
+	var tween := create_tween().set_parallel()
+	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(visual_root, "position:y", -0.035, 0.26)
+	tween.tween_property(visual_root, "rotation_degrees:z", 9.0 if side == &"White" else -9.0, 0.26)
+	tween.tween_property(visual_root, "scale", base_scale * Vector3(1.04, 0.86, 1.04), 0.26)
+	await tween.finished
+
 func get_visual_parts(prefix: String) -> Array[Node3D]:
 	var result: Array[Node3D] = []
 	if visual_root == null:
@@ -134,6 +229,71 @@ func get_part_rest_position(part: Node3D) -> Vector3:
 	if _visual_part_rest.has(key):
 		return _visual_part_rest[key]["position"]
 	return part.position
+
+func _apply_move_part_pose(active: bool) -> void:
+	if not active:
+		_restore_visual_part_rest()
+		return
+	match piece_type:
+		&"Pawn":
+			_pose_named(["Spear_Shaft", "SpearShaft", "Knife_Grip", "KnifeGrip"], Vector3(0, 0, -8))
+			_pose_named(["Head"], Vector3(-3, 0, 0))
+		&"Knight":
+			_pose_named(["HorseHead"], Vector3(-6, 0, 0), Vector3(0, -0.015, -0.025))
+			_pose_prefix("Leg_", Vector3(12, 0, 0))
+		&"Bishop":
+			_pose_named(["Staff"], Vector3(0, 0, -9))
+			_pose_named(["Trunk", "Snout", "V3_TrunkTip"], Vector3(-6, 0, 0))
+		&"Rook":
+			_pose_prefix("Arm_", Vector3(0, 0, 8))
+			_pose_prefix("Fist_", Vector3(0, 0, 10))
+		&"Queen":
+			_pose_named(["Staff"], Vector3(0, 0, 9))
+			_pose_prefix("V3_HairCurl", Vector3(-3, 0, 0))
+		&"King":
+			_pose_named(["Scepter"], Vector3(0, 0, -7))
+			_pose_prefix("Arm_", Vector3(0, 0, -5))
+
+func _apply_victory_part_pose() -> void:
+	match piece_type:
+		&"Pawn":
+			_pose_named(["Spear_Shaft", "SpearShaft", "Knife_Grip", "KnifeGrip"], Vector3(0, 0, 16))
+		&"Knight":
+			_pose_named(["HorseHead"], Vector3(-10, 0, 0), Vector3(0, 0.035, -0.02))
+			_pose_named(["Plume", "V3_Plume_0", "V3_Plume_1", "V3_Plume_2"], Vector3(0, 0, 10))
+		&"Bishop":
+			_pose_named(["Staff"], Vector3(0, 0, 18))
+			_pose_named(["Trunk", "Snout", "V3_TrunkTip"], Vector3(-12, 0, 0))
+		&"Rook":
+			_pose_prefix("Arm_", Vector3(0, 0, 22))
+			_pose_prefix("Fist_", Vector3(0, 0, 28))
+		&"Queen":
+			_pose_named(["Staff"], Vector3(0, 0, 24))
+			_pose_prefix("V3_Cape", Vector3(-8, 0, 0), Vector3(0, 0.03, 0.04))
+		&"King":
+			_pose_named(["Scepter"], Vector3(0, 0, -20))
+			_pose_prefix("Arm_", Vector3(0, 0, -13))
+
+func _pose_named(names: Array, rotation_offset: Vector3, position_offset: Vector3 = Vector3.ZERO) -> void:
+	for candidate in names:
+		var part := get_visual_part(String(candidate))
+		if part == null:
+			continue
+		var key := part.get_instance_id()
+		if not _visual_part_rest.has(key):
+			continue
+		var rest: Dictionary = _visual_part_rest[key]
+		part.rotation_degrees = rest["rotation"] + rotation_offset
+		part.position = rest["position"] + position_offset
+
+func _pose_prefix(prefix: String, rotation_offset: Vector3, position_offset: Vector3 = Vector3.ZERO) -> void:
+	for part in get_visual_parts(prefix):
+		var key := part.get_instance_id()
+		if not _visual_part_rest.has(key):
+			continue
+		var rest: Dictionary = _visual_part_rest[key]
+		part.rotation_degrees = rest["rotation"] + rotation_offset
+		part.position = rest["position"] + position_offset
 
 func _apply_secondary_idle(wave: float, slow_wave: float) -> void:
 	match piece_type:
