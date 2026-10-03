@@ -151,6 +151,13 @@ def build(side,outpath):
     for i,(x,z) in enumerate(((-.13,1.96),(-.065,2.02),(0,2.06),(.065,2.02),(.13,1.96))):
         O.append(cone(f"CrownPoint_{i}",(x,-.005,z),.035,.004,.22 if i!=2 else .26,P["gold"],verts=28))
     O.append(sphere("CrownGem",(0,-.185,1.88),(.045,.024,.052),P["gem"],28,14))
+    # G6 silhouette V2: larger crown wings + hair mass improve gameplay readability.
+    O.append(cone("CrownWing_L",(-.20,.012,1.98),.050,.006,.34,P["gold"],rot=(0,math.radians(-15),math.radians(-24)),verts=30))
+    O.append(cone("CrownWing_R",(.20,.012,1.98),.050,.006,.34,P["gold"],rot=(0,math.radians(15),math.radians(24)),verts=30))
+    O.append(sphere("HairSideMass_L",(-.205,.055,1.63),(.095,.095,.23),P["hair"],36,18))
+    O.append(sphere("HairSideMass_R",(.205,.055,1.63),(.095,.095,.23),P["hair"],36,18))
+    O.append(tube("V3_HairCurl_4",[(-.26,.06,1.68),(-.29,.08,1.50),(-.24,.04,1.34)],.038,P["hair"]))
+    O.append(tube("V3_HairCurl_5",[(.26,.06,1.68),(.29,.08,1.50),(.24,.04,1.34)],.038,P["hair"]))
 
     # Staff and magic orb; Staff prefix drives capture.
     sx=.43
@@ -159,6 +166,15 @@ def build(side,outpath):
     O.append(torus("StaffOuterRing",(sx,-.02,1.94),.22,.015,P["gold"],rot=(math.radians(90),0,0)))
     O.append(sphere("MagicOrb",(sx,-.03,1.94),(.10,.075,.10),P["gem"],40,20))
     O.append(cone("StaffCrownTip",(sx,-.01,2.19),.045,.004,.22,P["gold"],verts=28))
+    O.append(cone("StaffProng_L",(sx-.115,-.015,2.08),.028,.004,.25,P["gold"],rot=(0,math.radians(-10),math.radians(-24)),verts=24))
+    O.append(cone("StaffProng_R",(sx+.115,-.015,2.08),.028,.004,.25,P["gold"],rot=(0,math.radians(10),math.radians(24)),verts=24))
+    O.append(torus("StaffHaloOuter",(sx,-.02,1.94),.285,.011,P["gold"],rot=(math.radians(90),0,0)))
+    O.append(box("V3_CapeShoulder_L",(-.27,.17,1.34),(.16,.045,.12),P["cloth"],rot=(math.radians(-10),0,math.radians(-10)),bevel=.045))
+    O.append(box("V3_CapeShoulder_R",(.27,.17,1.34),(.16,.045,.12),P["cloth"],rot=(math.radians(-10),0,math.radians(10)),bevel=.045))
+    O.append(cone("V3_CapeCollar_L",(-.16,.16,1.52),.060,.018,.30,P["dress2"],rot=(math.radians(-12),math.radians(-8),math.radians(-12)),verts=28))
+    O.append(cone("V3_CapeCollar_R",(.16,.16,1.52),.060,.018,.30,P["dress2"],rot=(math.radians(-12),math.radians(8),math.radians(12)),verts=28))
+    O.append(box("Shoulder_L_Mantle",(-.35,-.005,1.38),(.11,.12,.075),P["gold"],rot=(0,0,math.radians(-12)),bevel=.05))
+    O.append(box("Shoulder_R_Mantle",(.35,-.005,1.38),(.11,.12,.075),P["gold"],rot=(0,0,math.radians(12)),bevel=.05))
 
     # Faction details.
     if side=="white":
@@ -175,6 +191,8 @@ def build(side,outpath):
     # More trim/detail to avoid concept-blockout simplicity.
     for i,z in enumerate((.42,.58,.76,.94)):
         O.append(torus(f"SkirtTrim_{i}",(0,0,z),.34-i*.018,.010,P["gold"]))
+    O.append(box("SkirtSilhouette_L",(-.34,.02,.69),(.085,.10,.34),P["dress2"],rot=(0,0,math.radians(-5)),bevel=.055))
+    O.append(box("SkirtSilhouette_R",(.34,.02,.69),(.085,.10,.34),P["dress2"],rot=(0,0,math.radians(5)),bevel=.055))
     for i,(x,z) in enumerate(((-.18,1.16),(.18,1.16),(-.23,1.02),(.23,1.02))):
         O.append(sphere(f"RobeGem_{i}",(x,-.245,z),(.032,.018,.032),P["gem"],22,11))
 
