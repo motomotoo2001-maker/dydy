@@ -13,6 +13,7 @@ var ai := ChessAI.new()
 var selected_square: StringName = &""
 var selected_moves: Array[Dictionary] = []
 var input_locked := false
+var game_over := false
 var ai_enabled := true
 var status_label: Label
 var help_label: Label
@@ -25,6 +26,10 @@ var volume_slider: HSlider
 var ambience_slider: HSlider
 var sfx_slider: HSlider
 var hud_layer: CanvasLayer
+var intro_banner: PanelContainer
+var endgame_overlay: Control
+var endgame_title: Label
+var endgame_subtitle: Label
 
 func setup(p_arena: ArenaBuilder, p_battle_director: BattleDirector) -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -32,6 +37,7 @@ func setup(p_arena: ArenaBuilder, p_battle_director: BattleDirector) -> void:
 	battle_director = p_battle_director
 	_build_hud()
 	_refresh_hud()
+	call_deferred("_maybe_play_intro")
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
@@ -42,7 +48,10 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if get_tree().paused:
 		return
-	if arena == null or input_locked or battle_director.busy:
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_R and game_over and not battle_director.busy:
+		restart_game()
+		return
+	if arena == null or input_locked or battle_director.busy or game_over:
 		return
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_R:
@@ -127,6 +136,9 @@ func _execute_move(move: Dictionary, allow_ai_reply: bool) -> void:
 	elif status == &"checkmate":
 		var winner_side := ChessState.BLACK if state.turn == ChessState.WHITE else ChessState.WHITE
 		await arena.play_checkmate_presentation(winner_side, state.turn)
+	if status in [&"checkmate", &"stalemate", &"draw_50_move", &"draw_insufficient"]:
+		game_over = true
+		_show_endgame(status)
 	input_locked = false
 	if allow_ai_reply and ai_enabled and state.turn == ChessState.BLACK and status in [&"ongoing", &"check"]:
 		input_locked = true
@@ -256,6 +268,135 @@ func _build_hud() -> void:
 	alert_panel.add_child(alert_label)
 
 	_build_pause_overlay()
+	_build_intro_banner()
+	_build_endgame_overlay()
+
+
+func _build_intro_banner() -> void:
+	intro_banner = PanelContainer.new()
+	intro_banner.name = "IntroBanner"
+	intro_banner.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	intro_banner.position = Vector2(-170, 24)
+	intro_banner.size = Vector2(340, 74)
+	intro_banner.visible = false
+	intro_banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	intro_banner.add_theme_stylebox_override("panel", _panel_style(Color(0.045, 0.035, 0.045, 0.94), Color("#c18c42"), 12, 1))
+	hud_layer.add_child(intro_banner)
+
+	var label := Label.new()
+	label.name = "IntroLabel"
+	label.text = "BATTLE CHESS\nБЕЛЫЕ НАЧИНАЮТ"
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 18)
+	label.add_theme_color_override("font_color", Color("#f3dfb9"))
+	intro_banner.add_child(label)
+
+
+func _build_endgame_overlay() -> void:
+	endgame_overlay = Control.new()
+	endgame_overlay.name = "EndgameOverlay"
+	endgame_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	endgame_overlay.visible = false
+	endgame_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	endgame_overlay.process_mode = Node.PROCESS_MODE_ALWAYS
+	hud_layer.add_child(endgame_overlay)
+
+	var dim := ColorRect.new()
+	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	dim.color = Color(0.015, 0.012, 0.018, 0.62)
+	dim.mouse_filter = Control.MOUSE_FILTER_STOP
+	endgame_overlay.add_child(dim)
+
+	var card := PanelContainer.new()
+	card.name = "EndgameCard"
+	card.set_anchors_preset(Control.PRESET_CENTER)
+	card.position = Vector2(-220, -145)
+	card.size = Vector2(440, 290)
+	card.add_theme_stylebox_override("panel", _panel_style(Color(0.06, 0.045, 0.055, 0.98), Color("#d0a052"), 18, 2))
+	endgame_overlay.add_child(card)
+
+	var margin := MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 34)
+	margin.add_theme_constant_override("margin_right", 34)
+	margin.add_theme_constant_override("margin_top", 30)
+	margin.add_theme_constant_override("margin_bottom", 28)
+	card.add_child(margin)
+
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 14)
+	margin.add_child(column)
+
+	endgame_title = Label.new()
+	endgame_title.name = "EndgameTitle"
+	endgame_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	endgame_title.add_theme_font_size_override("font_size", 34)
+	endgame_title.add_theme_color_override("font_color", Color("#f4dba8"))
+	column.add_child(endgame_title)
+
+	endgame_subtitle = Label.new()
+	endgame_subtitle.name = "EndgameSubtitle"
+	endgame_subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	endgame_subtitle.add_theme_font_size_override("font_size", 16)
+	endgame_subtitle.add_theme_color_override("font_color", Color("#c5b29a"))
+	column.add_child(endgame_subtitle)
+
+	var separator := HSeparator.new()
+	column.add_child(separator)
+
+	var rematch := Button.new()
+	rematch.name = "RematchButton"
+	rematch.text = "РЕВАНШ"
+	rematch.custom_minimum_size.y = 48
+	rematch.pressed.connect(_restart_from_endgame)
+	column.add_child(rematch)
+
+	var hint := Label.new()
+	hint.text = "R — реванш  •  Esc — настройки"
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hint.add_theme_font_size_override("font_size", 11)
+	hint.add_theme_color_override("font_color", Color("#8f7d70"))
+	column.add_child(hint)
+
+
+func _maybe_play_intro() -> void:
+	# Scripted render/smoke tests instantiate main.tscn manually and therefore
+	# have no current_scene equal to the game root. Keep their visual baseline clean.
+	if intro_banner == null or get_tree().current_scene != get_parent():
+		return
+	intro_banner.visible = true
+	intro_banner.modulate.a = 0.0
+	var tween := create_tween()
+	tween.tween_property(intro_banner, "modulate:a", 1.0, 0.28)
+	tween.tween_interval(1.05)
+	tween.tween_property(intro_banner, "modulate:a", 0.0, 0.38)
+	tween.tween_callback(func(): intro_banner.visible = false)
+
+
+func _show_endgame(status: StringName) -> void:
+	if endgame_overlay == null:
+		return
+	if status == &"checkmate":
+		var winner := "ЧЁРНЫЕ" if state.turn == ChessState.WHITE else "БЕЛЫЕ"
+		endgame_title.text = "ПОБЕДА"
+		endgame_subtitle.text = "%s ПОБЕЖДАЮТ • МАТ" % winner
+	else:
+		endgame_title.text = "НИЧЬЯ"
+		match status:
+			&"stalemate": endgame_subtitle.text = "ПАТ"
+			&"draw_50_move": endgame_subtitle.text = "ПРАВИЛО 50 ХОДОВ"
+			&"draw_insufficient": endgame_subtitle.text = "НЕДОСТАТОЧНО МАТЕРИАЛА"
+			_: endgame_subtitle.text = "ПАРТИЯ ЗАВЕРШЕНА"
+	endgame_overlay.visible = true
+	endgame_overlay.modulate.a = 0.0
+	var tween := create_tween()
+	tween.tween_property(endgame_overlay, "modulate:a", 1.0, 0.30)
+
+
+func _restart_from_endgame() -> void:
+	if endgame_overlay != null:
+		endgame_overlay.visible = false
+	restart_game()
 
 
 func _build_pause_overlay() -> void:
@@ -399,8 +540,12 @@ func _current_bus_volume_linear(bus_name: StringName) -> float:
 
 
 func restart_game() -> void:
-	if input_locked or battle_director.busy:
+	if (input_locked and not game_over) or battle_director.busy:
 		return
+	game_over = false
+	input_locked = false
+	if endgame_overlay != null:
+		endgame_overlay.visible = false
 	state.reset()
 	arena.reset_pieces()
 	_clear_selection()
@@ -434,9 +579,9 @@ func _refresh_hud() -> void:
 		state_badge.text = "AI: %s   •   %s" % [("ON" if ai_enabled else "OFF"), _material_summary()]
 
 	if alert_panel != null:
-		alert_panel.visible = status in [&"check", &"checkmate"]
+		alert_panel.visible = status == &"check"
 		if alert_label != null:
-			alert_label.text = "ШАХ" if status == &"check" else "МАТ"
+			alert_label.text = "ШАХ"
 
 	match status:
 		&"check":
