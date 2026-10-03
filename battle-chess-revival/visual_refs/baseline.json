@@ -1,7 +1,7 @@
 {
-  "source_commit": "87496261b3a99db894d3c8e13e432154a6a1b785",
-  "gameplay": {"score": 0.8140},
+  "source_commit": "73d0eec7b3cf39790410ed23d6b9735e276e7e66",
+  "gameplay": {"score": 0.7694},
   "battle": {"score": 0.7590},
   "regression_tolerance": 0.04,
-  "note": "Verified asset-first animation polish baseline: imported GLB army, AgX lighting, secondary idle motion, contact-distance staging, rook target landing, readable impact VFX, and refined Pawn toe-stab."
+  "note": "User-approved post-RC G1 baseline: full-board 3/4 gameplay camera from the open cathedral entrance with reduced foreground occlusion; battle camera and battle visual baseline unchanged."
 }
