@@ -197,7 +197,43 @@ func _run() -> void:
 		quit(1)
 		return
 
-	print("RENDER_CAPTURE_PASS gameplay=", image.get_width(), "x", image.get_height(), " captures=", CAPTURES.size(), " lineups=2 reviews=11")
+	# Authored Knight state diagnostics. These frames deliberately inspect the
+	# bone clips themselves, independently from BattleDirector staging.
+	_prepare_asset_review(arena, &"Black", &"Knight")
+	var black_knight := arena.find_piece(&"Black", &"Knight")
+	if black_knight != null:
+		black_knight.set_battle_animation_active(true)
+		black_knight.play_authored_animation(&"Hit", 1.0, 0.0)
+		await create_timer(maxf(black_knight.authored_animation_length(&"Hit") * 0.36, 0.12)).timeout
+	await process_frame
+	await RenderingServer.frame_post_draw
+	var knight_hit_review := get_root().get_texture().get_image()
+	var knight_hit_error := knight_hit_review.save_png("res://asset_review_black_knight_hit.png")
+	if knight_hit_error != OK:
+		push_error("RENDER_CAPTURE_FAIL: Knight Hit review save_png error %s" % knight_hit_error)
+		quit(1)
+		return
+	if black_knight != null:
+		black_knight.set_battle_animation_active(false)
+
+	_prepare_asset_review(arena, &"White", &"Knight")
+	var white_knight := arena.find_piece(&"White", &"Knight")
+	if white_knight != null:
+		white_knight.set_battle_animation_active(true)
+		white_knight.play_authored_animation(&"DoubleKick", 1.0, 0.0)
+		await create_timer(maxf(white_knight.authored_animation_length(&"DoubleKick") * 0.57, 0.20)).timeout
+	await process_frame
+	await RenderingServer.frame_post_draw
+	var knight_kick_review := get_root().get_texture().get_image()
+	var knight_kick_error := knight_kick_review.save_png("res://asset_review_white_knight_doublekick.png")
+	if knight_kick_error != OK:
+		push_error("RENDER_CAPTURE_FAIL: Knight DoubleKick review save_png error %s" % knight_kick_error)
+		quit(1)
+		return
+	if white_knight != null:
+		white_knight.set_battle_animation_active(false)
+
+	print("RENDER_CAPTURE_PASS gameplay=", image.get_width(), "x", image.get_height(), " captures=", CAPTURES.size(), " lineups=2 reviews=13")
 	root.queue_free()
 	await process_frame
 	quit(0)
