@@ -17,9 +17,11 @@ const PIECE_VALUES := {
 }
 const MATE_SCORE := 100000.0
 const INF := 1000000.0
+const QUIESCENCE_DEPTH := 2
 
 var difficulty := Difficulty.NORMAL
 var nodes_searched := 0
+var quiescence_nodes := 0
 
 func set_difficulty(value: int) -> void:
 	difficulty = clampi(value, Difficulty.EASY, Difficulty.HARD)
@@ -48,6 +50,7 @@ func choose_move(state: ChessState) -> Dictionary:
 		return {}
 
 	nodes_searched = 0
+	quiescence_nodes = 0
 	var root_side: StringName = state.turn
 	var depth := search_depth()
 	var best_move: Dictionary = moves[0]
@@ -72,9 +75,11 @@ func _minimax(state: ChessState, depth: int, alpha_in: float, beta_in: float, ro
 	if status == &"checkmate":
 		# Side to move has been mated.
 		return (-MATE_SCORE + float(ply)) if state.turn == root_side else (MATE_SCORE - float(ply))
-	if status in [&"stalemate", &"draw_50_move", &"draw_insufficient"]:
+	if status in [&"stalemate", &"draw_50_move", &"draw_repetition", &"draw_insufficient"]:
 		return 0.0
 	if depth <= 0:
+		if difficulty == Difficulty.HARD:
+			return _quiescence(state, alpha_in, beta_in, root_side, QUIESCENCE_DEPTH)
 		return _evaluate_position(state, root_side)
 
 	var moves := _ordered_moves(state)
@@ -101,6 +106,66 @@ func _minimax(state: ChessState, depth: int, alpha_in: float, beta_in: float, ro
 		if beta <= alpha:
 			break
 	return best
+
+func _quiescence(
+	state: ChessState,
+	alpha_in: float,
+	beta_in: float,
+	root_side: StringName,
+	depth_left: int
+) -> float:
+	quiescence_nodes += 1
+	var status := state.get_game_status()
+	if status == &"checkmate":
+		return -MATE_SCORE if state.turn == root_side else MATE_SCORE
+	if status in [&"stalemate", &"draw_50_move", &"draw_repetition", &"draw_insufficient"]:
+		return 0.0
+
+	var maximizing := state.turn == root_side
+	var alpha := alpha_in
+	var beta := beta_in
+	var stand_pat := _evaluate_position(state, root_side)
+
+	if depth_left <= 0:
+		return stand_pat
+
+	if maximizing:
+		if stand_pat >= beta:
+			return stand_pat
+		alpha = maxf(alpha, stand_pat)
+	else:
+		if stand_pat <= alpha:
+			return stand_pat
+		beta = minf(beta, stand_pat)
+
+	var in_check := state.is_in_check(state.turn)
+	var tactical: Array[Dictionary] = []
+	for move in _ordered_moves(state):
+		if in_check or move.get("capture", false) or move.has("promotion"):
+			tactical.append(move)
+
+	if tactical.is_empty():
+		return stand_pat
+
+	if maximizing:
+		var best := stand_pat
+		for move in tactical:
+			var score := _quiescence(state.preview_move(move), alpha, beta, root_side, depth_left - 1)
+			best = maxf(best, score)
+			alpha = maxf(alpha, best)
+			if beta <= alpha:
+				break
+		return best
+
+	var best := stand_pat
+	for move in tactical:
+		var score := _quiescence(state.preview_move(move), alpha, beta, root_side, depth_left - 1)
+		best = minf(best, score)
+		beta = minf(beta, best)
+		if beta <= alpha:
+			break
+	return best
+
 
 func _evaluate_position(state: ChessState, root_side: StringName) -> float:
 	var score := 0.0
