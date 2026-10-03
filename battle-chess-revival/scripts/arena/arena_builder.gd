@@ -333,11 +333,14 @@ func _build_cameras() -> void:
 	# 3/4 gameplay view from the open front-right entrance. The camera stays
 	# outside the board footprint but enters through the cathedral opening,
 	# avoiding side-wall occlusion while keeping the entire 8x8 board visible.
-	gameplay_camera.position = Vector3(9.3, 10.8, 15.5)
-	gameplay_camera.fov = 46.5
+	# G1 composition refinement: keep the approved 3/4 side view but move
+	# closer to the center of the open entrance so the near right column/capital
+	# no longer occludes the board or HUD sightline.
+	gameplay_camera.position = Vector3(7.8, 10.6, 16.8)
+	gameplay_camera.fov = 45.5
 	gameplay_camera.current = true
 	root.add_child(gameplay_camera)
-	gameplay_camera.look_at(Vector3(0, 0.72, -0.25), Vector3.UP)
+	gameplay_camera.look_at(Vector3(0, 0.72, -0.30), Vector3.UP)
 
 	battle_camera = Camera3D.new()
 	battle_camera.name = "BattleCamera"
