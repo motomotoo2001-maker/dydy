@@ -4,6 +4,8 @@ This file is the durable roadmap for continuing the project without losing the n
 The rule is simple: keep one verified checkpoint behind us, one active milestone in progress,
 and at least two upcoming milestones already specified.
 
+Last updated: 2026-10-03.
+
 ## Verified checkpoint
 
 **Production V3 Animation Backup — commit `3b8d4b4`**
@@ -15,9 +17,29 @@ and at least two upcoming milestones already specified.
 - Imported named-part articulation, idle motion, VFX polish, render captures and Visual QA.
 - Google Drive backup: `BattleChessRevival_CONCEPT_V3_ANIMATION_BACKUP_2026-10-02_3b8d4b4.zip`.
 
-## ACTIVE — Milestone A: board-game presentation animation
+## ACTIVE — Milestone A0: restore V3 binary assets to GitHub
 
-Goal: make the pieces feel alive outside capture cinematics before replacing the blockout meshes with final authored characters.
+A recovery audit on 2026-10-03 found that `PieceView` references the external V3 GLBs,
+but the GLB binaries themselves are absent from the GitHub branch. This forces the game to
+fall back to procedural production blockouts even though the Drive checkpoint contains the models.
+
+Immediate deliverables:
+
+- restore the 12 required V3 GLBs from the verified Drive backup into `assets/models/`;
+- change White Pawn from the stale `white_pawn_production_v1.glb` path to the existing
+  `white_pawn_concept_v3.glb` asset;
+- retain procedural blockouts as a safe fallback;
+- run Godot 4.7.2 import/parse, chess rules, smoke tests and Visual QA;
+- inspect gameplay/battle/lineup captures and correct scale/orientation/material issues before
+  freezing a new baseline;
+- create a new Drive checkpoint only after the render is verified.
+
+Exit gate: all 12 GLBs are present in GitHub, non-headless gameplay uses them, tests pass,
+and generated reference captures visibly contain the external models.
+
+## NEXT — Milestone A1: board-game presentation animation
+
+Goal: make the pieces feel alive outside capture cinematics before replacing V3 meshes with final authored V4 characters.
 
 Deliverables:
 
@@ -31,9 +53,9 @@ Deliverables:
 
 Exit gate: `CHESS_RULES_PASS`, `BATTLE_CHESS_SMOKE_PASS`, render/Visual-QA pass, no parser/runtime regression.
 
-## NEXT — Milestone B: Production V4 final character pipeline
+## NEXT + 1 — Milestone B: Production V4 final character pipeline
 
-Goal: replace procedural production blockouts with genuinely authored/organic meshes while preserving the current gameplay contract.
+Goal: replace V3 concept meshes / procedural fallbacks with genuinely authored organic meshes while preserving the current gameplay contract.
 
 Order: Knight → Bishop → Rook → Queen → King → final Pawn polish.
 
