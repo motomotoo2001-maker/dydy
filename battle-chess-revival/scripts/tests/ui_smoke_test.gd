@@ -34,13 +34,14 @@ func _run() -> void:
 	var sfx_slider := controller.find_child("SFXVolume", true, false) as HSlider
 	var ai_select := controller.find_child("AIDifficulty", true, false) as OptionButton
 	var resume := controller.find_child("ResumeButton", true, false) as Button
+	var undo := controller.find_child("UndoButton", true, false) as Button
 	var restart := controller.find_child("RestartButton", true, false) as Button
 
 	if turn_panel == null or hint_panel == null or alert_panel == null:
 		_fail("production HUD controls missing")
 		return
-	if pause_overlay == null or settings_card == null or slider == null or ambience_slider == null or sfx_slider == null or ai_select == null or resume == null or restart == null:
-		_fail("pause/settings/audio/AI controls missing")
+	if pause_overlay == null or settings_card == null or slider == null or ambience_slider == null or sfx_slider == null or ai_select == null or resume == null or undo == null or restart == null:
+		_fail("pause/settings/audio/AI/undo controls missing")
 		return
 	if turn_panel.size.x > 380.0 or turn_panel.size.y > 90.0:
 		_fail("turn panel is too large and blocks gameplay")
