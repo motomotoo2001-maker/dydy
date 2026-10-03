@@ -66,6 +66,8 @@ jobs:
         run: ./Godot_v4.7.2-stable_linux.x86_64 --headless --rendering-method gl_compatibility --path battle-chess-revival --editor --quit-after 30
       - name: Validate authored Knight rig assets
         run: ./Godot_v4.7.2-stable_linux.x86_64 --headless --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/knight_rig_test.gd
+      - name: Validate Knight runtime authored animation wiring
+        run: xvfb-run -a ./Godot_v4.7.2-stable_linux.x86_64 --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/knight_runtime_animation_test.gd
       - name: Run chess rules tests
         run: ./Godot_v4.7.2-stable_linux.x86_64 --headless --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/chess_rules_test.gd
       - name: Run capture smoke tests
