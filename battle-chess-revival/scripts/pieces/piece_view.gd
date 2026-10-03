@@ -255,6 +255,11 @@ func stop_authored_animation() -> void:
 	if _authored_animation_player != null:
 		_authored_animation_player.stop()
 
+func current_authored_animation() -> StringName:
+	if _authored_animation_player == null:
+		return &""
+	return _authored_animation_player.current_animation
+
 func authored_animation_length(animation_name: StringName) -> float:
 	if not has_authored_animation(animation_name):
 		return 0.0
