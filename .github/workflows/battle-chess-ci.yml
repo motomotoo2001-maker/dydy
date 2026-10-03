@@ -138,6 +138,8 @@ jobs:
         run: ./Godot_v4.7.2-stable_linux.x86_64 --headless --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/ai_strategy_test.gd
       - name: Validate move history and undo
         run: xvfb-run -a ./Godot_v4.7.2-stable_linux.x86_64 --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/history_undo_test.gd
+      - name: Validate interactive pawn promotion flow
+        run: xvfb-run -a ./Godot_v4.7.2-stable_linux.x86_64 --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/promotion_flow_test.gd
       - name: Run chess rules tests
         run: ./Godot_v4.7.2-stable_linux.x86_64 --headless --rendering-method gl_compatibility --path battle-chess-revival --script res://scripts/tests/chess_rules_test.gd
       - name: Run capture smoke tests
