@@ -64,6 +64,18 @@ func _run() -> void:
 		promotion_types.append(move.get("promotion", &""))
 	_check(&"Queen" in promotion_types and &"Rook" in promotion_types and &"Bishop" in promotion_types and &"Knight" in promotion_types, "promotion choices include Q/R/B/N")
 
+	var same_color_bishops := ChessState.new(false)
+	same_color_bishops.board = {
+		&"A1": {"side": ChessState.WHITE, "type": &"King", "has_moved": true},
+		&"C1": {"side": ChessState.WHITE, "type": &"Bishop", "has_moved": true},
+		&"H8": {"side": ChessState.BLACK, "type": &"King", "has_moved": true},
+		&"F8": {"side": ChessState.BLACK, "type": &"Bishop", "has_moved": true},
+	}
+	same_color_bishops.turn = ChessState.WHITE
+	same_color_bishops.castling_rights = {"K": false, "Q": false, "k": false, "q": false}
+	same_color_bishops.position_history = [same_color_bishops._position_key()]
+	_check(same_color_bishops.get_game_status() == &"draw_insufficient", "same-colour bishop ending is insufficient material")
+
 	var mate := ChessState.new()
 	_check(mate.try_move(&"F2", &"F3"), "fool mate f2-f3")
 	_check(mate.try_move(&"E7", &"E5"), "fool mate e7-e5")
