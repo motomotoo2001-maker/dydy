@@ -59,9 +59,10 @@ func _process(delta: float) -> void:
 
 	# G6 secondary root motion is intentionally outside the imported Skeleton3D.
 	# It adds weight/breathing while authored clips continue to own all bones.
+	var idle_vertical := wave * profile.y * (0.35 if _selected else 1.0)
 	visual_root.position = Vector3(
 		micro_wave * secondary.w,
-		selected_lift + wave * profile.y,
+		selected_lift + idle_vertical,
 		slow_wave * secondary.w * 0.45
 	)
 	visual_root.rotation_degrees = Vector3(
