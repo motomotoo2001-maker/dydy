@@ -286,10 +286,25 @@ func show_selection(square: StringName, moves: Array[Dictionary]) -> void:
 	_selected_piece = get_piece_at(square)
 	if _selected_piece != null:
 		_selected_piece.set_selected(true)
-	_add_square_overlay(square, Color(0.95, 0.78, 0.18, 0.42))
+
+	# Selected square: gold frame, visually distinct from destinations.
+	_add_square_overlay(square, Color(0.95, 0.78, 0.18, 0.30))
+	_add_ring_marker(selection_root, square, Color("#ffd66f"), 0.38, 0.055, "SelectedRing")
+
 	for move in moves:
-		var color := Color(0.95, 0.25, 0.25, 0.48) if move.get("capture", false) else Color(0.25, 0.82, 0.48, 0.38)
-		_add_square_overlay(move["to"], color)
+		var to_square: StringName = move["to"]
+		if move.has("promotion"):
+			_add_overlay_to(selection_root, to_square, Color(0.62, 0.28, 0.92, 0.24), 0.056, 0.82)
+			_add_ring_marker(selection_root, to_square, Color("#ca7cff"), 0.34, 0.070, "PromotionMoveRing")
+		elif move.has("castle"):
+			_add_overlay_to(selection_root, to_square, Color(0.18, 0.62, 0.90, 0.22), 0.056, 0.84)
+			_add_ring_marker(selection_root, to_square, Color("#74d8ff"), 0.34, 0.060, "CastleMoveRing")
+		elif move.get("capture", false):
+			_add_overlay_to(selection_root, to_square, Color(0.95, 0.20, 0.18, 0.22), 0.056, 0.84)
+			_add_ring_marker(selection_root, to_square, Color("#ff5848"), 0.35, 0.075, "CaptureMoveRing")
+		else:
+			_add_overlay_to(selection_root, to_square, Color(0.20, 0.74, 0.44, 0.13), 0.056, 0.76)
+			_add_disc_marker(selection_root, to_square, Color("#68df9a"), 0.14, "QuietMoveMarker")
 
 func get_socket(square: StringName) -> Marker3D:
 	return _sockets.get(square) as Marker3D
@@ -777,6 +792,11 @@ func show_check_danger(square: StringName) -> void:
 	ring.rotation_degrees.x = 90.0
 	danger_root.add_child(ring)
 	ring.global_position = marker.global_position + Vector3(0, 0.072, 0)
+	ring.scale = Vector3.ONE * 0.92
+	var pulse := create_tween().bind_node(ring).set_loops()
+	pulse.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	pulse.tween_property(ring, "scale", Vector3.ONE * 1.08, 0.34)
+	pulse.tween_property(ring, "scale", Vector3.ONE * 0.92, 0.34)
 
 
 func clear_last_move() -> void:
@@ -796,6 +816,72 @@ func show_last_move(from_square: StringName, to_square: StringName) -> void:
 
 func _add_square_overlay(square: StringName, color: Color) -> void:
 	_add_overlay_to(selection_root, square, color, 0.055, 0.90)
+
+
+func _add_ring_marker(
+	parent: Node3D,
+	square: StringName,
+	color: Color,
+	radius: float,
+	thickness: float,
+	node_name: String
+) -> void:
+	if parent == null:
+		return
+	var marker := get_socket(square)
+	if marker == null:
+		return
+	var mesh := TorusMesh.new()
+	mesh.inner_radius = radius
+	mesh.outer_radius = radius + thickness
+	mesh.rings = 32
+	mesh.ring_segments = 8
+	var ring := MeshInstance3D.new()
+	ring.name = node_name
+	ring.mesh = mesh
+	var mat := StandardMaterial3D.new()
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.albedo_color = Color(color.r, color.g, color.b, 0.72)
+	mat.emission_enabled = true
+	mat.emission = color
+	mat.emission_energy_multiplier = 1.75
+	ring.material_override = mat
+	ring.rotation_degrees.x = 90.0
+	parent.add_child(ring)
+	ring.global_position = marker.global_position + Vector3(0, 0.071, 0)
+
+
+func _add_disc_marker(
+	parent: Node3D,
+	square: StringName,
+	color: Color,
+	radius: float,
+	node_name: String
+) -> void:
+	if parent == null:
+		return
+	var marker := get_socket(square)
+	if marker == null:
+		return
+	var mesh := CylinderMesh.new()
+	mesh.top_radius = radius
+	mesh.bottom_radius = radius
+	mesh.height = 0.015
+	mesh.radial_segments = 28
+	var disc := MeshInstance3D.new()
+	disc.name = node_name
+	disc.mesh = mesh
+	var mat := StandardMaterial3D.new()
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.albedo_color = Color(color.r, color.g, color.b, 0.70)
+	mat.emission_enabled = true
+	mat.emission = color
+	mat.emission_energy_multiplier = 1.45
+	disc.material_override = mat
+	parent.add_child(disc)
+	disc.global_position = marker.global_position + Vector3(0, 0.071, 0)
 
 
 func _add_overlay_to(parent: Node3D, square: StringName, color: Color, y_offset: float, size_factor: float) -> void:
