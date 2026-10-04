@@ -74,6 +74,38 @@ def build(out):
               0.46 * tone(150 + 90 * t / .24, t) + 0.16 * n2(t)
           ), 0.52)
 
+    # Family-weighted ordinary move/landing sounds. These layer the same
+    # deterministic synthetic vocabulary with different weight/material reads.
+    write(out / "move_pawn.wav", 0.22,
+          lambda t: env(t, .22, .002, .08) * (
+              0.34 * tone(210 + 120 * t / .22, t) + 0.18 * bell(t, 760, 12) + 0.08 * n1(t) * math.exp(-t * 18)
+          ), 0.52)
+
+    write(out / "move_knight.wav", 0.34,
+          lambda t: env(t, .34, .002, .13) * (
+              0.38 * low_thump(t, 92, 11) + 0.23 * tone(260 + 120 * t, t) + 0.10 * n2(t) * math.exp(-t * 13)
+          ), 0.60)
+
+    write(out / "move_bishop.wav", 0.30,
+          lambda t: env(t, .30, .004, .12) * (
+              0.20 * bell(t, 420, 8) + 0.18 * tone(560 + 300 * t, t) + 0.07 * n1(t) * math.exp(-t * 14)
+          ), 0.48)
+
+    write(out / "move_rook.wav", 0.38,
+          lambda t: env(t, .38, .001, .16) * (
+              0.52 * low_thump(t, 58, 9) + 0.18 * tone(118, t) * math.exp(-t * 8) + 0.12 * n2(t) * math.exp(-t * 11)
+          ), 0.70)
+
+    write(out / "move_queen.wav", 0.34,
+          lambda t: env(t, .34, .004, .14) * (
+              0.16 * low_thump(t, 105, 10) + 0.21 * bell(t, 620, 7) + 0.16 * bell(t, 930, 9)
+          ), 0.50)
+
+    write(out / "move_king.wav", 0.42,
+          lambda t: env(t, .42, .002, .18) * (
+              0.48 * low_thump(t, 62, 8) + 0.16 * bell(t, 180, 6) + 0.10 * n1(t) * math.exp(-t * 10)
+          ), 0.68)
+
     write(out / "check.wav", 0.78,
           lambda t: env(t, .78, .008, .22) * (0.62 * bell(t, 392, 4.5) + 0.25 * bell(t, 587.3, 5.0)), 0.66)
 
