@@ -45,6 +45,24 @@ func _run() -> void:
 			_fail("missing tactical marker " + required + " names=" + str(names))
 			return
 
+	# Hover preview is a separate overlay layer and should communicate target intent.
+	arena.show_hover(&"C3", false, false)
+	await process_frame
+	var hover_ring := arena.hover_root.find_child("HoverRing", true, false) as MeshInstance3D
+	if hover_ring == null:
+		_fail("neutral hover ring missing")
+		return
+	arena.show_hover(&"E4", true, false)
+	await process_frame
+	if arena.hover_root.find_child("HoverRing", true, false) == null:
+		_fail("legal-target hover ring missing")
+		return
+	arena.show_hover(&"D3", true, true)
+	await process_frame
+	if arena.hover_root.find_child("HoverRing", true, false) == null:
+		_fail("capture-target hover ring missing")
+		return
+
 	arena.show_check_danger(&"E1")
 	await process_frame
 	var danger_ring := arena.danger_root.find_child("CheckDangerRing", true, false) as MeshInstance3D
@@ -59,8 +77,9 @@ func _run() -> void:
 		return
 
 	arena.clear_selection()
+	arena.clear_hover()
 	arena.clear_danger()
-	print("TACTICAL_FEEDBACK_PASS markers=", names.size(), " pulse=", start_scale, "->", later_scale)
+	print("TACTICAL_FEEDBACK_PASS markers=", names.size(), " hover=ok pulse=", start_scale, "->", later_scale)
 	scene.queue_free()
 	await process_frame
 	quit(0)
