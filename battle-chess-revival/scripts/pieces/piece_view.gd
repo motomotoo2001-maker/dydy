@@ -59,7 +59,12 @@ func _process(delta: float) -> void:
 
 	# G6 secondary root motion is intentionally outside the imported Skeleton3D.
 	# It adds weight/breathing while authored clips continue to own all bones.
-	var idle_vertical := wave * profile.y * (0.35 if _selected else 1.0)
+	var idle_vertical := wave * profile.y
+	if _selected:
+		# Selection must remain readable on every idle phase. Keep only a small
+		# breathing contribution and clamp its negative half so authored/secondary
+		# idle motion can never cancel the deliberate selection lift.
+		idle_vertical = maxf(wave * profile.y * 0.16, -selection_profile.x * 0.08)
 	visual_root.position = Vector3(
 		micro_wave * secondary.w,
 		selected_lift + idle_vertical,
