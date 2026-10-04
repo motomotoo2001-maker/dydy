@@ -25,9 +25,15 @@ func _run() -> void:
 	if AudioServer.get_bus_index("Ambience") < 0 or AudioServer.get_bus_index("SFX") < 0:
 		_fail("Ambience/SFX buses missing")
 		return
-	if audio.asset_count() != 11:
-		_fail("expected 11 audio assets, got %d" % audio.asset_count())
+	if audio.asset_count() != 17:
+		_fail("expected 17 audio assets, got %d" % audio.asset_count())
 		return
+
+	for piece_type in [&"Pawn", &"Knight", &"Bishop", &"Rook", &"Queen", &"King"]:
+		var move_key := audio.call("_move_sound_key", piece_type)
+		if move_key == &"" or not audio.has_asset(move_key):
+			_fail("move audio mapping missing for %s" % piece_type)
+			return
 
 	for id in [&"pawn_toe_stab", &"knight_double_kick", &"bishop_ram", &"rook_crush", &"queen_transform", &"king_trapdoor"]:
 		var key := audio.capture_sound_key(id)
