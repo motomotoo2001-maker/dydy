@@ -71,6 +71,10 @@ func _process(delta: float) -> void:
 		selected_lift + idle_vertical,
 		slow_wave * secondary.w * 0.45
 	)
+	if _selected:
+		# Authored Selected clips may contain subtle root translation. Enforce a
+		# readable post-layer floor so no family can sink back into the pedestal.
+		visual_root.position.y = maxf(visual_root.position.y, 0.032)
 	visual_root.rotation_degrees = Vector3(
 		wave * secondary.x,
 		micro_wave * secondary.y * side_sign,
