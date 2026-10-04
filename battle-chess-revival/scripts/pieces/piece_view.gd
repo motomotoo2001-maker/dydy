@@ -51,9 +51,10 @@ func _process(delta: float) -> void:
 	var micro_wave := sin(_idle_clock * profile.x * 0.73 + _idle_phase * 1.31)
 	var selection_wave := sin(_idle_clock * 3.2 + _idle_phase * 0.35)
 	var side_sign := 1.0 if side == &"White" else -1.0
-	var selected_lift := 0.045 if _selected else 0.0
-	var selected_scale := 1.035 if _selected else 1.0
-	var selected_pulse := (selection_wave * 0.006) if _selected else 0.0
+	var selection_profile := _selection_motion_profile(piece_type)
+	var selected_lift := selection_profile.x if _selected else 0.0
+	var selected_scale := (1.0 + selection_profile.y) if _selected else 1.0
+	var selected_pulse := (selection_wave * selection_profile.z) if _selected else 0.0
 	var base_scale := _design_scale(piece_type)
 
 	# G6 secondary root motion is intentionally outside the imported Skeleton3D.
@@ -172,35 +173,62 @@ func begin_move_presentation() -> void:
 	_presentation_animation_active = true
 	_restore_visual_part_rest()
 	var base_scale := Vector3.ONE * _design_scale(piece_type)
-	if play_authored_animation(&"Move", 1.55, 0.06):
-		var authored_tween := create_tween().set_parallel()
-		authored_tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-		authored_tween.tween_property(visual_root, "scale", base_scale * Vector3(1.025, 0.975, 1.025), 0.08)
-		authored_tween.tween_property(visual_root, "rotation_degrees:x", -2.0, 0.08)
-		await authored_tween.finished
-		return
-	_apply_move_part_pose(true)
-	var tween := create_tween().set_parallel()
-	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tween.tween_property(visual_root, "scale", base_scale * Vector3(1.045, 0.94, 1.045), 0.10)
-	tween.tween_property(visual_root, "rotation_degrees:x", -4.5, 0.10)
-	await tween.finished
+	var profile := _move_motion_profile(piece_type)
+	var side_sign := 1.0 if side == &"White" else -1.0
+	var authored := play_authored_animation(&"Move", profile.w, 0.055)
+	if not authored:
+		_apply_move_part_pose(true)
+
+	# G9 anticipation layer. The imported authored clip owns bones; this root
+	# layer adds family-specific weight before ArenaBuilder moves the piece.
+	var anticipate := create_tween().set_parallel()
+	anticipate.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	anticipate.tween_property(
+		visual_root,
+		"scale",
+		base_scale * Vector3(1.0 + profile.x * 0.55, 1.0 - profile.x, 1.0 + profile.x * 0.55),
+		0.085 + profile.x * 0.16
+	)
+	anticipate.tween_property(visual_root, "rotation_degrees:x", -profile.y, 0.10)
+	anticipate.tween_property(visual_root, "rotation_degrees:z", profile.z * side_sign, 0.10)
+	anticipate.tween_property(visual_root, "position:y", -profile.x * 0.16, 0.10)
+	await anticipate.finished
+
 
 func end_move_presentation() -> void:
 	if visual_root == null:
 		_presentation_animation_active = false
 		return
 	var base_scale := Vector3.ONE * _design_scale(piece_type)
-	var tween := create_tween().set_parallel()
-	tween.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tween.tween_property(visual_root, "scale", base_scale, 0.14)
-	tween.tween_property(visual_root, "rotation_degrees", Vector3.ZERO, 0.14)
-	tween.tween_property(visual_root, "position", Vector3.ZERO, 0.14)
-	await tween.finished
+	var landing := _landing_motion_profile(piece_type)
+	var side_sign := 1.0 if side == &"White" else -1.0
+
+	# Contact/squash.
+	var contact := create_tween().set_parallel()
+	contact.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	contact.tween_property(
+		visual_root,
+		"scale",
+		base_scale * Vector3(1.0 + landing.x, 1.0 - landing.y, 1.0 + landing.x),
+		landing.w
+	)
+	contact.tween_property(visual_root, "position:y", -landing.y * 0.09, landing.w)
+	contact.tween_property(visual_root, "rotation_degrees:z", landing.z * side_sign, landing.w)
+	await contact.finished
+
+	# Spring recovery to exact rest transform.
+	var recover := create_tween().set_parallel()
+	recover.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	recover.tween_property(visual_root, "scale", base_scale, 0.13 + landing.w * 0.45)
+	recover.tween_property(visual_root, "rotation_degrees", Vector3.ZERO, 0.13 + landing.w * 0.45)
+	recover.tween_property(visual_root, "position", Vector3.ZERO, 0.13 + landing.w * 0.45)
+	await recover.finished
+
 	_restore_visual_part_rest()
 	_presentation_animation_active = false
 	if has_authored_animation(&"Idle"):
 		play_authored_animation(&"Idle", 1.0, 0.10)
+
 
 func play_check_reaction() -> void:
 	if visual_root == null:
@@ -257,6 +285,25 @@ func play_defeat_pose() -> void:
 
 func play_hit_pose() -> void:
 	play_authored_animation(&"Hit", 1.2, 0.04)
+	if visual_root == null or _battle_animation_active:
+		return
+	_presentation_animation_active = true
+	var base_scale := Vector3.ONE * _design_scale(piece_type)
+	var hit := _hit_motion_profile(piece_type)
+	var side_sign := 1.0 if side == &"White" else -1.0
+
+	var recoil := create_tween()
+	recoil.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	recoil.tween_property(visual_root, "position", Vector3(0, hit.x, hit.y), 0.07)
+	recoil.parallel().tween_property(visual_root, "rotation_degrees:z", hit.z * side_sign, 0.07)
+	recoil.parallel().tween_property(visual_root, "scale", base_scale * Vector3(1.04, 0.91, 1.04), 0.07)
+	recoil.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	recoil.tween_property(visual_root, "position", Vector3.ZERO, 0.16)
+	recoil.parallel().tween_property(visual_root, "rotation_degrees", Vector3.ZERO, 0.16)
+	recoil.parallel().tween_property(visual_root, "scale", base_scale, 0.16)
+	recoil.tween_callback(func():
+		_presentation_animation_active = false
+	)
 
 func has_authored_animation(animation_name: StringName) -> bool:
 	return _authored_animation_player != null and _authored_animation_player.has_animation(animation_name)
@@ -451,6 +498,54 @@ func _idle_named(
 		var rest: Dictionary = _visual_part_rest[id]
 		part.rotation_degrees = rest["rotation"] + rotation_offset
 		part.position = rest["position"] + position_offset
+
+func _selection_motion_profile(t: StringName) -> Vector3:
+	# x=lift, y=base scale bonus, z=breathing pulse.
+	match t:
+		&"Pawn": return Vector3(0.040, 0.030, 0.0050)
+		&"Knight": return Vector3(0.055, 0.042, 0.0070)
+		&"Bishop": return Vector3(0.048, 0.034, 0.0055)
+		&"Rook": return Vector3(0.036, 0.026, 0.0035)
+		&"Queen": return Vector3(0.052, 0.038, 0.0060)
+		&"King": return Vector3(0.043, 0.032, 0.0045)
+	return Vector3(0.045, 0.032, 0.0050)
+
+
+func _move_motion_profile(t: StringName) -> Vector4:
+	# x=squash, y=forward pitch, z=side roll, w=authored playback speed.
+	match t:
+		&"Pawn": return Vector4(0.075, 5.8, 1.8, 1.68)
+		&"Knight": return Vector4(0.105, 8.0, 3.2, 1.48)
+		&"Bishop": return Vector4(0.052, 4.6, 2.2, 1.52)
+		&"Rook": return Vector4(0.125, 3.2, 1.4, 1.36)
+		&"Queen": return Vector4(0.048, 4.0, 2.4, 1.48)
+		&"King": return Vector4(0.092, 3.0, 1.5, 1.30)
+	return Vector4(0.06, 4.0, 2.0, 1.5)
+
+
+func _landing_motion_profile(t: StringName) -> Vector4:
+	# x=horizontal squash, y=vertical squash, z=roll degrees, w=contact time.
+	match t:
+		&"Pawn": return Vector4(0.050, 0.080, 1.8, 0.055)
+		&"Knight": return Vector4(0.080, 0.120, 3.2, 0.070)
+		&"Bishop": return Vector4(0.040, 0.060, 2.0, 0.060)
+		&"Rook": return Vector4(0.105, 0.155, 1.4, 0.085)
+		&"Queen": return Vector4(0.042, 0.065, 2.2, 0.060)
+		&"King": return Vector4(0.085, 0.130, 1.5, 0.080)
+	return Vector4(0.05, 0.08, 2.0, 0.06)
+
+
+func _hit_motion_profile(t: StringName) -> Vector3:
+	# x=vertical hop, y=backward local-root recoil, z=roll degrees.
+	match t:
+		&"Pawn": return Vector3(0.035, 0.055, 6.0)
+		&"Knight": return Vector3(0.050, 0.080, 8.0)
+		&"Bishop": return Vector3(0.042, 0.065, 6.5)
+		&"Rook": return Vector3(0.025, 0.040, 4.5)
+		&"Queen": return Vector3(0.045, 0.070, 7.0)
+		&"King": return Vector3(0.032, 0.050, 5.2)
+	return Vector3(0.04, 0.06, 6.0)
+
 
 func _secondary_motion_profile(t: StringName) -> Vector4:
 	# x=pitch degrees, y=yaw degrees, z=breathing scale, w=horizontal drift.
