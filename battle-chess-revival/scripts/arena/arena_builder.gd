@@ -334,7 +334,7 @@ func clear_selection() -> void:
 	if selection_root == null:
 		return
 	for child in selection_root.get_children():
-		child.queue_free()
+		child.free()
 
 func show_selection(square: StringName, moves: Array[Dictionary]) -> void:
 	clear_selection()
@@ -811,7 +811,7 @@ func clear_hover() -> void:
 	if hover_root == null:
 		return
 	for child in hover_root.get_children():
-		child.queue_free()
+		child.free()
 
 
 func show_hover(square: StringName, selectable: bool, occupied_by_enemy: bool = false) -> void:
@@ -839,7 +839,7 @@ func clear_hint() -> void:
 	if hint_root == null:
 		return
 	for child in hint_root.get_children():
-		child.queue_free()
+		child.free()
 
 
 func show_hint(from_square: StringName, to_square: StringName) -> void:
@@ -906,7 +906,7 @@ func clear_danger() -> void:
 	if danger_root == null:
 		return
 	for child in danger_root.get_children():
-		child.queue_free()
+		child.free()
 
 
 func show_check_danger(square: StringName) -> void:
@@ -947,7 +947,7 @@ func clear_last_move() -> void:
 	if last_move_root == null:
 		return
 	for child in last_move_root.get_children():
-		child.queue_free()
+		child.free()
 
 
 func show_last_move(from_square: StringName, to_square: StringName) -> void:
