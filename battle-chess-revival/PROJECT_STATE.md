@@ -1,8 +1,8 @@
 # Battle Chess Revival — Project State
 
-Last verified release candidate: **G7 gameplay pacing + Hard AI checkpoint**
+Last verified release candidate: **G8 tactical readability + match feedback checkpoint**
 Verified branch: `battle-chess-revival`
-Latest verified post-public checkpoint: `5cc9db9`
+Latest verified post-public checkpoint: `5dfba8d`
 Stable release rollback: `cd20018` (RC2)
 Engine: **Godot 4.7.2 stable**
 Target release: **Windows x86_64**
@@ -113,8 +113,18 @@ Source:
 
 G7 adds persistent Full/Fast/Off capture pacing plus Hard-AI quiescence/repetition awareness. Full remains the reference-quality capture mode.
 
+## Verified G8 artifacts
+
+Windows:
+`BattleChessRevival_G8_TacticalFeedback_Windows_2026-10-04_5dfba8d.zip`
+
+Source:
+`BattleChessRevival_G8_TacticalFeedback_Source_2026-10-04_5dfba8d.zip`
+
+G8 adds semantic board markers, pulsing check danger and live material/capture information while preserving the approved full-board camera.
+
 ## Next milestone
 
-**G8 — tactical readability + match feedback**
+**G9 — ordinary animation + VFX polish**
 
-Improve board decision clarity and HUD match information without changing the approved camera or authored combat baseline.
+Strengthen selection, board movement, landing and non-cinematic hit feedback on top of the verified authored animation clips.
