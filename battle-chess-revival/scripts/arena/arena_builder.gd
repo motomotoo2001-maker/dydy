@@ -1254,10 +1254,13 @@ void vertex() {
 void fragment() {
 	float a = sin(local_position.x * 7.0 + local_position.z * 5.0 + sin(local_position.z * 3.5) * 1.4);
 	float b = sin(local_position.x * 15.0 - local_position.z * 8.0);
-	float v = abs(a * 0.78 + b * 0.22);
-	float vein = smoothstep(0.72, 0.98, v);
-	ALBEDO = mix(base_color, vein_color, vein * 0.36);
-	ROUGHNESS = surface_roughness;
+	float c = sin(local_position.x * 31.0 + local_position.z * 23.0);
+	float v = abs(a * 0.74 + b * 0.20 + c * 0.06);
+	float vein = smoothstep(0.70, 0.985, v);
+	float hairline = smoothstep(0.91, 0.995, abs(sin(local_position.x * 26.0 - local_position.z * 18.0 + a)));
+	float cloud = 0.5 + 0.5 * sin(local_position.x * 3.3 + local_position.z * 2.6);
+	ALBEDO = mix(base_color, vein_color, clamp(vein * 0.34 + hairline * 0.10 + cloud * 0.035, 0.0, 0.48));
+	ROUGHNESS = clamp(surface_roughness + c * 0.025 - vein * 0.035 + cloud * 0.018, 0.16, 0.42);
 	METALLIC = 0.0;
 }
 """
@@ -1283,9 +1286,11 @@ void vertex() {
 void fragment() {
 	float wav = sin(local_position.x * 12.0 + sin(local_position.z * 4.0) * 2.2);
 	float fine = sin(local_position.x * 31.0 + local_position.z * 2.0);
-	float grain = smoothstep(0.10, 0.90, wav * 0.35 + fine * 0.15 + 0.50);
-	ALBEDO = mix(base_color, grain_color, grain * 0.34);
-	ROUGHNESS = surface_roughness;
+	float pores = sin(local_position.x * 57.0 + local_position.z * 8.0);
+	float grain = smoothstep(0.10, 0.90, wav * 0.34 + fine * 0.14 + pores * 0.035 + 0.50);
+	float ribbon = smoothstep(0.76, 0.98, abs(sin(local_position.x * 7.5 + local_position.z * 0.9)));
+	ALBEDO = mix(base_color, grain_color, clamp(grain * 0.32 + ribbon * 0.055, 0.0, 0.42));
+	ROUGHNESS = clamp(surface_roughness + fine * 0.020 + pores * 0.012 - ribbon * 0.025, 0.20, 0.48);
 	METALLIC = 0.0;
 }
 """
