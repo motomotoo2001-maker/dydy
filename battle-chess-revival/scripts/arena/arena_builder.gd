@@ -228,6 +228,55 @@ func _spawn_move_landing_fx(target: Vector3, piece: PieceView) -> void:
 	tween.tween_property(ring, "transparency", 1.0, 0.24)
 	tween.chain().tween_callback(ring.queue_free)
 
+	_spawn_landing_motes(target, piece, color)
+
+
+func _spawn_landing_motes(target: Vector3, piece: PieceView, color: Color) -> void:
+	if generated == null or piece == null:
+		return
+	var count := 3
+	match piece.piece_type:
+		&"Knight": count = 5
+		&"Rook": count = 7
+		&"King": count = 6
+		&"Queen": count = 4
+		_: count = 3
+
+	for i in range(count):
+		var mote := MeshInstance3D.new()
+		mote.name = "MoveLandingMote"
+		var sphere := SphereMesh.new()
+		sphere.radius = 0.028 if piece.piece_type not in [&"Rook", &"King"] else 0.038
+		sphere.height = sphere.radius * 2.0
+		sphere.radial_segments = 10
+		sphere.rings = 6
+		mote.mesh = sphere
+
+		var mat := StandardMaterial3D.new()
+		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		mat.albedo_color = Color(color.r, color.g, color.b, 0.46)
+		mat.emission_enabled = true
+		mat.emission = color
+		mat.emission_energy_multiplier = 0.28
+		mote.material_override = mat
+
+		var angle := TAU * float(i) / float(maxi(count, 1)) + float(i % 2) * 0.18
+		var radial := 0.12 + float(i % 3) * 0.035
+		var outward := Vector3(cos(angle), 0.0, sin(angle))
+		mote.global_position = target + Vector3(0, 0.055, 0) + outward * radial
+		mote.scale = Vector3.ONE * (0.72 + 0.08 * float(i % 2))
+		generated.add_child(mote)
+
+		var travel := 0.20 + 0.015 * float(i % 3)
+		var finish := target + outward * (0.34 + 0.05 * float(i % 3)) + Vector3(0, 0.12 + 0.025 * float(i % 2), 0)
+		var mote_tween := create_tween().set_parallel()
+		mote_tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		mote_tween.tween_property(mote, "global_position", finish, travel)
+		mote_tween.tween_property(mote, "scale", Vector3.ONE * 0.18, travel)
+		mote_tween.tween_property(mote, "transparency", 1.0, travel)
+		mote_tween.chain().tween_callback(mote.queue_free)
+
 
 func reset_pieces() -> void:
 	clear_selection()
