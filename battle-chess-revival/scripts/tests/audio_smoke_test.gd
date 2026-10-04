@@ -30,7 +30,7 @@ func _run() -> void:
 		return
 
 	for piece_type in [&"Pawn", &"Knight", &"Bishop", &"Rook", &"Queen", &"King"]:
-		var move_key := audio.call("_move_sound_key", piece_type)
+		var move_key: StringName = StringName(audio.call("_move_sound_key", piece_type))
 		if move_key == &"" or not audio.has_asset(move_key):
 			_fail("move audio mapping missing for %s" % piece_type)
 			return
