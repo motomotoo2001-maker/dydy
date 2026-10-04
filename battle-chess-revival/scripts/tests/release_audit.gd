@@ -17,6 +17,12 @@ const REQUIRED_RESOURCES := [
 	"res://assets/audio/cathedral_ambience.wav",
 	"res://assets/audio/ui_select.wav",
 	"res://assets/audio/move.wav",
+	"res://assets/audio/move_pawn.wav",
+	"res://assets/audio/move_knight.wav",
+	"res://assets/audio/move_bishop.wav",
+	"res://assets/audio/move_rook.wav",
+	"res://assets/audio/move_queen.wav",
+	"res://assets/audio/move_king.wav",
 	"res://assets/audio/check.wav",
 	"res://assets/audio/checkmate.wav",
 	"res://assets/audio/impact_pawn.wav",
@@ -59,7 +65,7 @@ func _run() -> void:
 	if arena.get_square_count() != 64 or arena.get_piece_count() != 32:
 		_fail("board contract failed squares=%d pieces=%d" % [arena.get_square_count(), arena.get_piece_count()])
 		return
-	if audio.asset_count() != 11:
+	if audio.asset_count() != 17:
 		_fail("audio contract failed assets=%d" % audio.asset_count())
 		return
 	if arena.gameplay_camera.position.x < 5.0:
@@ -115,12 +121,12 @@ func _run() -> void:
 		_fail("cathedral material classification too low unique=%d" % unique_materials.size())
 		return
 
-	for node_name in ["TurnPanel", "HintPanel", "PauseOverlay", "EndgameOverlay", "RematchButton", "MoveHistoryPanel", "MoveHistoryLabel", "GameMode", "AIDifficulty", "GraphicsQuality", "PromotionOverlay", "PromoteQueen", "UndoButton"]:
+	for node_name in ["TurnPanel", "HintPanel", "PauseOverlay", "EndgameOverlay", "RematchButton", "MoveHistoryPanel", "MoveHistoryLabel", "GameMode", "PlayerSide", "AIDifficulty", "GraphicsQuality", "PromotionOverlay", "PromoteQueen", "UndoButton"]:
 		if controller.find_child(node_name, true, false) == null:
 			_fail("required UX node missing: %s" % node_name)
 			return
 
-	print("RELEASE_AUDIT_PASS squares=64 pieces=32 audio=11 cathedral_meshes=", cathedral_meshes,
+	print("RELEASE_AUDIT_PASS squares=64 pieces=32 audio=17 cathedral_meshes=", cathedral_meshes,
 		" shared_materials=", unique_materials.size(), " viewport=", viewport_size,
 		" camera=", arena.gameplay_camera.position)
 	scene.queue_free()
