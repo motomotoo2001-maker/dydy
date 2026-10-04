@@ -390,15 +390,27 @@ Verified checkpoint `5cc9db9`:
   - `BattleChessRevival_G7_PacingAI_Windows_2026-10-04_5cc9db9.zip`
   - `BattleChessRevival_G7_PacingAI_Source_2026-10-04_5cc9db9.zip`.
 
-## ACTIVE — Milestone G8: tactical readability + match feedback
+## VERIFIED — Milestone G8: tactical readability + match feedback
+
+Verified checkpoint `5dfba8d`:
+- quiet/capture/castling/promotion destinations use distinct shapes as well as colors;
+- selected-square ring and pulsing check-danger ring improve board readability;
+- HUD shows live material advantage and captured-piece count;
+- tactical feedback runtime test, UI smoke, AI, Undo/history, promotion and chess rules all pass;
+- authored rigs/captures, gameplay render, Visual QA and Windows export remain green;
+- Drive backups:
+  - `BattleChessRevival_G8_TacticalFeedback_Windows_2026-10-04_5dfba8d.zip`
+  - `BattleChessRevival_G8_TacticalFeedback_Source_2026-10-04_5dfba8d.zip`.
+
+## ACTIVE — Milestone G9: ordinary animation + VFX polish
 
 Current task:
-- add a compact position/material evaluation readout without obscuring the board;
-- improve quiet/capture/castling move markers and king-in-check readability;
-- add captured-material summary to the match HUD;
-- strengthen ordinary move landing/selection feedback while preserving authored movement clips;
-- keep the locked full-board 3/4 gameplay camera and G7 combat pacing intact;
-- pass full gameplay/UI/rules/render/Visual-QA/Windows-export regression before checkpoint.
+- strengthen anticipation before ordinary board movement;
+- add per-family landing weight/recovery without changing legal move timing;
+- add richer non-cinematic hit recoil and selection feedback;
+- preserve authored Move/Hit clips as the base layer;
+- avoid camera motion during normal gameplay;
+- pass runtime animation/VFX tests, gameplay render, Visual QA and Windows export before checkpoint.
 
 ## AFTER E — Milestone F: optimization and release candidate
 
