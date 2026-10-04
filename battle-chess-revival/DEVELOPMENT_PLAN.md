@@ -378,15 +378,27 @@ Verified checkpoint `6a0fbdc`:
   - `BattleChessRevival_G6_Silhouette_Windows_2026-10-04_6a0fbdc.zip`
   - `BattleChessRevival_G6_Silhouette_Source_2026-10-04_6a0fbdc.zip`.
 
-## ACTIVE — Milestone G7: gameplay pacing + combat presentation
+## VERIFIED — Milestone G7: gameplay pacing + combat presentation
+
+Verified checkpoint `5cc9db9`:
+- persistent Full / Fast / Off cinematic capture modes are available in settings;
+- Full remains the Visual-QA reference mode, Fast preserves signature identity with shorter pacing, Off skips cinematic staging while retaining board-space feedback;
+- Hard AI adds quiescence search and repetition awareness without changing Easy/Normal search depth;
+- capture mode runtime/UI/settings tests and Hard-AI strategy tests are green;
+- full CI including authored rigs, rules, capture smoke, render, Visual QA and Windows export is green;
+- Drive backups:
+  - `BattleChessRevival_G7_PacingAI_Windows_2026-10-04_5cc9db9.zip`
+  - `BattleChessRevival_G7_PacingAI_Source_2026-10-04_5cc9db9.zip`.
+
+## ACTIVE — Milestone G8: tactical readability + match feedback
 
 Current task:
-- add Full / Fast / Off cinematic capture modes while preserving signature identity and SFX;
-- persist capture mode in player settings;
-- keep Full as the reference-quality mode used by Visual QA;
-- strengthen Hard AI without slowing Easy/Normal;
-- add targeted gameplay feedback only where it improves decision clarity;
-- preserve G6 as the rollback checkpoint.
+- add a compact position/material evaluation readout without obscuring the board;
+- improve quiet/capture/castling move markers and king-in-check readability;
+- add captured-material summary to the match HUD;
+- strengthen ordinary move landing/selection feedback while preserving authored movement clips;
+- keep the locked full-board 3/4 gameplay camera and G7 combat pacing intact;
+- pass full gameplay/UI/rules/render/Visual-QA/Windows-export regression before checkpoint.
 
 ## AFTER E — Milestone F: optimization and release candidate
 
