@@ -32,6 +32,7 @@ func _run() -> void:
 		return
 
 	controller.ai_enabled = false
+	controller.player_side = ChessState.BLACK
 	controller.ai.set_difficulty(ChessAI.Difficulty.HARD)
 	controller.graphics_quality = ArenaBuilder.QUALITY_MEDIUM
 	controller.arena.apply_quality_preset(ArenaBuilder.QUALITY_MEDIUM)
@@ -73,6 +74,9 @@ func _run() -> void:
 	if restored.ai_enabled:
 		_fail("game mode did not persist")
 		return
+	if restored.player_side != ChessState.BLACK:
+		_fail("player side did not persist")
+		return
 	if restored.ai.difficulty != ChessAI.Difficulty.HARD:
 		_fail("AI difficulty did not persist")
 		return
@@ -95,7 +99,7 @@ func _run() -> void:
 		_fail("SFX volume did not persist")
 		return
 
-	print("SETTINGS_PERSISTENCE_PASS mode=local difficulty=", restored.ai.difficulty_label(), " quality=", restored.arena.quality_label(), " captures=", restored.battle_director.capture_mode_label())
+	print("SETTINGS_PERSISTENCE_PASS mode=local side=", restored.player_side, " difficulty=", restored.ai.difficulty_label(), " quality=", restored.arena.quality_label(), " captures=", restored.battle_director.capture_mode_label())
 	second.queue_free()
 	await process_frame
 	_cleanup()
