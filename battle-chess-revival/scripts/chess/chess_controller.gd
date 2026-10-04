@@ -91,7 +91,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				if candidate.get("to", &"") == hover_square:
 					is_legal_target = true
 					break
-			var enemy := not hover_piece.is_empty() and hover_piece.get("side", &"") != state.turn
+			var enemy: bool = not hover_piece.is_empty() and hover_piece.get("side", &"") != state.turn
 			arena.show_hover(hover_square, is_legal_target, enemy and is_legal_target)
 		return
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_U and arena != null and not input_locked and not battle_director.busy:
