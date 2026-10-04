@@ -1,8 +1,8 @@
 # Battle Chess Revival — Project State
 
-Last verified release candidate: **G6 silhouette + secondary-motion checkpoint**
+Last verified release candidate: **G7 gameplay pacing + Hard AI checkpoint**
 Verified branch: `battle-chess-revival`
-Latest verified post-public checkpoint: `6a0fbdc`
+Latest verified post-public checkpoint: `5cc9db9`
 Stable release rollback: `cd20018` (RC2)
 Engine: **Godot 4.7.2 stable**
 Target release: **Windows x86_64**
@@ -103,8 +103,18 @@ Source:
 
 G6 adds verified per-family secondary motion and silhouette V2 upgrades for Queen, King, Rook, Knight and Bishop. Pawn remains on the prior production model because its board read was already strong.
 
+## Verified G7 artifacts
+
+Windows:
+`BattleChessRevival_G7_PacingAI_Windows_2026-10-04_5cc9db9.zip`
+
+Source:
+`BattleChessRevival_G7_PacingAI_Source_2026-10-04_5cc9db9.zip`
+
+G7 adds persistent Full/Fast/Off capture pacing plus Hard-AI quiescence/repetition awareness. Full remains the reference-quality capture mode.
+
 ## Next milestone
 
-**G7 — gameplay pacing + combat presentation**
+**G8 — tactical readability + match feedback**
 
-Add persistent Full/Fast/Off capture modes, then improve Hard AI and targeted board feedback while preserving the G6 visual/animation baseline.
+Improve board decision clarity and HUD match information without changing the approved camera or authored combat baseline.
