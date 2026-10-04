@@ -106,6 +106,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.keycode == KEY_R:
 			restart_game()
 			return
+		if event.keycode == KEY_H:
+			if not _is_ai_turn():
+				call_deferred("_request_hint")
+			return
 		if event.keycode == KEY_A:
 			ai_enabled = not ai_enabled
 			_sync_game_mode_controls()
@@ -161,6 +165,8 @@ func _clear_selection() -> void:
 
 func _execute_move(move: Dictionary, allow_ai_reply: bool) -> void:
 	input_locked = true
+	if arena != null:
+		arena.clear_hint()
 	var from_square: StringName = move["from"]
 	var to_square: StringName = move["to"]
 	var attacker := arena.get_piece_at(from_square)
@@ -720,7 +726,7 @@ func _build_pause_overlay() -> void:
 	column.add_child(restart)
 
 	var tip := Label.new()
-	tip.text = "Esc закрыть  •  U отмена  •  R новая игра  •  A AI"
+	tip.text = "Esc закрыть  •  H подсказка  •  U отмена  •  R новая игра  •  A AI"
 	tip.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	tip.add_theme_font_size_override("font_size", 11)
 	tip.add_theme_color_override("font_color", Color("#9e8b77"))
@@ -958,6 +964,7 @@ func restart_game() -> void:
 	arena.reset_pieces()
 	arena.clear_last_move()
 	arena.clear_danger()
+	arena.clear_hint()
 	_clear_selection()
 	_refresh_hud()
 	game_restarted.emit()
@@ -1012,7 +1019,7 @@ func _refresh_hud() -> void:
 		)
 
 	if help_label != null:
-		help_label.text = "ЛКМ ход  •  U отмена  •  Esc меню  •  R новая игра  •  A AI %s" % ("ON" if ai_enabled else "OFF")
+		help_label.text = "ЛКМ ход  •  H подсказка  •  U отмена  •  Esc меню  •  A AI %s" % ("ON" if ai_enabled else "OFF")
 
 	if state_badge != null:
 		state_badge.text = "AI: %s/%s  •  Вы: %s  •  Бой: %s  •  %s" % [
@@ -1075,6 +1082,7 @@ func undo_last_turn() -> void:
 		endgame_overlay.visible = false
 	arena.sync_pieces_from_state(state)
 	arena.clear_last_move()
+	arena.clear_hint()
 	if not move_log.is_empty() and state_history.size() < move_log.size():
 		# Defensive guard; history/log are normally kept in lockstep.
 		move_log.resize(state_history.size())
@@ -1112,6 +1120,27 @@ func _maybe_start_ai_turn() -> void:
 	_refresh_hud()
 	if not reply.is_empty() and _is_ai_turn():
 		await _execute_move(reply, false)
+
+
+func _request_hint() -> void:
+	if arena == null or battle_director == null or battle_director.busy or input_locked or game_over or _is_ai_turn():
+		return
+	var status := state.get_game_status()
+	if status not in [&"ongoing", &"check"]:
+		return
+	input_locked = true
+	if status_label != null:
+		status_label.text = "Анализ позиции…"
+	await get_tree().process_frame
+
+	var helper_ai := ChessAI.new()
+	# Hints use at least Normal depth, while respecting the user's Hard setting.
+	helper_ai.set_difficulty(maxi(ai.difficulty, ChessAI.Difficulty.NORMAL))
+	var hint := helper_ai.choose_move(state)
+	input_locked = false
+	if not hint.is_empty():
+		arena.show_hint(hint.get("from", &""), hint.get("to", &""))
+	_refresh_hud()
 
 
 func _format_move_notation(move: Dictionary, piece_type: StringName, capture: bool, status: StringName) -> String:
