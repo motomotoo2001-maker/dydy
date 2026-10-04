@@ -39,6 +39,10 @@ var _authored_animation_player: AnimationPlayer = null
 var selection_aura: MeshInstance3D = null
 
 func _ready() -> void:
+	# Imported AnimationPlayers are children at the default process priority.
+	# Apply our root-level idle/selection layer afterwards so authored clips
+	# cannot overwrite the readable selection lift in the same frame.
+	process_priority = 50
 	set_process(DisplayServer.get_name() != "headless")
 
 func _process(delta: float) -> void:
