@@ -292,16 +292,19 @@ func play_hit_pose() -> void:
 	var hit := _hit_motion_profile(piece_type)
 	var side_sign := 1.0 if side == &"White" else -1.0
 
-	var recoil := create_tween()
-	recoil.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	recoil.tween_property(visual_root, "position", Vector3(0, hit.x, hit.y), 0.07)
-	recoil.parallel().tween_property(visual_root, "rotation_degrees:z", hit.z * side_sign, 0.07)
-	recoil.parallel().tween_property(visual_root, "scale", base_scale * Vector3(1.04, 0.91, 1.04), 0.07)
+	# Hit feedback must read on the very first frame, so apply the contact pose
+	# immediately and tween only the recovery. The authored Hit clip continues
+	# to own the skeleton underneath this short root-layer recoil.
+	visual_root.position = Vector3(0, hit.x, hit.y)
+	visual_root.rotation_degrees = Vector3(0, 0, hit.z * side_sign)
+	visual_root.scale = base_scale * Vector3(1.04, 0.91, 1.04)
+
+	var recoil := create_tween().set_parallel()
 	recoil.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	recoil.tween_property(visual_root, "position", Vector3.ZERO, 0.16)
-	recoil.parallel().tween_property(visual_root, "rotation_degrees", Vector3.ZERO, 0.16)
-	recoil.parallel().tween_property(visual_root, "scale", base_scale, 0.16)
-	recoil.tween_callback(func():
+	recoil.tween_property(visual_root, "position", Vector3.ZERO, 0.21)
+	recoil.tween_property(visual_root, "rotation_degrees", Vector3.ZERO, 0.21)
+	recoil.tween_property(visual_root, "scale", base_scale, 0.21)
+	recoil.chain().tween_callback(func():
 		_presentation_animation_active = false
 	)
 
