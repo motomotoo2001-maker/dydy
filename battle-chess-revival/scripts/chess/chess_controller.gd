@@ -261,15 +261,15 @@ func _build_hud() -> void:
 	var turn_panel := PanelContainer.new()
 	turn_panel.name = "TurnPanel"
 	turn_panel.position = Vector2(20, 18)
-	turn_panel.size = Vector2(342, 92)
+	turn_panel.size = Vector2(350, 88)
 	turn_panel.add_theme_stylebox_override("panel", _panel_style(Color(0.055, 0.045, 0.05, 0.92), Color(0.64, 0.45, 0.20, 0.90), 12, 1))
 	hud_layer.add_child(turn_panel)
 
 	var turn_margin := MarginContainer.new()
 	turn_margin.add_theme_constant_override("margin_left", 14)
 	turn_margin.add_theme_constant_override("margin_right", 14)
-	turn_margin.add_theme_constant_override("margin_top", 10)
-	turn_margin.add_theme_constant_override("margin_bottom", 9)
+	turn_margin.add_theme_constant_override("margin_top", 6)
+	turn_margin.add_theme_constant_override("margin_bottom", 6)
 	turn_panel.add_child(turn_margin)
 
 	var row := HBoxContainer.new()
@@ -278,40 +278,40 @@ func _build_hud() -> void:
 
 	side_chip = Label.new()
 	side_chip.name = "SideChip"
-	side_chip.custom_minimum_size = Vector2(48, 48)
+	side_chip.custom_minimum_size = Vector2(44, 44)
 	side_chip.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	side_chip.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	side_chip.add_theme_font_size_override("font_size", 26)
+	side_chip.add_theme_font_size_override("font_size", 24)
 	side_chip.add_theme_color_override("font_color", Color("#241d1b"))
 	side_chip.add_theme_stylebox_override("normal", _panel_style(Color("#e9dfce"), Color("#c3974c"), 10, 1))
 	row.add_child(side_chip)
 
 	var text_column := VBoxContainer.new()
 	text_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	text_column.add_theme_constant_override("separation", 1)
+	text_column.add_theme_constant_override("separation", 0)
 	row.add_child(text_column)
 
 	status_label = Label.new()
 	status_label.name = "TurnStatus"
-	status_label.add_theme_font_size_override("font_size", 19)
+	status_label.add_theme_font_size_override("font_size", 18)
 	status_label.add_theme_color_override("font_color", Color("#fff2dc"))
 	text_column.add_child(status_label)
 
 	state_badge = Label.new()
 	state_badge.name = "StateBadge"
-	state_badge.add_theme_font_size_override("font_size", 11)
+	state_badge.add_theme_font_size_override("font_size", 10)
 	state_badge.add_theme_color_override("font_color", Color("#c8b69d"))
 	text_column.add_child(state_badge)
 
 	last_move_label = Label.new()
 	last_move_label.name = "LastMove"
-	last_move_label.add_theme_font_size_override("font_size", 10)
+	last_move_label.add_theme_font_size_override("font_size", 9)
 	last_move_label.add_theme_color_override("font_color", Color("#9f8f7b"))
 	text_column.add_child(last_move_label)
 
 	material_eval_label = Label.new()
 	material_eval_label.name = "MaterialEval"
-	material_eval_label.add_theme_font_size_override("font_size", 10)
+	material_eval_label.add_theme_font_size_override("font_size", 9)
 	material_eval_label.add_theme_color_override("font_color", Color("#d7c29f"))
 	text_column.add_child(material_eval_label)
 
@@ -1022,13 +1022,14 @@ func _refresh_hud() -> void:
 		help_label.text = "ЛКМ ход  •  H подсказка  •  U отмена  •  Esc меню  •  A AI %s" % ("ON" if ai_enabled else "OFF")
 
 	if state_badge != null:
-		state_badge.text = "AI: %s/%s  •  Вы: %s  •  Бой: %s  •  %s" % [
-			("ON" if ai_enabled else "OFF"),
-			ai.difficulty_label(),
-			_side_label(player_side),
-			battle_director.capture_mode_label() if battle_director != null else "—",
-			_material_summary()
-		]
+		if ai_enabled:
+			state_badge.text = "AI: %s  •  Вы: %s  •  %s" % [
+				ai.difficulty_label(),
+				_side_label(player_side),
+				_material_summary()
+			]
+		else:
+			state_badge.text = "Локальная партия  •  %s" % _material_summary()
 
 	if last_move_label != null:
 		last_move_label.text = "Последний: %s" % (move_log[-1] if not move_log.is_empty() else "—")
