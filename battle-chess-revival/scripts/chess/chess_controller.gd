@@ -594,20 +594,20 @@ func _build_pause_overlay() -> void:
 	var card := PanelContainer.new()
 	card.name = "SettingsCard"
 	card.set_anchors_preset(Control.PRESET_CENTER)
-	card.position = Vector2(-205, -372)
-	card.size = Vector2(410, 744)
+	card.position = Vector2(-205, -330)
+	card.size = Vector2(410, 660)
 	card.add_theme_stylebox_override("panel", _panel_style(Color(0.07, 0.055, 0.065, 0.98), Color("#b7833e"), 16, 2))
 	pause_overlay.add_child(card)
 
 	var margin := MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 28)
-	margin.add_theme_constant_override("margin_right", 28)
-	margin.add_theme_constant_override("margin_top", 24)
-	margin.add_theme_constant_override("margin_bottom", 24)
+	margin.add_theme_constant_override("margin_left", 22)
+	margin.add_theme_constant_override("margin_right", 22)
+	margin.add_theme_constant_override("margin_top", 18)
+	margin.add_theme_constant_override("margin_bottom", 18)
 	card.add_child(margin)
 
 	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 14)
+	column.add_theme_constant_override("separation", 7)
 	margin.add_child(column)
 
 	var title := Label.new()
@@ -634,7 +634,7 @@ func _build_pause_overlay() -> void:
 
 	game_mode_select = OptionButton.new()
 	game_mode_select.name = "GameMode"
-	game_mode_select.custom_minimum_size.y = 36
+	game_mode_select.custom_minimum_size.y = 32
 	game_mode_select.add_item("Против AI", 1)
 	game_mode_select.add_item("Локально • 2 игрока", 0)
 	game_mode_select.item_selected.connect(_on_game_mode_selected)
@@ -647,7 +647,7 @@ func _build_pause_overlay() -> void:
 
 	player_side_select = OptionButton.new()
 	player_side_select.name = "PlayerSide"
-	player_side_select.custom_minimum_size.y = 36
+	player_side_select.custom_minimum_size.y = 32
 	player_side_select.add_item("Белые", 0)
 	player_side_select.add_item("Чёрные", 1)
 	player_side_select.select(0 if player_side == ChessState.WHITE else 1)
@@ -661,7 +661,7 @@ func _build_pause_overlay() -> void:
 
 	ai_difficulty_select = OptionButton.new()
 	ai_difficulty_select.name = "AIDifficulty"
-	ai_difficulty_select.custom_minimum_size.y = 36
+	ai_difficulty_select.custom_minimum_size.y = 32
 	ai_difficulty_select.add_item("Лёгкий", ChessAI.Difficulty.EASY)
 	ai_difficulty_select.add_item("Обычный", ChessAI.Difficulty.NORMAL)
 	ai_difficulty_select.add_item("Сложный", ChessAI.Difficulty.HARD)
@@ -677,7 +677,7 @@ func _build_pause_overlay() -> void:
 
 	graphics_quality_select = OptionButton.new()
 	graphics_quality_select.name = "GraphicsQuality"
-	graphics_quality_select.custom_minimum_size.y = 36
+	graphics_quality_select.custom_minimum_size.y = 32
 	graphics_quality_select.add_item("Низкое", ArenaBuilder.QUALITY_LOW)
 	graphics_quality_select.add_item("Среднее", ArenaBuilder.QUALITY_MEDIUM)
 	graphics_quality_select.add_item("Высокое", ArenaBuilder.QUALITY_HIGH)
@@ -692,7 +692,7 @@ func _build_pause_overlay() -> void:
 
 	capture_mode_select = OptionButton.new()
 	capture_mode_select.name = "CaptureMode"
-	capture_mode_select.custom_minimum_size.y = 34
+	capture_mode_select.custom_minimum_size.y = 30
 	capture_mode_select.add_item("Выкл", BattleDirector.CaptureMode.OFF)
 	capture_mode_select.add_item("Быстро", BattleDirector.CaptureMode.FAST)
 	capture_mode_select.add_item("Полностью", BattleDirector.CaptureMode.FULL)
@@ -707,21 +707,21 @@ func _build_pause_overlay() -> void:
 	var resume := Button.new()
 	resume.name = "ResumeButton"
 	resume.text = "ПРОДОЛЖИТЬ"
-	resume.custom_minimum_size.y = 42
+	resume.custom_minimum_size.y = 36
 	resume.pressed.connect(_toggle_pause)
 	column.add_child(resume)
 
 	var undo := Button.new()
 	undo.name = "UndoButton"
 	undo.text = "ОТМЕНИТЬ ХОД"
-	undo.custom_minimum_size.y = 40
+	undo.custom_minimum_size.y = 34
 	undo.pressed.connect(_undo_from_pause)
 	column.add_child(undo)
 
 	var restart := Button.new()
 	restart.name = "RestartButton"
 	restart.text = "НОВАЯ ИГРА"
-	restart.custom_minimum_size.y = 42
+	restart.custom_minimum_size.y = 36
 	restart.pressed.connect(_restart_from_pause)
 	column.add_child(restart)
 
