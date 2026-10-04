@@ -33,6 +33,9 @@ func _run() -> void:
 		# Selection feedback is a root-layer lift/pulse over the authored clip.
 		piece.set_selected(true)
 		await process_frame
+		if piece.selection_aura == null or not piece.selection_aura.visible:
+			_fail("%s selection aura missing" % family)
+			return
 		if piece.visual_root.position.y < 0.025:
 			_fail("%s selection lift too small: %s" % [family, piece.visual_root.position.y])
 			return
@@ -41,6 +44,9 @@ func _run() -> void:
 
 		var base_scale := Vector3.ONE * piece._design_scale(piece.piece_type)
 		await piece.begin_move_presentation()
+		if piece.selection_aura != null and piece.selection_aura.visible:
+			_fail("%s selection aura remained visible during move" % family)
+			return
 		if piece.visual_root.scale.y >= base_scale.y * 0.985:
 			_fail("%s anticipation did not squash enough: %s base=%s" % [family, piece.visual_root.scale, base_scale])
 			return
