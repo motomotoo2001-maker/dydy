@@ -22,6 +22,9 @@ var _sockets: Dictionary = {}
 var _piece_by_square: Dictionary = {}
 var selection_root: Node3D
 var hover_root: Node3D
+var hint_root: Node3D
+var hint_from_square: StringName = &""
+var hint_to_square: StringName = &""
 var last_move_root: Node3D
 var danger_root: Node3D
 var _selected_piece: PieceView
@@ -46,6 +49,7 @@ func build() -> void:
 	_build_pieces()
 	_build_selection_root()
 	_build_hover_root()
+	_build_hint_root()
 	_build_last_move_root()
 	_build_danger_root()
 
@@ -821,6 +825,69 @@ func show_hover(square: StringName, selectable: bool, occupied_by_enemy: bool = 
 		color = Color("#8ee6a9")
 	_add_overlay_to(hover_root, square, Color(color.r, color.g, color.b, 0.085), 0.041, 0.91)
 	_add_ring_marker(hover_root, square, color, 0.47, 0.020, "HoverRing")
+
+
+func _build_hint_root() -> void:
+	hint_root = Node3D.new()
+	hint_root.name = "HintOverlay"
+	generated.add_child(hint_root)
+
+
+func clear_hint() -> void:
+	hint_from_square = &""
+	hint_to_square = &""
+	if hint_root == null:
+		return
+	for child in hint_root.get_children():
+		child.queue_free()
+
+
+func show_hint(from_square: StringName, to_square: StringName) -> void:
+	clear_hint()
+	if hint_root == null or from_square == &"" or to_square == &"":
+		return
+	var from_marker := get_socket(from_square)
+	var to_marker := get_socket(to_square)
+	if from_marker == null or to_marker == null:
+		return
+	hint_from_square = from_square
+	hint_to_square = to_square
+
+	var from_color := Color("#57c7ff")
+	var to_color := Color("#ffd66b")
+	_add_overlay_to(hint_root, from_square, Color(from_color.r, from_color.g, from_color.b, 0.14), 0.052, 0.86)
+	_add_overlay_to(hint_root, to_square, Color(to_color.r, to_color.g, to_color.b, 0.18), 0.054, 0.86)
+	_add_ring_marker(hint_root, from_square, from_color, 0.39, 0.027, "HintFromRing")
+	_add_ring_marker(hint_root, to_square, to_color, 0.43, 0.032, "HintToRing")
+
+	var start := from_marker.global_position + Vector3(0, 0.080, 0)
+	var finish := to_marker.global_position + Vector3(0, 0.080, 0)
+	var delta := finish - start
+	var length := Vector2(delta.x, delta.z).length()
+	if length > 0.05:
+		var beam := MeshInstance3D.new()
+		beam.name = "HintDirection"
+		var mesh := BoxMesh.new()
+		mesh.size = Vector3(0.055, 0.016, length)
+		beam.mesh = mesh
+		var mat := StandardMaterial3D.new()
+		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		mat.albedo_color = Color("#9edcff88")
+		mat.emission_enabled = true
+		mat.emission = Color("#8bcfff")
+		mat.emission_energy_multiplier = 1.35
+		beam.material_override = mat
+		hint_root.add_child(beam)
+		beam.global_position = (start + finish) * 0.5
+		beam.look_at(finish, Vector3.UP)
+
+	var pulse_target := hint_root.get_node_or_null("HintToRing") as Node3D
+	if pulse_target != null:
+		var pulse := create_tween().bind_node(pulse_target).set_loops()
+		pulse.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		pulse.tween_property(pulse_target, "scale", Vector3.ONE * 1.08, 0.42)
+		pulse.tween_property(pulse_target, "scale", Vector3.ONE * 0.96, 0.42)
 
 
 func _build_last_move_root() -> void:
