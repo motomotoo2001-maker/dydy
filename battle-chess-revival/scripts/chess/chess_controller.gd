@@ -2,6 +2,14 @@ class_name ChessController
 extends Node
 
 const SETTINGS_PATH := "user://battle_chess_settings.cfg"
+const MATERIAL_VALUES := {
+	&"Pawn": 1,
+	&"Knight": 3,
+	&"Bishop": 3,
+	&"Rook": 5,
+	&"Queen": 9,
+	&"King": 0,
+}
 
 signal piece_selected(piece_type: StringName)
 signal move_committed(piece_type: StringName, capture: bool)
@@ -26,6 +34,7 @@ var help_label: Label
 var side_chip: Label
 var state_badge: Label
 var last_move_label: Label
+var material_eval_label: Label
 var move_history_label: RichTextLabel
 var alert_panel: PanelContainer
 var alert_label: Label
@@ -234,7 +243,7 @@ func _build_hud() -> void:
 	var turn_panel := PanelContainer.new()
 	turn_panel.name = "TurnPanel"
 	turn_panel.position = Vector2(20, 18)
-	turn_panel.size = Vector2(342, 76)
+	turn_panel.size = Vector2(342, 92)
 	turn_panel.add_theme_stylebox_override("panel", _panel_style(Color(0.055, 0.045, 0.05, 0.92), Color(0.64, 0.45, 0.20, 0.90), 12, 1))
 	hud_layer.add_child(turn_panel)
 
@@ -281,6 +290,12 @@ func _build_hud() -> void:
 	last_move_label.add_theme_font_size_override("font_size", 10)
 	last_move_label.add_theme_color_override("font_color", Color("#9f8f7b"))
 	text_column.add_child(last_move_label)
+
+	material_eval_label = Label.new()
+	material_eval_label.name = "MaterialEval"
+	material_eval_label.add_theme_font_size_override("font_size", 10)
+	material_eval_label.add_theme_color_override("font_color", Color("#d7c29f"))
+	text_column.add_child(material_eval_label)
 
 	# Help is detached from the turn card so the board stays visible.
 	var hint_panel := PanelContainer.new()
@@ -957,6 +972,8 @@ func _refresh_hud() -> void:
 
 	if last_move_label != null:
 		last_move_label.text = "Последний: %s" % (move_log[-1] if not move_log.is_empty() else "—")
+	if material_eval_label != null:
+		material_eval_label.text = _material_advantage_summary()
 	_refresh_move_history()
 
 	if alert_panel != null:
@@ -1055,5 +1072,38 @@ func _material_summary() -> String:
 			white_count += 1
 		elif piece.get("side", &"") == ChessState.BLACK:
 			black_count += 1
-	return "%d : %d" % [white_count, black_count]
+	return "%d:%d" % [white_count, black_count]
+
+
+func _material_advantage_summary() -> String:
+	var white_value := 0
+	var black_value := 0
+	var white_count := 0
+	var black_count := 0
+	for square in state.board.keys():
+		var piece: Dictionary = state.board[square]
+		if piece.is_empty():
+			continue
+		var value: int = int(MATERIAL_VALUES.get(piece.get("type", &""), 0))
+		if piece.get("side", &"") == ChessState.WHITE:
+			white_value += value
+			white_count += 1
+		elif piece.get("side", &"") == ChessState.BLACK:
+			black_value += value
+			black_count += 1
+
+	var delta := white_value - black_value
+	var advantage := "="
+	if delta > 0:
+		advantage = "Белые +%d" % delta
+	elif delta < 0:
+		advantage = "Чёрные +%d" % abs(delta)
+
+	var captured_by_white := 16 - black_count
+	var captured_by_black := 16 - white_count
+	return "Материал: %s  •  взято %d:%d" % [
+		advantage,
+		captured_by_white,
+		captured_by_black
+	]
 
