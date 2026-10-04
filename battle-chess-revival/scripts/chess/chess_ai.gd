@@ -22,6 +22,8 @@ const QUIESCENCE_DEPTH := 2
 var difficulty := Difficulty.NORMAL
 var nodes_searched := 0
 var quiescence_nodes := 0
+var eval_cache_hits := 0
+var _eval_cache: Dictionary = {}
 
 func set_difficulty(value: int) -> void:
 	difficulty = clampi(value, Difficulty.EASY, Difficulty.HARD)
@@ -51,6 +53,8 @@ func choose_move(state: ChessState) -> Dictionary:
 
 	nodes_searched = 0
 	quiescence_nodes = 0
+	eval_cache_hits = 0
+	_eval_cache.clear()
 	var root_side: StringName = state.turn
 	var depth := search_depth()
 	var best_move: Dictionary = moves[0]
@@ -168,6 +172,10 @@ func _quiescence(
 
 
 func _evaluate_position(state: ChessState, root_side: StringName) -> float:
+	var cache_key := "%s|%s" % [state.position_key(), String(root_side)]
+	if _eval_cache.has(cache_key):
+		eval_cache_hits += 1
+		return float(_eval_cache[cache_key])
 	var score := 0.0
 	var root_bishops := 0
 	var enemy_bishops := 0
@@ -198,6 +206,7 @@ func _evaluate_position(state: ChessState, root_side: StringName) -> float:
 	if state.is_in_check(enemy_side):
 		score += 32.0
 
+	_eval_cache[cache_key] = score
 	return score
 
 func _positional_bonus(type: StringName, side: StringName, coord: Vector2i) -> float:
