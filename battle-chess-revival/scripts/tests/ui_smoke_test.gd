@@ -50,7 +50,7 @@ func _run() -> void:
 	if pause_overlay == null or promotion_overlay == null or promotion_card == null or settings_card == null or slider == null or ambience_slider == null or sfx_slider == null or mode_select == null or ai_select == null or graphics_select == null or capture_select == null or resume == null or undo == null or restart == null:
 		_fail("pause/promotion/settings/audio/mode/AI/undo controls missing")
 		return
-	if turn_panel.size.x > 380.0 or turn_panel.size.y > 90.0:
+	if turn_panel.size.x > 380.0 or turn_panel.size.y > 104.0:
 		_fail("turn panel is too large and blocks gameplay")
 		return
 	if pause_overlay.visible:
@@ -160,6 +160,7 @@ func _run() -> void:
 	var status := controller.find_child("TurnStatus", true, false) as Label
 	var help := controller.find_child("HelpLabel", true, false) as Label
 	var badge := controller.find_child("StateBadge", true, false) as Label
+	var material_eval := controller.find_child("MaterialEval", true, false) as Label
 	if status == null or status.text.is_empty():
 		_fail("turn status missing")
 		return
@@ -169,8 +170,11 @@ func _run() -> void:
 	if badge == null or not badge.text.contains("Сложный"):
 		_fail("AI difficulty not reflected in HUD")
 		return
+	if material_eval == null or not material_eval.text.contains("Материал:") or not material_eval.text.contains("0:0"):
+		_fail("material/capture summary missing from HUD")
+		return
 
-	print("UI_SMOKE_PASS turn_panel=", turn_panel.size, " status=", status.text, " AI=", controller.ai.difficulty_label(), " volume=", slider.value)
+	print("UI_SMOKE_PASS turn_panel=", turn_panel.size, " status=", status.text, " material=", material_eval.text, " AI=", controller.ai.difficulty_label(), " volume=", slider.value)
 	scene.queue_free()
 	await process_frame
 	quit(0)
