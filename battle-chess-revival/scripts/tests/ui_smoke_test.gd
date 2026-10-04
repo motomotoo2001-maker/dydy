@@ -37,6 +37,7 @@ func _run() -> void:
 	var ambience_slider := controller.find_child("AmbienceVolume", true, false) as HSlider
 	var sfx_slider := controller.find_child("SFXVolume", true, false) as HSlider
 	var mode_select := controller.find_child("GameMode", true, false) as OptionButton
+	var side_select := controller.find_child("PlayerSide", true, false) as OptionButton
 	var ai_select := controller.find_child("AIDifficulty", true, false) as OptionButton
 	var graphics_select := controller.find_child("GraphicsQuality", true, false) as OptionButton
 	var capture_select := controller.find_child("CaptureMode", true, false) as OptionButton
@@ -47,8 +48,8 @@ func _run() -> void:
 	if turn_panel == null or hint_panel == null or alert_panel == null:
 		_fail("production HUD controls missing")
 		return
-	if pause_overlay == null or promotion_overlay == null or promotion_card == null or settings_card == null or slider == null or ambience_slider == null or sfx_slider == null or mode_select == null or ai_select == null or graphics_select == null or capture_select == null or resume == null or undo == null or restart == null:
-		_fail("pause/promotion/settings/audio/mode/AI/undo controls missing")
+	if pause_overlay == null or promotion_overlay == null or promotion_card == null or settings_card == null or slider == null or ambience_slider == null or sfx_slider == null or mode_select == null or side_select == null or ai_select == null or graphics_select == null or capture_select == null or resume == null or undo == null or restart == null:
+		_fail("pause/promotion/settings/audio/mode/side/AI/undo controls missing")
 		return
 	if turn_panel.size.x > 380.0 or turn_panel.size.y > 104.0:
 		_fail("turn panel is too large and blocks gameplay")
