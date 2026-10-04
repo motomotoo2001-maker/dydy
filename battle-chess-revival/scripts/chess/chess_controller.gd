@@ -27,6 +27,7 @@ var selected_moves: Array[Dictionary] = []
 var input_locked := false
 var game_over := false
 var ai_enabled := true
+var player_side: StringName = ChessState.WHITE
 var graphics_quality := ArenaBuilder.QUALITY_HIGH
 var capture_mode := BattleDirector.CaptureMode.FULL
 var status_label: Label
@@ -43,6 +44,7 @@ var volume_slider: HSlider
 var ambience_slider: HSlider
 var sfx_slider: HSlider
 var game_mode_select: OptionButton
+var player_side_select: OptionButton
 var ai_difficulty_select: OptionButton
 var graphics_quality_select: OptionButton
 var capture_mode_select: OptionButton
@@ -64,6 +66,7 @@ func setup(p_arena: ArenaBuilder, p_battle_director: BattleDirector) -> void:
 	_build_hud()
 	_refresh_hud()
 	call_deferred("_maybe_play_intro")
+	call_deferred("_maybe_start_ai_turn")
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
@@ -108,8 +111,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			_sync_game_mode_controls()
 			_refresh_hud()
 			_save_settings()
+			if _is_ai_turn():
+				call_deferred("_maybe_start_ai_turn")
 			return
-	if ai_enabled and state.turn == ChessState.BLACK:
+	if _is_ai_turn():
 		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		var square := _screen_to_square(event.position)
@@ -204,16 +209,8 @@ func _execute_move(move: Dictionary, allow_ai_reply: bool) -> void:
 		game_over = true
 		_show_endgame(status)
 	input_locked = false
-	if allow_ai_reply and ai_enabled and state.turn == ChessState.BLACK and status in [&"ongoing", &"check"]:
-		input_locked = true
-		_refresh_hud()
-		await get_tree().process_frame
-		await get_tree().create_timer(0.24).timeout
-		var reply := ai.choose_move(state)
-		input_locked = false
-		_refresh_hud()
-		if not reply.is_empty():
-			await _execute_move(reply, false)
+	if allow_ai_reply and _is_ai_turn() and status in [&"ongoing", &"check"]:
+		await _maybe_start_ai_turn()
 
 func _move_castle_rook(side: StringName, kind: StringName) -> void:
 	var from_square: StringName
@@ -444,6 +441,9 @@ func _maybe_play_intro() -> void:
 	# have no current_scene equal to the game root. Keep their visual baseline clean.
 	if intro_banner == null or get_tree().current_scene != get_parent():
 		return
+	var intro_label := intro_banner.find_child("IntroLabel", true, false) as Label
+	if intro_label != null:
+		intro_label.text = "BATTLE CHESS\nВЫ ИГРАЕТЕ: %s" % _side_label(player_side).to_upper()
 	intro_banner.visible = true
 	intro_banner.modulate.a = 0.0
 	var tween := create_tween()
@@ -588,8 +588,8 @@ func _build_pause_overlay() -> void:
 	var card := PanelContainer.new()
 	card.name = "SettingsCard"
 	card.set_anchors_preset(Control.PRESET_CENTER)
-	card.position = Vector2(-205, -345)
-	card.size = Vector2(410, 690)
+	card.position = Vector2(-205, -372)
+	card.size = Vector2(410, 744)
 	card.add_theme_stylebox_override("panel", _panel_style(Color(0.07, 0.055, 0.065, 0.98), Color("#b7833e"), 16, 2))
 	pause_overlay.add_child(card)
 
@@ -633,6 +633,20 @@ func _build_pause_overlay() -> void:
 	game_mode_select.add_item("Локально • 2 игрока", 0)
 	game_mode_select.item_selected.connect(_on_game_mode_selected)
 	column.add_child(game_mode_select)
+
+	var side_title := Label.new()
+	side_title.text = "Ваша сторона"
+	side_title.add_theme_font_size_override("font_size", 13)
+	column.add_child(side_title)
+
+	player_side_select = OptionButton.new()
+	player_side_select.name = "PlayerSide"
+	player_side_select.custom_minimum_size.y = 36
+	player_side_select.add_item("Белые", 0)
+	player_side_select.add_item("Чёрные", 1)
+	player_side_select.select(0 if player_side == ChessState.WHITE else 1)
+	player_side_select.item_selected.connect(_on_player_side_selected)
+	column.add_child(player_side_select)
 
 	var ai_title := Label.new()
 	ai_title.text = "Сложность AI"
@@ -800,6 +814,20 @@ func _on_game_mode_selected(index: int) -> void:
 	_sync_game_mode_controls()
 	_refresh_hud()
 	_save_settings()
+	if _is_ai_turn():
+		call_deferred("_maybe_start_ai_turn")
+
+
+func _on_player_side_selected(index: int) -> void:
+	if player_side_select == null:
+		return
+	player_side = ChessState.WHITE if player_side_select.get_item_id(index) == 0 else ChessState.BLACK
+	_save_settings()
+	# Side ownership changes the AI side, so begin a clean match.
+	get_tree().paused = false
+	if pause_overlay != null:
+		pause_overlay.visible = false
+	restart_game()
 
 
 func _sync_game_mode_controls() -> void:
@@ -807,6 +835,9 @@ func _sync_game_mode_controls() -> void:
 		game_mode_select.select(0 if ai_enabled else 1)
 	if ai_difficulty_select != null:
 		ai_difficulty_select.disabled = not ai_enabled
+	if player_side_select != null:
+		player_side_select.disabled = not ai_enabled
+		player_side_select.select(0 if player_side == ChessState.WHITE else 1)
 
 
 func _on_ai_difficulty_selected(index: int) -> void:
@@ -865,6 +896,7 @@ func _on_bus_volume_changed(value: float, bus_name: StringName) -> void:
 func _save_settings() -> void:
 	var config := ConfigFile.new()
 	config.set_value("gameplay", "ai_enabled", ai_enabled)
+	config.set_value("gameplay", "player_side", String(player_side))
 	config.set_value("gameplay", "ai_difficulty", ai.difficulty)
 	config.set_value("graphics", "quality", graphics_quality)
 	config.set_value("gameplay", "capture_mode", capture_mode)
@@ -881,6 +913,9 @@ func _load_settings() -> void:
 	if config.load(SETTINGS_PATH) != OK:
 		return
 	ai_enabled = bool(config.get_value("gameplay", "ai_enabled", true))
+	player_side = StringName(config.get_value("gameplay", "player_side", String(ChessState.WHITE)))
+	if player_side not in [ChessState.WHITE, ChessState.BLACK]:
+		player_side = ChessState.WHITE
 	ai.set_difficulty(int(config.get_value("gameplay", "ai_difficulty", ChessAI.Difficulty.NORMAL)))
 	graphics_quality = clampi(int(config.get_value("graphics", "quality", ArenaBuilder.QUALITY_HIGH)), ArenaBuilder.QUALITY_LOW, ArenaBuilder.QUALITY_HIGH)
 	capture_mode = clampi(int(config.get_value("gameplay", "capture_mode", BattleDirector.CaptureMode.FULL)), BattleDirector.CaptureMode.OFF, BattleDirector.CaptureMode.FULL)
@@ -926,6 +961,8 @@ func restart_game() -> void:
 	_clear_selection()
 	_refresh_hud()
 	game_restarted.emit()
+	if _is_ai_turn():
+		call_deferred("_maybe_start_ai_turn")
 
 func _refresh_move_history() -> void:
 	if move_history_label == null:
@@ -978,9 +1015,10 @@ func _refresh_hud() -> void:
 		help_label.text = "ЛКМ ход  •  U отмена  •  Esc меню  •  R новая игра  •  A AI %s" % ("ON" if ai_enabled else "OFF")
 
 	if state_badge != null:
-		state_badge.text = "AI: %s/%s  •  Бой: %s  •  %s" % [
+		state_badge.text = "AI: %s/%s  •  Вы: %s  •  Бой: %s  •  %s" % [
 			("ON" if ai_enabled else "OFF"),
 			ai.difficulty_label(),
+			_side_label(player_side),
 			battle_director.capture_mode_label() if battle_director != null else "—",
 			_material_summary()
 		]
@@ -1011,8 +1049,8 @@ func _refresh_hud() -> void:
 		&"draw_insufficient":
 			status_label.text = "НИЧЬЯ  •  материал"
 		_:
-			if ai_enabled and state.turn == ChessState.BLACK and input_locked:
-				status_label.text = "Чёрные думают…  •  %s" % ai.difficulty_label()
+			if _is_ai_turn() and input_locked:
+				status_label.text = "%s думают…  •  %s" % [_side_label(state.turn), ai.difficulty_label()]
 			else:
 				status_label.text = "%s ходят" % side_text
 
@@ -1020,14 +1058,15 @@ func _refresh_hud() -> void:
 func undo_last_turn() -> void:
 	if arena == null or battle_director == null or battle_director.busy or input_locked or state_history.is_empty():
 		return
-	var steps := 2 if ai_enabled and state_history.size() >= 2 else 1
 	var restored: ChessState = null
-	for _i in range(steps):
-		if state_history.is_empty():
-			break
+	while not state_history.is_empty():
 		restored = state_history.pop_back()
 		if not move_log.is_empty():
 			move_log.pop_back()
+		# In AI mode stop at the previous player decision point. This naturally
+		# means two plies for White and one ply after the AI opener for Black.
+		if not ai_enabled or restored.turn == player_side:
+			break
 	if restored == null:
 		return
 	state = restored
@@ -1042,6 +1081,37 @@ func undo_last_turn() -> void:
 	_clear_selection()
 	_refresh_hud()
 	game_status_changed.emit(state.get_game_status())
+	if _is_ai_turn():
+		call_deferred("_maybe_start_ai_turn")
+
+
+func _ai_side() -> StringName:
+	return ChessState.BLACK if player_side == ChessState.WHITE else ChessState.WHITE
+
+
+func _is_ai_turn() -> bool:
+	return ai_enabled and state.turn == _ai_side() and not game_over
+
+
+func _side_label(side: StringName) -> String:
+	return "Белые" if side == ChessState.WHITE else "Чёрные"
+
+
+func _maybe_start_ai_turn() -> void:
+	if arena == null or battle_director == null or battle_director.busy or input_locked or not _is_ai_turn():
+		return
+	var status := state.get_game_status()
+	if status not in [&"ongoing", &"check"]:
+		return
+	input_locked = true
+	_refresh_hud()
+	await get_tree().process_frame
+	await get_tree().create_timer(0.24).timeout
+	var reply := ai.choose_move(state)
+	input_locked = false
+	_refresh_hud()
+	if not reply.is_empty() and _is_ai_turn():
+		await _execute_move(reply, false)
 
 
 func _format_move_notation(move: Dictionary, piece_type: StringName, capture: bool, status: StringName) -> String:
