@@ -21,6 +21,7 @@ var _pieces: Array[PieceView] = []
 var _sockets: Dictionary = {}
 var _piece_by_square: Dictionary = {}
 var selection_root: Node3D
+var hover_root: Node3D
 var last_move_root: Node3D
 var danger_root: Node3D
 var _selected_piece: PieceView
@@ -44,6 +45,7 @@ func build() -> void:
 	_build_lighting()
 	_build_pieces()
 	_build_selection_root()
+	_build_hover_root()
 	_build_last_move_root()
 	_build_danger_root()
 
@@ -794,6 +796,32 @@ func _build_selection_root() -> void:
 	selection_root = Node3D.new()
 	selection_root.name = "SelectionOverlay"
 	generated.add_child(selection_root)
+
+func _build_hover_root() -> void:
+	hover_root = Node3D.new()
+	hover_root.name = "HoverOverlay"
+	generated.add_child(hover_root)
+
+
+func clear_hover() -> void:
+	if hover_root == null:
+		return
+	for child in hover_root.get_children():
+		child.queue_free()
+
+
+func show_hover(square: StringName, selectable: bool, occupied_by_enemy: bool = false) -> void:
+	clear_hover()
+	if hover_root == null or square == &"":
+		return
+	var color := Color("#79d9ff")
+	if occupied_by_enemy:
+		color = Color("#ff7f66")
+	elif selectable:
+		color = Color("#8ee6a9")
+	_add_overlay_to(hover_root, square, Color(color.r, color.g, color.b, 0.085), 0.041, 0.91)
+	_add_ring_marker(hover_root, square, color, 0.47, 0.020, "HoverRing")
+
 
 func _build_last_move_root() -> void:
 	last_move_root = Node3D.new()
