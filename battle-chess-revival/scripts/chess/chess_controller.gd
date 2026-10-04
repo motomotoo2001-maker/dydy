@@ -77,6 +77,20 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if get_tree().paused:
 		return
+	if event is InputEventMouseMotion and arena != null and not input_locked and not battle_director.busy and not game_over:
+		var hover_square := _screen_to_square(event.position)
+		if hover_square == &"":
+			arena.clear_hover()
+		else:
+			var hover_piece := state.get_piece(hover_square)
+			var is_legal_target := false
+			for candidate in selected_moves:
+				if candidate.get("to", &"") == hover_square:
+					is_legal_target = true
+					break
+			var enemy := not hover_piece.is_empty() and hover_piece.get("side", &"") != state.turn
+			arena.show_hover(hover_square, is_legal_target, enemy and is_legal_target)
+		return
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_U and arena != null and not input_locked and not battle_director.busy:
 		undo_last_turn()
 		return
@@ -138,6 +152,7 @@ func _clear_selection() -> void:
 	selected_square = &""
 	selected_moves.clear()
 	arena.clear_selection()
+	arena.clear_hover()
 
 func _execute_move(move: Dictionary, allow_ai_reply: bool) -> void:
 	input_locked = true
