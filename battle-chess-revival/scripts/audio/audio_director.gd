@@ -5,6 +5,12 @@ const AUDIO_PATHS := {
 	&"ambient": "res://assets/audio/cathedral_ambience.wav",
 	&"select": "res://assets/audio/ui_select.wav",
 	&"move": "res://assets/audio/move.wav",
+	&"move_pawn": "res://assets/audio/move_pawn.wav",
+	&"move_knight": "res://assets/audio/move_knight.wav",
+	&"move_bishop": "res://assets/audio/move_bishop.wav",
+	&"move_rook": "res://assets/audio/move_rook.wav",
+	&"move_queen": "res://assets/audio/move_queen.wav",
+	&"move_king": "res://assets/audio/move_king.wav",
 	&"check": "res://assets/audio/check.wav",
 	&"checkmate": "res://assets/audio/checkmate.wav",
 	&"pawn": "res://assets/audio/impact_pawn.wav",
@@ -115,9 +121,45 @@ func _play_key(key: StringName, volume_db: float = 0.0, pitch: float = 1.0) -> b
 func _on_piece_selected(_piece_type: StringName) -> void:
 	_play_key(&"select", -6.0, 1.0)
 
-func _on_move_committed(_piece_type: StringName, capture: bool) -> void:
-	if not capture:
-		_play_key(&"move", -4.5, 1.0)
+func _on_move_committed(piece_type: StringName, capture: bool) -> void:
+	if capture:
+		return
+	var key := _move_sound_key(piece_type)
+	if key == &"":
+		key = &"move"
+	var volume := -4.5
+	var pitch := 1.0
+	match piece_type:
+		&"Pawn":
+			volume = -5.4
+			pitch = 1.04
+		&"Knight":
+			volume = -4.0
+			pitch = 0.98
+		&"Bishop":
+			volume = -4.8
+			pitch = 1.02
+		&"Rook":
+			volume = -2.8
+			pitch = 0.92
+		&"Queen":
+			volume = -4.2
+			pitch = 1.03
+		&"King":
+			volume = -2.9
+			pitch = 0.90
+	_play_key(key, volume, pitch)
+
+
+func _move_sound_key(piece_type: StringName) -> StringName:
+	match piece_type:
+		&"Pawn": return &"move_pawn"
+		&"Knight": return &"move_knight"
+		&"Bishop": return &"move_bishop"
+		&"Rook": return &"move_rook"
+		&"Queen": return &"move_queen"
+		&"King": return &"move_king"
+	return &"move"
 
 func _on_game_status_changed(status: StringName) -> void:
 	if status == &"check":
