@@ -36,6 +36,7 @@ var _battle_animation_active := false
 var _presentation_animation_active := false
 var _selected := false
 var _authored_animation_player: AnimationPlayer = null
+var selection_aura: MeshInstance3D = null
 
 func _ready() -> void:
 	set_process(DisplayServer.get_name() != "headless")
@@ -82,6 +83,11 @@ func _process(delta: float) -> void:
 		1.0 - breathe * 0.24 + selected_pulse
 	) * base_scale * selected_scale
 
+	if selection_aura != null and selection_aura.visible:
+		var aura_pulse := 1.0 + selection_wave * 0.055
+		selection_aura.scale = Vector3(aura_pulse, 1.0, aura_pulse)
+		selection_aura.position.y = 0.055 + selection_wave * 0.006
+
 	if has_authored_animation(&"Idle"):
 		if not _selected and (_authored_animation_player == null or not _authored_animation_player.is_playing()):
 			play_authored_animation(&"Idle", 1.0, 0.08)
@@ -106,11 +112,14 @@ func setup(
 	_refresh_authored_animation_player()
 	_cache_visual_part_rest()
 	_build_anchors()
+	_build_selection_aura()
 	_apply_rest_pose()
 
 func reset_visual() -> void:
 	_presentation_animation_active = false
 	_selected = false
+	if selection_aura != null:
+		selection_aura.visible = false
 	if visual_root == null:
 		return
 	visual_root.position = Vector3.ZERO
@@ -141,10 +150,13 @@ func change_type(new_type: StringName) -> void:
 	_refresh_authored_animation_player()
 	_cache_visual_part_rest()
 	_build_anchors()
+	_build_selection_aura()
 	_apply_rest_pose()
 
 func set_battle_animation_active(active: bool) -> void:
 	_battle_animation_active = active
+	if selection_aura != null:
+		selection_aura.visible = _selected and not active
 	if active and visual_root != null:
 		stop_authored_animation()
 		visual_root.position = Vector3.ZERO
@@ -154,6 +166,8 @@ func set_battle_animation_active(active: bool) -> void:
 
 func set_selected(active: bool) -> void:
 	_selected = active
+	if selection_aura != null:
+		selection_aura.visible = active and not _battle_animation_active and not _presentation_animation_active
 	if visual_root == null or _battle_animation_active or _presentation_animation_active:
 		return
 	if has_authored_animation(&"Selected"):
@@ -177,6 +191,8 @@ func begin_move_presentation() -> void:
 	if visual_root == null:
 		return
 	_presentation_animation_active = true
+	if selection_aura != null:
+		selection_aura.visible = false
 	_restore_visual_part_rest()
 	var base_scale := Vector3.ONE * _design_scale(piece_type)
 	var profile := _move_motion_profile(piece_type)
@@ -1467,6 +1483,34 @@ func _build_black_king_production_blockout() -> void:
 	_add_cylinder_mat("Scepter", 0.028, 0.98, Vector3(-0.44, 1.12, -0.02), armor, Vector3(0,0,5))
 	_add_sphere_mat("ScepterCore", 0.10, Vector3(-0.48, 1.62, -0.02), glow)
 	_add_box_mat("ScepterRune", Vector3(0.18, 0.18, 0.04), Vector3(-0.48, 1.62, -0.02), violet, Vector3(0,0,45))
+
+func _build_selection_aura() -> void:
+	selection_aura = MeshInstance3D.new()
+	selection_aura.name = "SelectionAura"
+	var mesh := TorusMesh.new()
+	mesh.inner_radius = 0.39
+	mesh.outer_radius = 0.47
+	mesh.rings = 36
+	mesh.ring_segments = 10
+	selection_aura.mesh = mesh
+	var color := Color("#7fd9ff") if side == &"White" else Color("#ff8068")
+	if piece_type == &"Queen":
+		color = Color("#d6a3ff") if side == &"White" else Color("#e76dff")
+	elif piece_type == &"King":
+		color = Color("#ffd27f") if side == &"White" else Color("#ff745d")
+	var material := StandardMaterial3D.new()
+	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.albedo_color = Color(color.r, color.g, color.b, 0.50)
+	material.emission_enabled = true
+	material.emission = color
+	material.emission_energy_multiplier = 1.65
+	selection_aura.material_override = material
+	selection_aura.rotation_degrees.x = 90.0
+	selection_aura.position = Vector3(0, 0.055, 0)
+	selection_aura.visible = false
+	add_child(selection_aura)
+
 
 func _build_anchors() -> void:
 	battle_target = _marker("BattleTarget", Vector3(0, 0.82, 0))
