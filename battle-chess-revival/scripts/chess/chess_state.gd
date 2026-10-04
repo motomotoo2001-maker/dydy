@@ -419,6 +419,10 @@ func _repetition_count() -> int:
 	return count
 
 
+func position_key() -> String:
+	return _position_key()
+
+
 func _position_key() -> String:
 	var squares: Array = board.keys()
 	squares.sort()
